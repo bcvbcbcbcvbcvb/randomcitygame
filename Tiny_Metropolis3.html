@@ -849,11 +849,11 @@ function ga(d){const c=g$("on-ga");c.replaceChildren();if(!d||(d.status=="drawn"
  if(d.status=="open"){c.append(mkE("span","🎁 "+d.title+" · win $"+d.amount.toLocaleString()));const b=mkE("button",S0.e==d.id?"Entered ✓":me?"Enter":"Sign up to enter");b.disabled=S0.e==d.id||!me;
   b.onclick=async()=>{try{await db.doc("entries/"+uid).set({gid:d.id,name:me,at:Date.now()});S0.e=d.id;put();ga(d)}catch(e){banner("Couldn’t enter.",4000)}};c.append(b)}
  else{c.append(mkE("span","🏆 "+d.winnerName+" won “"+d.title+"”"));if(d.winner&&d.winner==uid&&S0.c!=d.id){S0.c=d.id;put();money+=d.amount;ui();save();banner("🎉 You won the giveaway: $"+d.amount.toLocaleString()+"!",9000)}}}
-function onEv(id,d){ev[id]=d;if(id=="announce"&&S0.a!=d.id&&Date.now()-d.at<36e5){S0.a=d.id;put();banner("📢 "+d.text,15000)}
+function onEv(id,d){ev[id]=d;if(id=="announce"&&S0.a!=d.id&&Date.now()-d.at<36e5){S0.a=d.id;put();banner("📢 "+d.text,30000)}
  if(id=="wheel"&&S0.w!=d.id){S0.w=d.id;put();if(Date.now()-d.at<9e4)wheel(d)}if(id=="giveaway")ga(d)}
 // admin panel section
 const sec=mkE("div",null,"gsec");sec.innerHTML='<b>🌍 Global events</b><input id="g-msg" maxlength="200" placeholder="Announcement"><button id="g-ann">📢 Send announcement</button><input id="g-prz" value="500,1000,0,2500,250,5000,0,10000" title="Prize $ per slice (0 = no prize)"><button id="g-wheel">🎡 Spin wheel for everyone</button><input id="g-gt" placeholder="Giveaway title"><input id="g-ga" type="number" placeholder="Prize $"><div class="qr"><button id="g-gs">🎁 Start</button><button id="g-gd">🎲 Draw winner</button></div><small id="g-st"></small>';g$("a-tools").append(sec);
-const st=t=>g$("g-st").textContent=t,w=async(p,d,u)=>{if(!db||!ed){st("Log in with your admin account first (see README).");return 0}try{await(u?db.doc(p).update(d):db.doc(p).set(d));return 1}catch(e){st("Not allowed or failed.");return 0}};
+const st=t=>g$("g-st").textContent=t,w=async(p,d,u)=>{if(!db||!ed){st("Log in with your admin account first (see README).");return 0}try{await(u?db.doc(p).update(d):db.doc(p).set(d));return 1}catch(e){st("Rejected by the server: "+(e.code||e.message));return 0}};
 g$("g-ann").onclick=async()=>{const t=g$("g-msg").value.trim();if(t&&await w("events/announce",{id:rid(),text:t,at:Date.now()})){st("Sent to everyone!");g$("g-msg").value=""}};
 g$("g-wheel").onclick=async()=>{const v=g$("g-prz").value.split(",").map(s=>Math.max(0,parseInt(s)||0)).slice(0,10);if(v.length<2){st("Add at least 2 prizes.");return}const segs=v.map(n=>({v:n,l:n?"$"+n:"Nope"}));if(await w("events/wheel",{id:rid(),at:Date.now(),idx:Math.floor(Math.random()*v.length),segs}))st("Spinning on every screen!")};
 g$("g-gs").onclick=async()=>{if(await w("events/giveaway",{id:rid(),title:g$("g-gt").value.trim().slice(0,60)||"Giveaway",amount:Math.max(0,parseInt(g$("g-ga").value)||0),status:"open",at:Date.now()}))st("Giveaway is live!")};
@@ -864,7 +864,7 @@ const cfg=window.TM_FIREBASE;
 if(!window.firebase||!cfg||/PASTE/.test(cfg.apiKey||"")){lbl();return}
 try{firebase.initializeApp(cfg);auth=firebase.auth();db=firebase.firestore()}catch(e){db=null;lbl();return}
 lbl();
-db.collection("events").onSnapshot(s=>s.docs.forEach(d=>onEv(d.id,d.data())),()=>{});
+db.collection("events").onSnapshot(s=>s.docs.forEach(d=>onEv(d.id,d.data())),e=>{console.error("events listener",e);banner("⚠️ Can’t receive live events ("+(e.code||"error")+").",12000)});
 db.collection("scores").orderBy("pop","desc").limit(30).onSnapshot(s=>{rows=s.docs.map(d=>({id:d.id,...d.data()}));if(cur=="lb")render()},()=>{});
 let first=1;
 auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
