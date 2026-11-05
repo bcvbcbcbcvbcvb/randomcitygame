@@ -179,7 +179,19 @@ std:{n:"Football Stadium",e:"🏟️",c:15000,k:"p",jobs:60,inc:55,fun:500,joy:.
 bball:{n:"Basketball Arena",e:"🏀",c:17000,k:"p",jobs:55,inc:50,fun:450,joy:.04,tint:1,t:3,w:3,h:3},
 hockey:{n:"Hockey Arena",e:"🏒",c:18500,k:"p",jobs:58,inc:52,fun:480,joy:.04,tint:1,t:3,w:3,h:3},
 base:{n:"Baseball Stadium",e:"⚾",c:25000,k:"p",jobs:80,inc:75,fun:650,joy:.05,tint:1,t:3,w:4,h:4}};
-const GR=[["Roads",["none","road","hwy","hwy2","bull","lamp"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3"]],["Industry",["f1","f4","f7","f2","f5","f3"]],["Utilities",["wind","solar","f6","wtow","wtre","wtow2","wtre2"]],["Commerce",["c1","c4","c7","c9","c2","c5","c3","c6","c8"]],["Government",["gov1","gov2"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","base"]],["Landmarks",[]]];
+Object.assign(T,{
+well:{n:"Water Well",e:"⛲",c:250,k:"u",jobs:1,tre:18,twr:18,t:1,d:"A tiny self-contained supply: it treats and delivers a little water on its own."},
+rain:{n:"Rain Harvester",e:"🌧️",c:700,k:"u",jobs:1,tre:45,twr:45,t:1,d:"Collects rainwater, treats it and feeds it into the pipes."},
+pump:{n:"Pump Station",e:"⚙️",c:900,k:"u",jobs:2,twr:140,t:1,d:"Boosts water pressure so more homes get water."},
+filt:{n:"Filtration Plant",e:"🚿",c:2800,k:"u",jobs:8,tre:240,t:2,w:2,h:1},
+desal:{n:"Desalination Plant",e:"🌊",c:10000,k:"u",jobs:25,tre:950,twr:350,t:2,w:2,h:2,d:"Turns seawater into drinking water: huge treatment plus some delivery."},
+dam:{n:"Hydro Dam",e:"🏞️",c:14000,k:"u",jobs:28,inc:18,pwr:400,twr:500,t:2,w:2,h:2,d:"Makes clean power and stores water for the whole city."},
+lm1:{n:"Statue of Liberty",e:"🗽",c:30000,k:"p",jobs:20,inc:25,fun:300,joy:.02,t:3,bh:3,w:2,h:2,lm:1,d:"A copper-green icon holding her torch high."},
+lm2:{n:"CN Tower",e:"📡",c:60000,k:"p",jobs:35,inc:45,fun:450,joy:.03,t:3,bh:3,w:2,h:2,lm:2,d:"A towering concrete spire with a revolving pod."},
+lm3:{n:"Eiffel Tower",e:"🗼",c:100000,k:"p",jobs:45,inc:70,fun:600,joy:.04,t:3,bh:3,w:3,h:3,lm:3,d:"An iron lattice tower that sparkles at night."},
+lm4:{n:"Taj Mahal",e:"🕌",c:150000,k:"p",jobs:60,inc:100,fun:800,joy:.05,t:3,bh:3,w:4,h:4,lm:4,d:"White marble domes, four minarets and a reflecting pool."},
+lm5:{n:"Burj Khalifa",e:"🏙️",c:250000,k:"p",jobs:90,inc:160,fun:1200,joy:.06,t:4,bh:3,w:2,h:2,lm:5,d:"The tallest tower on Earth, rising far above your skyline."}});
+const GR=[["Roads",["none","road","hwy","hwy2","bull","lamp"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3"]],["Industry",["f1","f4","f7","f2","f5","f3"]],["Utilities",["wind","solar","f6"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c4","c7","c9","c2","c5","c3","c6","c8"]],["Government",["gov1","gov2"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","base"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
 const cv=$("cv");
@@ -222,8 +234,9 @@ function ui(){
   $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+S.ps)+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP))+"/"+S.sw)+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
   const uf=S.cap&&pop>=1?(S.pw<.98?1:0)|(S.wt<.98?2:0):0;if(uf!==UF){UF=uf;dirty=1}LV=S.pw}
  [S.j,S.s,S.a,S.q,S.r,S.pw,S.wt].forEach((v,i)=>$("b"+i).style.width=v*100+"%");
- document.querySelectorAll(".t").forEach(b=>b.classList.toggle("no",cc(T[b.dataset.t])>money));
- const m=[[RVP>.15?1-RVP:1,"The river is polluted by untreated sewage — build more Water Treatment."],[S.pw,S.ps>0?"Not enough energy — citizens are complaining. Build more power (wind, solar or a power plant).":"No electricity! Citizens are complaining — build a wind turbine, solar farm or power plant."],[S.wt,!S.tre&&!S.twr?"Citizens have no water! Build a Water Treatment plant and a Water Tower.":!S.tre?"The water isn’t treated — build a Water Treatment plant.":!S.twr?"Water can’t reach homes — build a Water Tower.":"Not enough water — citizens are complaining. Add more treatment and towers."],[S.j,"Citizens need jobs — build factories or shops."],[S.s,"Not enough shopping — add commercial buildings."],[S.a,"Smog is bothering residents — keep factories 5+ tiles from homes."],[S.r,"Citizens want things to do — build parks, a pool or a stadium."]].sort((a,b)=>a[0]-b[0])[0];
+ document.querySelectorAll(".t").forEach(b=>{const o=T[b.dataset.t];b.classList.toggle("no",cc(o)>money||(o.lm&&o.lm>nex))});
+ document.querySelectorAll(".t[data-lm]").forEach(b=>{const o=T[b.dataset.t],i=b.querySelector("i"),built=Object.values(B).some(q=>q.id==b.dataset.t);i.textContent=built?"✓ built":o.lm>nex?"🔒 Expand city":"$"+o.c.toLocaleString()+" · "+o.w+"×"+o.h});
+ const m=[[RVP>.15?1-RVP:1,"The river is polluted by untreated sewage — build more Water Treatment."],[S.pw,S.ps>0?"Not enough energy — citizens are complaining. Build more power (wind, solar or a power plant).":"No electricity! Citizens are complaining — build a wind turbine, solar farm or power plant."],[S.wt,!S.tre&&!S.twr?"Citizens have no water! Build a Water Well, or a Water Treatment plant plus a Water Tower.":!S.tre?"The water isn’t treated — build a Water Treatment plant.":!S.twr?"Water can’t reach homes — build a Water Tower.":"Not enough water — citizens are complaining. Add more treatment and towers."],[S.j,"Citizens need jobs — build factories or shops."],[S.s,"Not enough shopping — add commercial buildings."],[S.a,"Smog is bothering residents — keep factories 5+ tiles from homes."],[S.r,"Citizens want things to do — build parks, a pool or a stadium."]].sort((a,b)=>a[0]-b[0])[0];
  $("tip").textContent=S.bad?"🚫 Some buildings aren’t touching a road, so they’re inactive.":!S.cap?"Start by drawing a road, then place a home next to it.":m[0]<.98?m[1]:pop<S.cap?"Citizens are moving in…":"Everyone is thriving — keep growing!";
  const nm=$("name").value||"Your city",met=pop>=150&&S.hap>=.9;
  $("goal").textContent=met?"✅ "+nm+" is thriving!":"Goal: 150 citizens at 90%+ happiness";
@@ -250,13 +263,13 @@ function sel(t){tool=t;if(T[t].s)showStyle(T[t].s);$("colw").hidden=!T[t].tint;i
  const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: clicking does nothing, so you can look around freely. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road.":o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (3 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
  o.k=="l"?"Street Lamp: click anywhere on a tile (even a road’s edge) to place it exactly there. Glows at night. Bulldoze a tile to remove its lamps.":o.k=="h"?o.n+" ("+fp(o)+"): houses "+o.cap+" citizens. "+(o.d?o.d+" ":"")+"Nicer homes make people happier.":
  o.k=="g"?o.n+": "+o.d+" Click or drag to plant ($"+o.c+" each) on empty land. Cleans the air for homes within 4 tiles, so plant several near factories. Bulldoze to remove.":
- o.k=="u"?o.n+" ("+fp(o)+"): "+(o.pwr?"generates "+o.pwr+" power. ":"")+(o.tre?"treats water for "+o.tre+" citizens (needs a water tower to deliver it; untreated sewage pollutes rivers). ":"")+(o.twr?"delivers water to "+o.twr+" citizens (needs a treatment plant). ":"")+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.pol?", pollution "+"●".repeat(o.pol):"")+". Must touch a road.":
+ o.k=="u"?o.n+" ("+fp(o)+"): "+(o.d?o.d+" ":"")+(o.pwr?"generates "+o.pwr+" power. ":"")+(o.tre?"treats water for "+o.tre+" citizens"+(o.twr?"":" (needs a water tower to deliver it; untreated sewage pollutes rivers)")+". ":"")+(o.twr?"delivers water to "+o.twr+" citizens"+(o.tre?"":" (needs a treatment plant)")+". ":"")+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.pol?", pollution "+"●".repeat(o.pol):"")+". Must touch a road.":
  o.k=="f"?o.n+" ("+fp(o)+"): "+o.jobs+" jobs, +$"+o.inc+"/s, pollution "+"●".repeat(o.pol)+". Keep away from homes.":
- o.k=="p"?o.n+" ("+fp(o)+"): fun for "+o.fun+" citizens, "+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.grn?", freshens nearby air":"")+(o.joy?", boosts happiness +"+Math.round(o.joy*100)+"%":"")+(o.tint?". Pick an outer color below":"")+".":
+ o.lm?o.n+" ("+fp(o)+"): "+o.d+" Fun for "+o.fun+" citizens, "+o.jobs+" jobs, +$"+o.inc+"/s, happiness +"+Math.round(o.joy*100)+"%. Only one per city. Must touch a road.":o.k=="p"?o.n+" ("+fp(o)+"): fun for "+o.fun+" citizens, "+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.grn?", freshens nearby air":"")+(o.joy?", boosts happiness +"+Math.round(o.joy*100)+"%":"")+(o.tint?". Pick an outer color below":"")+".":
  o.n+" ("+fp(o)+"): "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s."+(o.gov?" Choose ✋ No tool (Esc), then click it to elect senators.":"")}
 
 let TR=[],RVP=0,WPC=new THREE.Color(0x6f7d35),FW=1,UF=0,LV=1,LVd=-1,SPN=[],BUB,LP=[],FX=[.5,.5],TOD=10,AUTO=1,sdrag=0,NL=-1,night=0,hem,lastMM=-1,nex=0,dirty=1,renderer,scene,cam,ctl,ray,PL,L,hl,rg,noMat,world3,cityG,ghost,ghostFor,last,pend=0,dragging=0;
-const pat=new Map(),proto={},ptrs=new Set(),EXP=100000,MX=5,D=Math.PI/2;
+const pat=new Map(),proto={},ptrs=new Set(),EXPC=[100000,250000,500000,750000,1000000],XW=10,XH=8,MX=5,D=Math.PI/2;
 const wx=x=>x-W/2+.5,wz=y=>y-H/2+.5,mat=o=>new THREE.MeshLambertMaterial(o);
 const bx=(w,h,d,c,x=0,y=0,z=0,tx)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),tx?tmat(tx):mat({color:c}));m.position.set(x,y+h/2,z);return m};
 const cy=(r,h,c,x,y,z,n=10)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m};
@@ -563,6 +576,77 @@ function protos(){
 
  proto.gov1=G(bx(.9,.05,.8,0xd8d2c0),bx(.7,.36,.5,0xefe8d8,0,.05,-.05),...[-.27,-.09,.09,.27].map(x=>cy(.025,.36,0xfaf6ea,x,.05,.24,8)),gb(.76,.18,.2,0xb8b0a0,0,.41,.2),bx(.2,.3,.2,0xefe8d8,0,.41,-.1),gl(.1,.1,.02,0xfff4d0,0,.55,.01),ro(.18,.18,0x3f6f9a,.71),cy(.008,.2,0x888888,0,.89,-.1,6),bx(.1,.06,.01,0xd9433b,.06,1,-.1));aw("gov1",WS(.7,.5,0,-.05,[.12],3,0,.1,.12,"b"));
  proto.gov2=G(bx(.96,.03,.96,0xe8e4d8),bx(.9,.25,.5,0xf1ecdd,0,.03,-.05),...[-.36,-.24,-.12,0,.12,.24,.36].map(x=>cy(.022,.25,0xfffaf0,x,.03,.24,8)),gb(.9,.14,.2,0xc9c2b0,0,.28,.2),cy(.2,.18,0xf1ecdd,0,.28,-.05,16),sp(.2,0xe8e4d8,0,.46,-.05),cy(.04,.1,0xd4b24a,0,.64,-.05,8),cy(.006,.15,0x888888,0,.72,-.05,6),bx(.08,.05,.01,0xd9433b,.05,.82,-.05),bx(.7,.03,.1,0xd8d2c0,0,.03,.34));aw("gov2",WS(.9,.5,0,-.05,[.1],5,0,.06,.1,"b"));
+ /* ---- more water supply + landmarks ---- */
+ {const tpr=(rb,rt,h,c,x,y,z,n=12)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m},
+  cg=(r,h,c,x,y,z,n,e)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,n||16),gm(c,e));m.position.set(x,y+h/2,z);m.userData.ns=1;return m},
+  cn3=(r,h,c,x,y,z,n=12)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m},
+  dm=(r,c,x,y,z,sy=1.2)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),mat({color:c}));m.scale.y=sy;m.position.set(x,y,z);return m},
+  pl=(c,k=.98)=>bx(k,.03,k,c);
+  /* water well */
+  proto.well=G(pl(0xb8c0c8,.9),cy(.2,.2,0x9a9086,0,.03,0,14),cy(.15,.015,0x4fc3f7,0,.23,0,14),bx(.04,.34,.04,0x6b4a2c,-.17,.03,0),bx(.04,.34,.04,0x6b4a2c,.17,.03,0),bx(.38,.03,.04,0x6b4a2c,0,.34,0),ro(.3,.14,0x8a5a3a,.37),bx(.12,.09,.12,0x7a5230,.28,.03,.26));
+  /* rain harvester */
+  {const rf=bx(.56,.03,.42,0xb8c8d8,.2,.26,.18);rf.rotation.x=.35;
+   proto.rain=G(pl(0xb8c0c8,.9),cy(.2,.4,0x9fb8c8,-.22,.03,-.12,16),cn3(.23,.14,0x5d7a90,-.22,.43,-.12,16),rf,
+    bx(.04,.24,.04,0x6f7780,-.02,.03,.02),bx(.04,.24,.04,0x6f7780,.42,.03,.02),bx(.04,.24,.04,0x6f7780,-.02,.03,.36),bx(.04,.24,.04,0x6f7780,.42,.03,.36),
+    bx(.2,.03,.03,0x8a9aa6,-.12,.22,.0))}
+  /* pump station */
+  proto.pump=G(pl(0xb8c0c8,.9),bx(.5,.28,.4,0x8fa3b5,-.12,.03,-.12),bx(.54,.04,.44,0x5d6772,-.12,.31,-.12),gl(.18,.1,.02,0xffe9a8,-.12,.1,.09),cy(.05,.34,0x3b8fd9,.3,.03,.25,10),bx(.34,.05,.05,0x3b8fd9,.12,.3,.25),gs(.04,0xe03c3c,.3,.4,.25));
+  /* filtration plant (1 cell, tiled 2x1) */
+  proto.filt=G(bx(.98,.04,.98,0xb8c0c8),bx(.9,.22,.5,0x8fa3b5,0,.04,-.22),bx(.94,.03,.54,0x5d6772,0,.26,-.22),cy(.17,.08,0xeceff1,-.24,.04,.28,16),cy(.14,.02,0x4fc3f7,-.24,.12,.28,16),cy(.17,.08,0xeceff1,.24,.04,.28,16),cy(.14,.02,0x4fc3f7,.24,.12,.28,16),gl(.5,.06,.02,0xffe9a8,0,.12,.035));
+  /* desalination plant (2x2) */
+  proto.desal=G(pl(0xb8c0c8),bx(.9,.28,.3,0x9fb5c8,0,.03,-.33),bx(.94,.03,.34,0x4a6a88,0,.31,-.33),gl(.7,.08,.02,0xffe9a8,0,.14,-.17),
+   ...[-.3,0,.3].map(x=>G(cy(.13,.42,0xeceff1,x,.03,.06,16),cy(.11,.02,0x4fc3f7,x,.45,.06,16))),
+   bx(.9,.05,.3,0xeceff1,0,.03,.4),bx(.82,.03,.22,0x4fc3f7,0,.08,.4),cy(.05,.7,0x9aa0a6,.38,.34,-.33,10),gs(.03,0xff3b2f,.38,1.06,-.33));
+  /* hydro dam (2x2): power + water */
+  proto.dam=G(pl(0x9bd08a),bx(.9,.05,.5,0x4fa8e0,0,.03,-.22),bx(.96,.42,.14,0xcfd3d8,0,.03,.26),bx(.98,.03,.2,0x9aa0a6,0,.45,.26),
+   ...[-.28,0,.28].map(x=>bx(.12,.1,.14,0x6f7780,x,.48,.26)),bx(.14,.4,.02,0xe9f6ff,0,.03,.35),
+   bx(.5,.03,.16,0x4fa8e0,.12,.03,.44),bx(.3,.22,.2,0x8fa3b5,-.32,.03,.4),bx(.34,.03,.24,0x5d6772,-.32,.25,.4),gl(.16,.08,.02,0xffe9a8,-.32,.1,.51));
+
+  /* ===== LANDMARK 1: Statue of Liberty (2x2) ===== */
+  {const C=0x6fb5a0,S=0xcfc8b8,f2=bx(.8,.08,.8,0xb8b0a0,0,.03,0);f2.rotation.y=D/2;
+   const ra=bx(.055,.38,.055,C,.1,.96,0);ra.rotation.z=-.3;
+   const tb=bx(.15,.1,.03,0x58a08a,-.11,.8,.08);tb.rotation.x=-.2;
+   const cr=[...Array(7)].map((_,i)=>{const a=i*Math.PI*2/7,k=bx(.014,.1,.014,C,Math.cos(a)*.06,1.17,Math.sin(a)*.06);k.rotation.set(Math.sin(a)*.8,0,-Math.cos(a)*.8);return k});
+   proto.lm1=G(pl(0x8fcf7a),bx(.8,.08,.8,0xb8b0a0,0,.03,0),f2,bx(.46,.04,.46,0xc9c2b0,0,.11,0),bx(.36,.34,.36,S,0,.15,0),bx(.42,.04,.42,0xc9c2b0,0,.49,0),
+    tpr(.17,.1,.42,C,0,.53,0,12),tpr(.1,.075,.2,C,0,.9,0,12),dm(.065,C,0,1.16,0,1),...cr,ra,tb,
+    bx(.08,.03,.08,0xd4b24a,.16,1.32,0),gs(.05,0xffcf5a,.16,1.42,0,0xffb040))}
+
+  /* ===== LANDMARK 2: CN Tower (2x2) ===== */
+  {const C=0xd5d8dc;
+   proto.lm2=G(pl(0x9aa3ad),cy(.22,.3,0xc9ced6,0,.03,0,6),tpr(.075,.03,3.1,C,0,.33,0,16),
+    tpr(.08,.19,.1,0xe8e8e8,0,2.26,0,20),cg(.19,.07,0xbfe0f5,0,2.36,0,20,0xffe9a8),tpr(.19,.16,.05,0xe8e8e8,0,2.43,0,20),
+    cg(.08,.05,0xbfe0f5,0,2.95,0,16,0xffe9a8),
+    tpr(.032,.006,1.5,0xf2f2f2,0,3.43,0,10),tpr(.022,.016,.18,0xe8503c,0,4.05,0,10),gs(.03,0xff3b2f,0,4.95,0,0xff3b2f))}
+
+  /* ===== LANDMARK 3: Eiffel Tower (3x3) ===== */
+  {const IR=0x6e5a48,
+   LAT=(()=>{const t=new THREE.CanvasTexture(cvs(64,(x,n)=>{x.clearRect(0,0,n,n);x.strokeStyle="#6e5a48";x.lineWidth=5;x.strokeRect(2,2,n-4,n-4);x.lineWidth=4;x.beginPath();x.moveTo(0,0);x.lineTo(n,n);x.moveTo(n,0);x.lineTo(0,n);x.stroke()}));return mat({map:t,transparent:true,alphaTest:.3,side:THREE.DoubleSide})})(),
+   fr=(rb,rt,h,y)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,4,1,true).rotateY(D/2),LAT);m.position.y=y+h/2;m.userData.ns=1;return m},
+   st=(sx,sz,rb,rt,h,y)=>{const x0=rb*.7071,x1=rt*.7071,a=Math.atan((x0-x1)/h),L2=Math.hypot(x0-x1,h),m=bx(.04,L2,.04,IR,sx*(x0+x1)/2,y+h/2-L2/2,sz*(x0+x1)/2);m.rotation.set(-sz*a,0,sx*a);m.userData.ns=1;return m},
+   sts=[[1,1],[1,-1],[-1,1],[-1,-1]];
+   proto.lm3=G(pl(0x9bd48a),fr(.55,.22,.55,.05),...sts.map(([a,b])=>st(a,b,.55,.22,.55,.05)),
+    gl(.5,.04,.5,IR,0,.6,0,0xffb347),fr(.22,.1,.5,.64),...sts.map(([a,b])=>st(a,b,.22,.1,.5,.64)),
+    gl(.28,.035,.28,IR,0,1.14,0,0xffb347),fr(.1,.035,.42,1.18),...sts.map(([a,b])=>st(a,b,.1,.035,.42,1.18)),
+    bx(.1,.08,.1,IR,0,1.6,0),tpr(.025,.006,.3,IR,0,1.68,0,8),gs(.025,0xfff2c0,0,1.99,0,0xffe28a))}
+
+  /* ===== LANDMARK 4: Taj Mahal (4x4) ===== */
+  {const M=0xf4efe3,M2=0xe6dfcf,GD=0xd4b24a,mn=(x,z)=>[tpr(.022,.02,.6,M,x,.08,z,10),bx(.07,.03,.07,M2,x,.4,z),bx(.07,.03,.07,M2,x,.58,z),bx(.08,.03,.08,M2,x,.68,z),dm(.035,M,x,.73,z,1.1)],
+   ch=(sx,sz)=>[bx(.07,.07,.07,M,sx*.16,.48,-.14+sz*.16),dm(.045,M,sx*.16,.6,-.14+sz*.16,1.15)];
+   proto.lm4=G(bx(.98,.02,.98,0x8fd08a),bx(.16,.016,.5,0xe9e4d6,0,.02,.26),bx(.12,.012,.46,0x7cc8ee,0,.036,.26),
+    bx(.64,.06,.64,M2,0,.02,-.14),bx(.46,.1,.46,M,0,.08,-.14),bx(.4,.3,.4,M,0,.18,-.14),bx(.44,.03,.44,M2,0,.48,-.14),
+    gl(.1,.18,.02,0x5d6b7a,0,.2,.067,0xffe9a8),gl(.1,.18,.02,0x5d6b7a,0,.2,-.347,0xffe9a8),gl(.02,.18,.1,0x5d6b7a,.207,.2,-.14,0xffe9a8),gl(.02,.18,.1,0x5d6b7a,-.207,.2,-.14,0xffe9a8),
+    cy(.15,.1,M,0,.51,-.14,16),dm(.17,M,0,.66,-.14,1.25),cy(.008,.14,GD,0,.86,-.14,6),gs(.017,GD,0,1.0,-.14),
+    ...ch(1,1),...ch(1,-1),...ch(-1,1),...ch(-1,-1),
+    ...mn(.3,.16),...mn(-.3,.16),...mn(.3,-.44),...mn(-.3,-.44),
+    tr(-.36,.34,.7),tr(.36,.34,.7),tr(-.36,.12,.6),tr(.36,.12,.6))}
+
+  /* ===== LANDMARK 5: Burj Khalifa (2x2, really tall) ===== */
+  {const tiers=[[.5,.95],[.44,.9],[.38,.85],[.32,.8],[.26,.75],[.2,.7],[.15,.62],[.1,.55]],P=[bx(.9,.12,.9,0x9aa3ad),bx(.6,.05,.6,0x6b7a88,0,.12)];
+   let y=.17;
+   tiers.forEach(([w,h],i)=>{P.push(bx(w,h,w,0,0,y,0,wt(Math.round(h*10),Math.max(2,Math.round(w*8)),i%2?"#4f6f8a":"#5b7d99","#cfeaff")));y+=h;P.push(bx(w+.02,.025,w+.02,0x3a4652,0,y,0));y+=.025});
+   P.push(tpr(.045,.008,1.1,0xd8dde2,0,y,0,10),tpr(.05,.035,.03,0x9aa3ad,0,y+.3,0,10),gs(.03,0xff3b2f,0,y+1.12,0,0xff3b2f));
+   proto.lm5=G(...P)}
+ }
  Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
 
 const CK={},CV=[0,0];let CT=0;
@@ -578,8 +662,8 @@ function camKeys(){const n=performance.now(),dt=Math.min((n-(CT||n))/1000,.1);CT
  cam.position.copy(t).add(o)}
 function init3d(){
  renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});renderer.shadowMap.enabled=true;
- scene=new THREE.Scene();cam=new THREE.PerspectiveCamera(42,1,.5,200);cam.position.set(0,22,23);
- ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.maxPolarAngle=1.3;ctl.minDistance=5;ctl.maxDistance=70;
+ scene=new THREE.Scene();cam=new THREE.PerspectiveCamera(42,1,.5,400);cam.position.set(0,22,23);
+ ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.maxPolarAngle=1.3;ctl.minDistance=5;ctl.maxDistance=130;
  ctl.mouseButtons={LEFT:-1,MIDDLE:THREE.MOUSE.PAN,RIGHT:THREE.MOUSE.ROTATE};ctl.touches={ONE:-1,TWO:THREE.TOUCH.DOLLY_PAN};ctl.screenSpacePanning=false;
  addEventListener("keydown",e=>{if(e.key=="Shift")ctl.mouseButtons.LEFT=THREE.MOUSE.ROTATE});
  addEventListener("keyup",e=>{if(e.key=="Shift")ctl.mouseButtons.LEFT=-1});
@@ -614,7 +698,7 @@ function rebuild(){
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
  trender();wrender();hrender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
-  if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=T[b.id].t*.6+.7+(big?1:0);o.add(sp)}
+  if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=(T[b.id].bh||T[b.id].t*.6+.7)+(big?1:0);o.add(sp)}
   else if(UF&&T[b.id].k=="h")[1,2].forEach((m,k)=>{if(UF&m){const sp=new THREE.Sprite(BUB[k]);sp.scale.set(.42,.42,1);sp.position.set(UF==3?(k?.22:-.22):0,T[b.id].t*.6+.8,0);o.add(sp)}})
   o.position.set(wx(r.x)+(r.w-1)/2,E(r.y*W+r.x),wz(r.y)+(r.h-1)/2);cityG.add(o)}
  LP.forEach(l=>{const o=mk("lamp"),i=l.y*W+l.x;o.position.set(wx(l.x)+l.ox,E(i)+(g[i]=="road"?.05:0),wz(l.y)+l.oz);cityG.add(o)});TR.forEach(q=>{const o=proto[q.id].clone(),i=q.y*W+q.x;o.scale.setScalar(q.s);o.rotation.y=q.ry;o.position.set(wx(q.x)+q.ox,E(i),wz(q.y)+q.oz);cityG.add(o)});scene.add(cityG)}
@@ -648,6 +732,7 @@ function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)
  if(t.k=="t"){if(tl===i)return 1;tl=i;if(rv[i]){toast("Can’t reshape water.");return 1}if(g[i]&&isB(g[i])){toast("Clear the building first.");return 1}const up=tool=="raise";if(up?el[i]>=MXE:el[i]<=0)return 1;if(money<cc(t)){toast("Not enough money to raise land ($"+t.c+").");return 0}money-=cc(t);el[i]+=up?1:-1;dirty=1;return 1}
  if(tool=="hwy"||tool=="hwy2"){const t=T[tool],G2=tool=="hwy2"?64:0;if(hw[i]){if(!G2||hw[i]&64)return 1;if(money<cc(t)/2){toast("Not enough money to upgrade.");return 0}money-=cc(t)/2;hw[i]|=64;dirty=1;return 1}if(g[i]&&isB(g[i])){toast("Highways can’t go through buildings.");return 1}if(money<cc(t)){toast("Not enough money for a highway ($"+t.c+").");return 0}money-=cc(t);hw[i]=32|G2;dirty=1;return 1}
  {const v=g[i];if(t.tint&&same(v,tool)){B[v].col=pcol[tool];dirty=1;toast("Recolored!");return 1}}
+ if(t.lm){if(t.lm>nex){toast("🔒 Expand your city to unlock the "+t.n+".");return 1}if(Object.values(B).some(q=>q.id==tool)){toast("You can only build one "+t.n+".");return 1}}
  const w=t.w||1,h=t.h||1,ew=rot&1?h:w,eh=rot&1?w:h;
  if(!fits(x,y,ew,eh)){toast("Doesn’t fit there — try rotating (R) or another spot.");return 1}
  if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}
@@ -668,13 +753,13 @@ cv.onpointercancel=e=>{ptrs.delete(e.pointerId);pend=dragging=0};
 cv.onpointerleave=()=>{hov=null};
 cv.oncontextmenu=e=>e.preventDefault();
 
-function updExp(){$("exp").textContent=nex<MX?"⬆ Expand city · $100,000":"City at max size"}
+function updExp(){const l=T["lm"+(nex+1)];$("exp").textContent=nex<MX?"⬆ Expand city · $"+EXPC[nex].toLocaleString()+" → unlocks "+l.e+" "+l.n:"City at max size"}
 $("exp").onclick=()=>{
  if(nex>=MX)return toast("Your city is already at maximum size.");
- if(money<EXP)return toast("Expanding costs $100,000. You have $"+Math.floor(money).toLocaleString()+".");
- const nw=W+6,nh=H+4,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0);
+ const cost=EXPC[nex];if(money<cost)return toast("Expanding costs $"+cost.toLocaleString()+". You have $"+Math.floor(money).toLocaleString()+".");
+ const nw=W+XW,nh=H+XH,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){ng[y*nw+x]=g[y*W+x];n2[y*nw+x]=hw[y*W+x];n3[y*nw+x]=rv[y*W+x];n4[y*nw+x]=el[y*W+x]}
- money-=EXP;nex++;g=ng;hw=n2;rv=n3;el=n4;W=nw;H=nh;world();dirty=1;updExp();ui();save();toast("City expanded! Room to grow.")};
+ money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
 
 const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)},cl=h=>new THREE.Color(h),TC=cl(0),
 RP=(q,u,o)=>{const k=u<q[1][0]?0:1,a=q[k],b=q[k+1],t=(u-a[0])/(b[0]-a[0]);return typeof a[1]=="number"?a[1]+(b[1]-a[1])*t:o.copy(a[1]).lerp(b[1],t)},
@@ -701,7 +786,7 @@ function draw(){
   hl.material.color.set(red?0xe03c3c:0xffffff);hl.scale.set(ew,1,eh);hl.position.set(wx(x)+(ew-1)/2,.09+E(y*W+x),wz(y)+(eh-1)/2);
   if(ghost){ghost.visible=tool=="lamp"||T[tool].k=="g"||!!fits(x,y,ew,eh);ghost.position.set(wx(x)+(ew-1)/2,E(y*W+x),wz(y)+(eh-1)/2);ghost.rotation.y=rot*D;if(tool=="lamp"){ghost.position.x+=FX[0]-.5;ghost.position.z+=FX[1]-.5}}}
  else if(ghost)ghost.visible=false;
- $("exp").style.opacity=nex<MX&&money>=EXP?1:.5;
+ $("exp").style.opacity=nex<MX&&money>=EXPC[nex]?1:.5;
  renderer.render(scene,cam)}
 
 function fit(){const r=$("stage").getBoundingClientRect();
@@ -716,7 +801,7 @@ function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.l
 const ST={cl:["h1","h4","h2","h5","h3","h6","h8","h7"],eu:["eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9"],us:["us1","us4","us2","us5","us3","us6","us10","us7","us8","us9"],as:["as1","as4","as2","as5","as3"]};
 function showStyle(s){document.querySelectorAll(".t[data-s]").forEach(b=>b.hidden=b.dataset.s!=s);document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.c==s))}
 const CHIPS=`<div class="chips">${[["cl","🏠 Classic"],["eu","🏰 European"],["us","🗽 American"],["as","⛩️ Asian"]].map(([k,l])=>`<button class="chip" data-c="${k}">${l}</button>`).join("")}</div>`;
-$("tb").innerHTML=GR.map(([n,ids])=>`<div class="grp"><small>${n}</small>${n=="Housing"?CHIPS:""}<div class="bs">${ids.map(id=>`<button class="t" data-t="${id}"${T[id].s?` data-s="${T[id].s}"`:""} title="${T[id].n}"><span>${T[id].e}</span><b>${T[id].n}</b><i>${T[id].k=="n"?"just look":T[id].k=="x"?"refund":"$"+T[id].c+("hfcpu".includes(T[id].k)?" · "+(T[id].w||1)+"×"+(T[id].h||1):"")}</i></button>`).join("")}</div></div>`).join("");
+$("tb").innerHTML=GR.map(([n,ids])=>`<div class="grp"><small>${n}</small>${n=="Housing"?CHIPS:""}<div class="bs">${ids.map(id=>`<button class="t" data-t="${id}"${T[id].s?` data-s="${T[id].s}"`:""}${T[id].lm?` data-lm="${T[id].lm}"`:""} title="${T[id].n}"><span>${T[id].e}</span><b>${T[id].n}</b><i>${T[id].k=="n"?"just look":T[id].k=="x"?"refund":"$"+T[id].c+("hfcpu".includes(T[id].k)?" · "+(T[id].w||1)+"×"+(T[id].h||1):"")}</i></button>`).join("")}</div></div>`).join("");
 $("tb").onclick=e=>{const c=e.target.closest(".chip");
  if(c){const q=Object.values(ST).find(a=>a.includes(tool)),i=q?q.indexOf(tool):0;sel(ST[c.dataset.c][i]||ST[c.dataset.c][0]);return}
  const b=e.target.closest(".t");if(b)sel(b.dataset.t==tool&&tool!="none"?"none":b.dataset.t)};
@@ -750,7 +835,7 @@ $("a-inc").textContent="Income speed: x1";$("a-inc").onclick=()=>{IM=IM==1?2:IM=
 $("a-zero").onclick=()=>admMoney(0);
 $("riv").onclick=()=>{genRiver();dirty=1;save();toast("River generated! Roads and highways can cross it as bridges.")};
 $("a-pop").onclick=()=>{pop=S.cap;ui();save();am("Homes filled to "+S.cap+".")};
-$("a-exp").onclick=()=>{if(nex>=MX)return am("Already at max size.");money+=EXP;$("exp").onclick();$("a-money").value=Math.floor(money);am("City expanded for free.")};
+$("a-exp").onclick=()=>{if(nex>=MX)return am("Already at max size.");money+=EXPC[nex];$("exp").onclick();$("a-money").value=Math.floor(money);am("City expanded for free.")};
 $("tsl").oninput=e=>{TOD=+e.target.value;lastMM=-1};$("tsl").onpointerdown=()=>sdrag=1;addEventListener("pointerup",()=>sdrag=0);$("tpl").onclick=e=>{AUTO^=1;e.target.textContent=AUTO?"⏸":"▶"};
 load();sel("road");init3d();fit();updExp();ui();toast("WASD / arrows to move · Q/E rotate · Z/X or scroll to zoom · Esc or click a tool again to deselect",7000);
 setInterval(tick,1000);
