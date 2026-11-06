@@ -101,7 +101,7 @@ let W=30,H=20;const $=id=>document.getElementById(id);
 let SEN=[null,null,null,null,null],SF=0;const SBON=[.02,.05,.1,.2,.4],senMul=()=>1+SEN.reduce((a,x)=>a+(x?SBON[x.r]:0),0);
 const T={
 none:{n:"No tool",e:"✋",c:0,k:"n"},
-water:{n:"Water",e:"💧",c:5,k:"v"},raise:{n:"Raise land",e:"⛰️",c:20,k:"t"},lower:{n:"Lower land",e:"🕳️",c:0,k:"t"},hwy:{n:"Highway",e:"🚗",c:40,k:"w"},road:{n:"Road",e:"🛣️",c:10,k:"r"},rway:{n:"Runway",e:"🛬",c:25,k:"a",d:"Drag to lay a runway ($25/tile). Make it at least 3 tiles long and straight. With an Airport Terminal built, planes land and take off on it."},tway:{n:"Taxiway",e:"🟨",c:10,k:"a",d:"Taxiway and apron. Buildings touching it count as connected. Join it to the runway."},aterm:{n:"Airport Terminal",e:"🛫",c:6000,k:"c",jobs:60,svc:200,inc:40,t:2,w:2,h:2,d:"Passengers and shops. Needed before planes start flying."},atwr:{n:"Control Tower",e:"🗼",c:1500,k:"c",jobs:10,svc:0,inc:8,t:3,d:"Lets the airport handle more planes at once."},hang:{n:"Hangar",e:"🛩️",c:2500,k:"c",jobs:20,svc:0,inc:15,t:1,w:2,h:2,d:"Plane storage and maintenance."},fuel:{n:"Fuel Depot",e:"⛽",c:1200,k:"c",jobs:6,svc:0,inc:8,t:1,d:"Jet fuel tanks."},road4:{n:"4-Lane Road",e:"🛤️",c:20,k:"r",d:"Draws two roads side by side at once (2 tiles wide). Any two regular roads placed side by side merge into a 4-lane road. Buildings must touch a road."},dirt:{n:"Dirt Road",e:"🟫",c:4,k:"r",d:"Cheap dirt road. Cars drive on it more slowly, and buildings can connect to it."},path:{n:"Footpath",e:"🚶",c:3,k:"r",d:"Narrow footpath for pedestrians only, no cars. It fits between buildings and trees, and a building touching one still works."},bull:{n:"Bulldoze",e:"🚜",c:0,k:"x"},
+water:{n:"Water",e:"💧",c:5,k:"v"},raise:{n:"Raise land",e:"⛰️",c:20,k:"t"},lower:{n:"Lower land",e:"🕳️",c:0,k:"t"},hwy:{n:"Highway",e:"🚗",c:40,k:"w"},road:{n:"Road",e:"🛣️",c:10,k:"r"},rway:{n:"Runway",e:"🛬",c:25,k:"a",d:"Drag to lay a runway ($25/tile). Make it at least 3 tiles long and straight. With an Airport Terminal built, planes land and take off on it."},tway:{n:"Taxiway",e:"🟨",c:10,k:"a",d:"Taxiway and apron. Buildings touching it count as connected. Join it to the runway."},aterm:{n:"Airport Terminal",e:"🛫",c:6000,k:"c",jobs:60,svc:200,inc:40,t:2,w:2,h:2,d:"Passengers and shops. Needed before planes start flying."},atwr:{n:"Control Tower",e:"🗼",c:1500,k:"c",jobs:10,svc:0,inc:8,t:3,d:"Lets the airport handle more planes at once."},hang:{n:"Hangar",e:"🛩️",c:2500,k:"c",jobs:20,svc:0,inc:15,t:1,w:2,h:2,d:"Plane storage and maintenance."},fuel:{n:"Fuel Depot",e:"⛽",c:1200,k:"c",jobs:6,svc:0,inc:8,t:1,d:"Jet fuel tanks."},dirt:{n:"Dirt Road",e:"🟫",c:4,k:"r",d:"Cheap dirt road. Cars drive on it more slowly, and buildings can connect to it."},path:{n:"Footpath",e:"🚶",c:3,k:"r",d:"Narrow footpath for pedestrians only, no cars. It fits between buildings and trees, and a building touching one still works."},bull:{n:"Bulldoze",e:"🚜",c:0,k:"x"},
 hwy2:{n:"Grand Highway",e:"🏎️",c:80,k:"w"},lamp:{n:"Street Lamp",e:"💡",c:15,k:"l",t:1},
 h1:{n:"Cottage",e:"🏠",c:100,k:"h",cap:4,tax:.5,q:.6,t:1,s:"cl"},
 h2:{n:"Townhomes",e:"🏘️",c:450,k:"h",cap:16,tax:1,q:.8,t:2,w:2,h:1,s:"cl"},
@@ -190,8 +190,11 @@ lm1:{n:"Statue of Liberty",e:"🗽",c:30000,k:"p",jobs:20,inc:25,fun:300,joy:.02
 lm2:{n:"CN Tower",e:"📡",c:60000,k:"p",jobs:35,inc:45,fun:450,joy:.03,t:3,bh:3,w:2,h:2,lm:2,d:"A towering concrete spire with a revolving pod."},
 lm3:{n:"Eiffel Tower",e:"🗼",c:100000,k:"p",jobs:45,inc:70,fun:600,joy:.04,t:3,bh:3,w:3,h:3,lm:3,d:"An iron lattice tower that sparkles at night."},
 lm4:{n:"Taj Mahal",e:"🕌",c:150000,k:"p",jobs:60,inc:100,fun:800,joy:.05,t:3,bh:3,w:4,h:4,lm:4,d:"White marble domes, four minarets and a reflecting pool."},
-lm5:{n:"Burj Khalifa",e:"🏙️",c:250000,k:"p",jobs:90,inc:160,fun:1200,joy:.06,t:4,bh:3,w:2,h:2,lm:5,d:"The tallest tower on Earth, rising far above your skyline."}});
-const GR=[["Roads",["none","road","road4","dirt","path","hwy","hwy2","bull","lamp"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3"]],["Industry",["f1","f4","f7","f2","f5","f3"]],["Utilities",["wind","solar","f6"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c4","c7","c9","c2","c5","c3","c6","c8"]],["Government",["gov1","gov2"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","base"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5"]]];
+lm5:{n:"Petronas Twin Towers",e:"🌆",c:250000,k:"p",jobs:90,inc:160,fun:1200,joy:.06,t:4,bh:4,w:3,h:3,lm:5,d:"Two glittering steel-and-glass towers joined by a sky bridge."},
+lm6:{n:"Taipei 101",e:"🏢",c:400000,k:"p",jobs:110,inc:200,fun:1400,joy:.07,t:4,bh:4,w:2,h:2,lm:6,d:"A stack of eight pagoda-style segments, like a giant bamboo stalk."},
+lm7:{n:"Colosseum",e:"🏛️",c:600000,k:"p",jobs:120,inc:230,fun:1800,joy:.08,t:3,bh:3,w:4,h:4,lm:7,d:"Rome's great stone arena, with rings of arches around a sandy floor."},
+lm8:{n:"Burj Khalifa",e:"🏙️",c:900000,k:"p",jobs:150,inc:300,fun:2200,joy:.1,t:4,bh:3,w:2,h:2,lm:8,d:"The tallest tower on Earth, rising far above your skyline."}});
+const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3"]],["Industry",["f1","f4","f7","f2","f5","f3"]],["Utilities",["wind","solar","f6"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c4","c7","c9","c2","c5","c3","c6","c8"]],["Government",["gov1","gov2"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","base"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
 const cv=$("cv");
@@ -260,7 +263,7 @@ tick.n=0;
 function toast(m,d=2200){const e=$("toast");e.textContent=m;e.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>e.style.opacity=0,d)}
 
 function sel(t){tool=t;if(T[t].s)showStyle(T[t].s);$("colw").hidden=!T[t].tint;if(T[t].tint)$("pc").value=pcol[t];$("rot").style.display="hfcpu".includes(T[t].k)?"":"none";document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
- const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: clicking does nothing, so you can look around freely. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?(o.d||"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road. Two roads side by side merge into a 4-lane road."):o.k=="a"?o.d:o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access. A highway’s last tile tapers with merge lines: touch a road to its end and cars exit onto it.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (3 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
+ const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: clicking does nothing, so you can look around freely. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?(o.d||"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road."):o.k=="a"?o.d:o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access. A highway’s last tile tapers with merge lines: touch a road to its end and cars exit onto it.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (3 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
  o.k=="l"?"Street Lamp: click anywhere on a tile (even a road’s edge) to place it exactly there. Glows at night. Bulldoze a tile to remove its lamps.":o.k=="h"?o.n+" ("+fp(o)+"): houses "+o.cap+" citizens. "+(o.d?o.d+" ":"")+"Nicer homes make people happier.":
  o.k=="g"?o.n+": "+o.d+" Click or drag to plant ($"+o.c+" each) on empty land. Cleans the air for homes within 4 tiles, so plant several near factories. Bulldoze to remove.":
  o.k=="u"?o.n+" ("+fp(o)+"): "+(o.d?o.d+" ":"")+(o.pwr?"generates "+o.pwr+" power. ":"")+(o.tre?"treats water for "+o.tre+" citizens"+(o.twr?"":" (needs a water tower to deliver it; untreated sewage pollutes rivers)")+". ":"")+(o.twr?"delivers water to "+o.twr+" citizens"+(o.tre?"":" (needs a treatment plant)")+". ":"")+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.pol?", pollution "+"●".repeat(o.pol):"")+". Must touch a road.":
@@ -269,7 +272,7 @@ function sel(t){tool=t;if(T[t].s)showStyle(T[t].s);$("colw").hidden=!T[t].tint;i
  o.n+" ("+fp(o)+"): "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s."+(o.gov?" Choose ✋ No tool (Esc), then click it to elect senators.":"")}
 
 let TR=[],RVP=0,WPC=new THREE.Color(0x6f7d35),FW=1,UF=0,LV=1,LVd=-1,SPN=[],BUB,LP=[],FX=[.5,.5],TOD=10,AUTO=1,sdrag=0,NL=-1,night=0,hem,lastMM=-1,nex=0,dirty=1,renderer,scene,cam,ctl,ray,PL,L,hl,rg,noMat,world3,cityG,ghost,ghostFor,last,pend=0,dragging=0;
-const pat=new Map(),proto={},ptrs=new Set(),EXPC=[100000,250000,500000,750000,1000000],XW=10,XH=8,MX=5,D=Math.PI/2;
+const pat=new Map(),proto={},ptrs=new Set(),EXPC=[100000,250000,500000,750000,1000000,1250000,1500000,2000000],XW=10,XH=8,MX=8,D=Math.PI/2;
 const wx=x=>x-W/2+.5,wz=y=>y-H/2+.5,mat=o=>new THREE.MeshLambertMaterial(o);
 const bx=(w,h,d,c,x=0,y=0,z=0,tx)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),tx?tmat(tx):mat({color:c}));m.position.set(x,y+h/2,z);return m};
 const cy=(r,h,c,x,y,z,n=10)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m};
@@ -289,8 +292,8 @@ aw=(id,...P)=>{const pos=[],nor=[],idx=[];let n=0;P.flat().forEach(([w,h,d,x,y,z
 gl=(w,h,d,c,x=0,y=0,z=0,e)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),gm(c,e));m.position.set(x,y+h/2,z);m.userData.ns=1;return m},
 gs=(r,c,x,y,z,e)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,8,6),gm(c,e));m.position.set(x,y,z);m.userData.ns=1;return m};
 
-function rmat(m,ty="road",pm=0){const K=m+ty+pm;if(pat.has(K))return pat.get(K);
- const bx=pm&16;pm&=15;const cur={3:[1,0,1],6:[1,1,2],12:[0,1,3],9:[0,0,0]}[m],dt=ty=="dirt",pt=ty=="path";
+function rmat(m,ty="road"){const K=m+ty;if(pat.has(K))return pat.get(K);
+ const cur={3:[1,0,1],6:[1,1,2],12:[0,1,3],9:[0,0,0]}[m],dt=ty=="dirt",pt=ty=="path";
  const t=new THREE.CanvasTexture(cvs(128,(x,Z)=>{const h=Z/2;if(!pt){x.fillStyle=dt?"#8a6d45":"#b4b8bc";x.fillRect(0,0,Z,Z)}
   const st=(w,col,dash)=>{x.lineWidth=w;x.strokeStyle=x.fillStyle=col;x.setLineDash(dash||[]);x.beginPath();
    if(cur)x.arc(cur[0]*Z,cur[1]*Z,h,cur[2]*D,cur[2]*D+D);
@@ -299,12 +302,6 @@ function rmat(m,ty="road",pm=0){const K=m+ty+pm;if(pat.has(K))return pat.get(K);
   if(pt){st(Z*.36,"#b9a984");st(Z*.26,"#e0d3ae");return}
   st(Z*.82,dt?"#7e6240":"#dfe2e5");st(Z*.7,dt?"#b08652":"#464b52");
   if(dt){st(Z*.03,"#96703f",[Z*.05,Z*.09]);return}
-  if(pm||bx){const rw=m|pm,X0=(rw&8?0:.15)*Z,X1=(rw&2?1:.85)*Z,Y0=(rw&1?0:.15)*Z,Y1=(rw&4?1:.85)*Z;x.setLineDash([]);x.fillStyle="#464b52";x.fillRect(X0,Y0,X1-X0,Y1-Y0);
-   if(bx)return;
-   x.fillStyle="#f1d468";if(pm&1)x.fillRect(X0,Y0+Z*.012,X1-X0,Z*.022);if(pm&4)x.fillRect(X0,Y1-Z*.034,X1-X0,Z*.022);if(pm&8)x.fillRect(X0+Z*.012,Y0,Z*.022,Y1-Y0);if(pm&2)x.fillRect(X1-Z*.034,Y0,Z*.022,Y1-Y0);
-   x.lineWidth=Z*.025;x.strokeStyle="#fff";x.setLineDash([Z*.09,Z*.07]);x.beginPath();
-   if(pm&5){const Y=((pm&1?0:.15)+(pm&4?1:.85))/2*Z;x.moveTo(X0,Y);x.lineTo(X1,Y)}else{const X=((pm&8?0:.15)+(pm&2?1:.85))/2*Z;x.moveTo(X,Y0);x.lineTo(X,Y1)}
-   x.stroke();return}
   if(cur||m==5||m==10)st(Z*.04,"#f1d468",[Z*.09,Z*.07])}));
  t.anisotropy=4;const r=mat({map:t,transparent:pt});r.polygonOffset=true;r.polygonOffsetFactor=-2;r.polygonOffsetUnits=-2;pat.set(K,r);return r}
 
@@ -402,8 +399,8 @@ function place(c){const[ax,az]=DIR[c.d0],[qx,qz]=DIR[c.d1],cx=wx(c.x),cz=wz(c.y)
  Cx=uu?cx+ax*.7:cx,Cz=uu?cz+az*.7:cz,P0x=cx-ax*.5,P0z=cz-az*.5,P1x=cx+qx*.5,P1z=cz+qz*.5,
  px=u*u*P0x+2*u*s*Cx+s*s*P1x,pz=u*u*P0z+2*u*s*Cz+s*s*P1z,tx=2*u*(Cx-P0x)+2*s*(P1x-Cx),tz=2*u*(Cz-P0z)+2*s*(P1z-Cz);
  if(tx*tx+tz*tz>1e-4){c.hx=tx;c.hz=tz}
- const pm=c.k?0:PRM[c.y*W+c.x]||0,hn=Math.hypot(c.hx,c.hz),hx=c.hx/hn,hz=c.hz/hn,off=c.k?(hw[c.y*W+c.x]&64?[.07,.215,.36][c.ln]:c.ln?.32:.13):pm?.2125:.13,y0=ed(c,(c.d0+2)%4),y1=ed(c,c.d1);
- c.m.position.set(px-hz*off+(pm&2?.075:0)-(pm&8?.075:0),y0+(y1-y0)*s,pz+hx*off+(pm&4?.075:0)-(pm&1?.075:0));c.m.rotation.set(-Math.atan(y1-y0),Math.atan2(hx,hz),0)}
+ const hn=Math.hypot(c.hx,c.hz),hx=c.hx/hn,hz=c.hz/hn,off=c.k?(hw[c.y*W+c.x]&64?[.07,.215,.36][c.ln]:c.ln?.32:.13):.13,y0=ed(c,(c.d0+2)%4),y1=ed(c,c.d1);
+ c.m.position.set(px-hz*off,y0+(y1-y0)*s,pz+hx*off);c.m.rotation.set(-Math.atan(y1-y0),Math.atan2(hx,hz),0)}
 function spawn(k,list){if(!list.length)return;const i=pk(list),c={k,x:i%W,y:i/W|0,s:Math.random()*.9,ln:k?Math.random()*3|0:0,d0:0},o=nb(c);
  if(!o.length)return;c.d0=pk(o);if(!pick(c))return;c.hx=DIR[c.d0][0];c.hz=DIR[c.d0][1];
  c.m=mkCar(pk(k?HT:RT));c.v=(k?2.4+Math.random()*1.2:1.1+Math.random()*.6)*c.m.userData.sp;carG.add(c.m);CR.push(c);place(c)}
@@ -417,26 +414,15 @@ function cars(dt){if(!carG){carG=new THREE.Group();scene.add(carG)}
    while(c.s>=1&&!dead){c.s-=1;c.x+=DIR[c.d1][0];c.y+=DIR[c.d1][1];c.d0=c.d1;if(c.x<0||c.y<0||c.x>=W||c.y>=H)dead=true;else{if(c.k==1&&!hw[c.y*W+c.x]&&rd(g[c.y*W+c.x])){c.k=0;c.ln=0;c.v=Math.min(c.v,1.5)}if(!pick(c))dead=true}}}
   if(dead){carG.remove(c.m);CR.splice(n,1);continue}
   place(c)}}
-/* ---- road types, 4-lane merging, pedestrians ---- */
-const wk=v=>v=="road"||v=="dirt"||v=="path",rd=v=>v=="road"||v=="dirt";let PRM={},PV=0,PD=[],pdG,pT=0,PGB,PGH;
-const sr=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&g[y*W+x]=="road",hzr=(x,y)=>sr(x,y)&&(sr(x-1,y)||sr(x+1,y)),vtr=(x,y)=>sr(x,y)&&(sr(x,y-1)||sr(x,y+1));
-/* a "stack" is exactly 2 roads thick; 16 = solid box (2x2 junction/corner) */
-const blk=(a,b)=>{for(let u=0;u<3;u++)for(let v=0;v<3;v++){let ok=1;for(let i=0;i<3&&ok;i++)for(let j=0;j<3&&ok;j++)if(!sr(a-u+i,b-v+j))ok=0;if(ok)return 1}return 0};
-function pairM(x,y){if(!sr(x,y))return 0;const he=(a,b)=>sr(a-1,b)||sr(a+1,b),ve=(a,b)=>sr(a,b-1)||sr(a,b+1);let P=0;
- if(sr(x,y+1)&&!sr(x,y-1)&&!sr(x,y+2)&&he(x,y)&&he(x,y+1))P|=4;
- if(sr(x,y-1)&&!sr(x,y+1)&&!sr(x,y-2)&&he(x,y)&&he(x,y-1))P|=1;
- if(sr(x+1,y)&&!sr(x-1,y)&&!sr(x+2,y)&&ve(x,y)&&ve(x+1,y))P|=2;
- if(sr(x-1,y)&&!sr(x+1,y)&&!sr(x-2,y)&&ve(x,y)&&ve(x-1,y))P|=8;
- if((P&5)&&(P&10))return 16;if(P)return P;
- return[[0,0],[-1,0],[0,-1],[-1,-1]].some(([u,v])=>sr(x+u,y+v)&&sr(x+u+1,y+v)&&sr(x+u,y+v+1)&&sr(x+u+1,y+v+1))?16:0}
+/* ---- road types, pedestrians ---- */
+const wk=v=>v=="road"||v=="dirt"||v=="path",rd=v=>v=="road"||v=="dirt";let PD=[],pdG,pT=0,PGB,PGH;
 function rk(x,y){const t=g[y*W+x];return[0,1,2,3].reduce((a,k)=>{const X=x+DIR[k][0],Y=y+DIR[k][1];if(X<0||Y<0||X>=W||Y>=H)return a;const j=Y*W+X,q=g[j];return a|((t=="path"?wk(q):rd(q)||(hw[j]&15)==DIR[k][2])?DIR[k][2]:0)},0)}
 const PCL=[0xd9433b,0x3b8fd9,0xf2c230,0x2f8f4e,0x7a4bd0,0xe8742a,0x2fd0a0,0xf2f4f6,0x1f5fa8],PSK=[0xf2c9a0,0xd9a577,0x9a6b45,0x6b4428],PMT={},pmt=c=>PMT[c]||(PMT[c]=mat({color:c}));
 function mkPed(){const o=new THREE.Group(),b=new THREE.Mesh(PGB||(PGB=new THREE.CylinderGeometry(.016,.022,.075,6)),pmt(pk(PCL))),h=new THREE.Mesh(PGH||(PGH=new THREE.SphereGeometry(.022,6,5)),pmt(pk(PSK)));
  b.position.y=.06;h.position.y=.125;b.castShadow=true;o.add(b,h);return o}
-const sbt=(a,b)=>Math.abs(a)>Math.abs(b)?(a>0?2:8):(b>0?4:1);
-/* pedestrians: stay on their sidewalk; never hop across a 4-lane road; only turn toward their own side at junctions */
+/* pedestrians: stay on their sidewalk; only turn toward their own side at junctions */
 function ppick(c){const o=nb(c);if(!o.length)return 0;const i=c.y*W+c.x,r=(c.d0+2)%4,[ax,az]=DIR[c.d0],
- se=PRM[i]&sbt(-az*c.sd,ax*c.sd)?-c.sd:c.sd,f=o.filter(d=>d!=r&&!(PRM[i]&DIR[d][2])),
+ se=c.sd,f=o.filter(d=>d!=r),
  k=f.filter(d=>{const cr=ax*DIR[d][1]-az*DIR[d][0];return!cr||cr*se>0}),L=k.length?k:f;
  c.d1=L.length?(L.includes(c.d0)&&Math.random()<.75?c.d0:pk(L)):(o.includes(r)?r:o[0]);return 1}
 function pplace(c,dt=1){const[ax,az]=DIR[c.d0],[qx,qz]=DIR[c.d1],cx=wx(c.x),cz=wz(c.y),s=c.s,u=1-s,uu=ax+qx==0&&az+qz==0,
@@ -444,7 +430,7 @@ function pplace(c,dt=1){const[ax,az]=DIR[c.d0],[qx,qz]=DIR[c.d1],cx=wx(c.x),cz=w
  px=u*u*P0x+2*u*s*Cx+s*s*P1x,pz=u*u*P0z+2*u*s*Cz+s*s*P1z,tx=2*u*(Cx-P0x)+2*s*(P1x-Cx),tz=2*u*(Cz-P0z)+2*s*(P1z-Cz);
  if(tx*tx+tz*tz>1e-4){c.hx=tx;c.hz=tz}
  const n=Math.hypot(c.hx,c.hz)||1,hx=c.hx/n,hz=c.hz/n,i=c.y*W+c.x,t=g[i];
- let sg=c.sd;if(PRM[i]&sbt(-hz*sg,hx*sg))c.sd=sg=-sg;const tg=t=="path"?c.j:(t=="dirt"?.4:.45)*sg;c.lat=c.lat===undefined?tg:c.lat+(tg-c.lat)*Math.min(1,dt*8);const off=c.lat;
+ const sg=c.sd,tg=t=="path"?c.j:(t=="dirt"?.4:.45)*sg;c.lat=c.lat===undefined?tg:c.lat+(tg-c.lat)*Math.min(1,dt*8);const off=c.lat;
  c.m.position.set(px-hz*off,E(i)+.03+Math.abs(Math.sin(performance.now()/110+c.j*90))*.006,pz+hx*off);c.m.rotation.y=Math.atan2(hx,hz)}
 function peds(dt){if(!pdG){pdG=new THREE.Group();scene.add(pdG)}
  dt=Math.min(dt,.1);pT-=dt;
@@ -731,11 +717,54 @@ function protos(){
     ...mn(.3,.16),...mn(-.3,.16),...mn(.3,-.44),...mn(-.3,-.44),
     tr(-.36,.34,.7),tr(.36,.34,.7),tr(-.36,.12,.6),tr(.36,.12,.6))}
 
-  /* ===== LANDMARK 5: Burj Khalifa (2x2, really tall) ===== */
+  /* ===== LANDMARK 8: Burj Khalifa (2x2, really tall) ===== */
   {const tiers=[[.5,.95],[.44,.9],[.38,.85],[.32,.8],[.26,.75],[.2,.7],[.15,.62],[.1,.55]],P=[bx(.9,.12,.9,0x9aa3ad),bx(.6,.05,.6,0x6b7a88,0,.12)];
    let y=.17;
    tiers.forEach(([w,h],i)=>{P.push(bx(w,h,w,0,0,y,0,wt(Math.round(h*10),Math.max(2,Math.round(w*8)),i%2?"#4f6f8a":"#5b7d99","#cfeaff")));y+=h;P.push(bx(w+.02,.025,w+.02,0x3a4652,0,y,0));y+=.025});
    P.push(tpr(.045,.008,1.1,0xd8dde2,0,y,0,10),tpr(.05,.035,.03,0x9aa3ad,0,y+.3,0,10),gs(.03,0xff3b2f,0,y+1.12,0,0xff3b2f));
+   proto.lm8=G(...P)}
+
+  /* ===== LANDMARK 6: Taipei 101 (2x2) ===== */
+  {const fr=(wb,wt2,h,y,tx)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(wt2*.7071,wb*.7071,h,4,1).rotateY(D/2),tmat(tx));m.position.y=y+h/2;return m},
+   GL="#3f8f89",LT="#d6fff2",GD=0xd4b24a,DK=0x2f6f6b,P=[pl(0x9aa3ad),bx(.8,.1,.8,0x8793a0,0,.03),bx(.6,.12,.6,0xa7b2bd,0,.13)];
+   let y=.25;
+   P.push(fr(.46,.28,.5,y,wt(6,12,GL,LT)));y+=.5;
+   for(let i=0;i<8;i++){P.push(fr(.26,.36,.38,y,wt(5,12,GL,LT)));y+=.38;P.push(bx(.4,.025,.4,i==7?GD:DK,0,y,0));y+=.025}
+   P.push(fr(.26,.2,.3,y,wt(4,12,GL,LT)));y+=.3;P.push(bx(.24,.02,.24,GD,0,y,0));y+=.02;
+   P.push(fr(.18,.12,.3,y,wt(4,12,GL,LT)));y+=.3;
+   P.push(tpr(.04,.012,.4,0xd8dde2,0,y,0,8),tpr(.012,.004,.4,0xe8ecef,0,y+.4,0,6),gs(.025,0xff3b2f,0,y+.84,0,0xff3b2f));
+   proto.lm6=G(...P)}
+
+  /* ===== LANDMARK 7: Colosseum (4x4) ===== */
+  {const cv=document.createElement("canvas");cv.width=512;cv.height=128;
+   {const x=cv.getContext("2d"),N=8,aw=512/N;x.fillStyle="#d8c7a0";x.fillRect(0,0,512,128);
+    for(let l=0;l<3;l++){const y0=l*34+4;x.fillStyle="#5a4a34";for(let i=0;i<N;i++){const ax=i*aw+aw*.2,w=aw*.6;x.fillRect(ax,y0+12,w,18);x.beginPath();x.arc(ax+w/2,y0+12,w/2,Math.PI,0);x.fill()}x.fillStyle="#bfae88";x.fillRect(0,y0+30,512,3)}
+    x.fillStyle="#5a4a34";for(let i=0;i<N*2;i++)x.fillRect(i*aw/2+aw*.1,106,aw*.2,10)}
+   const mkT=rx=>{const t=new THREE.CanvasTexture(cv);t.wrapS=THREE.RepeatWrapping;t.repeat.set(rx,1);return t},
+   wall=(h,a0,a1,rx)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.44,.44,h,40,1,true,a0,a1),mat({map:mkT(rx),side:THREE.DoubleSide}));m.position.y=.03+h/2;return m},
+   bowl=new THREE.Mesh(new THREE.CylinderGeometry(.4,.22,.24,40,1,true),mat({color:0xc4b186,side:THREE.DoubleSide})),
+   rim=new THREE.Mesh(new THREE.CylinderGeometry(.446,.446,.025,40,1,true,0,Math.PI*1.5),mat({color:0xcdbb92,side:THREE.DoubleSide}));
+   bowl.position.y=.15;rim.position.y=.03+.3-.0125;
+   const ring=G(wall(.3,0,Math.PI*1.5,3.75),wall(.2,Math.PI*1.5,Math.PI*.5,1.25),rim,bowl,cy(.22,.02,0xe6d3a0,0,.03,0,40),bx(.34,.012,.02,0xb89d6a,0,.05,0),bx(.02,.012,.3,0xb89d6a,0,.05,0));
+   ring.scale.set(1.12,1,.88);
+   proto.lm7=G(pl(0xa9c27d),ring,tr(-.4,-.42,.6),tr(.42,.42,.6),tr(.44,-.4,.5))}
+
+  /* ===== LANDMARK 5: Petronas Twin Towers (3x3): 8-pointed star towers, setbacks, sky bridge ===== */
+  {const S=0xdfe5ea,GB="#9db3c8",GY="#ffeaa6",
+   star=(s,h,y,x,lobes)=>{const o=[],r=Math.max(3,Math.round(h*9)),a=bx(s,h,s,0,x,y,0,wt(r,3,GB,GY)),b=bx(s,h,s,0,x,y,0,wt(r,3,GB,GY));b.rotation.y=D/2;o.push(a,b);
+    if(lobes)for(let k=0;k<8;k++){const an=Math.PI/8+k*Math.PI/4,m=new THREE.Mesh(new THREE.CylinderGeometry(s*.17,s*.17,h,10),tmat(wt(r,2,GB,GY)));m.position.set(x+Math.cos(an)*s*.5,y+h/2,Math.sin(an)*s*.5);o.push(m)}
+    return o},
+   band=(s,y,x)=>{const a=bx(s+.012,.012,s+.012,S,x,y,0),b=bx(s+.012,.012,s+.012,S,x,y,0);b.rotation.y=D/2;return[a,b]},
+   cw=(r,h,y,x)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,16),tmat(wt(Math.max(3,Math.round(h*9)),10,GB,GY)));m.position.set(x,y+h/2,0);return m},
+   P=[pl(0x9aa3ad),bx(.94,.06,.94,0x8793a0,0,.03),bx(.84,.08,.34,0xb7c0c9,0,.09,.3),bx(.5,.012,.22,0x7fbf6a,0,.09,-.3),bx(.22,.012,.1,0x4fc3f7,0,.1,-.3)];
+   [-.37,.37].forEach(x=>{let y=.09;
+    P.push(...star(.18,1.3,y,x,1));for(let i=1;i<=5;i++)P.push(...band(.18,y+i*.2,x));y+=1.3;
+    P.push(...star(.15,.35,y,x,1),...band(.15,y,x));y+=.35;
+    P.push(...star(.12,.3,y,x,0),...band(.12,y,x));y+=.3;
+    P.push(cw(.062,.22,y,x));y+=.22;P.push(cw(.046,.2,y,x));y+=.2;
+    P.push(tpr(.056,.056,.02,S,x,y,0,16),tpr(.03,.03,.16,S,x,y+.02,0,12),tpr(.032,.006,.45,0xe8ecef,x,y+.18,0,10),gs(.014,0xfff2c0,x,y+.66,0,0xffe28a))});
+   const yb=.84,L=Math.hypot(.25,.22),lg=sg=>{const m=bx(.03,L,.03,S,sg*.125,yb-.11-L/2,0);m.rotation.z=sg*Math.atan2(.25,.22);return m};
+   P.push(bx(.5,.07,.07,S,0,yb),bx(.5,.04,.072,0,0,yb+.015,0,wt(1,10,"#7f9bb8",GY)),lg(-1),lg(1));
    proto.lm5=G(...P)}
  }
  Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
@@ -778,12 +807,12 @@ function world(){
  t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(W/2,H/2);
  const gr=new THREE.Mesh(rg.clone().scale(W,1,H),mat({map:t}));gr.receiveShadow=true;
  world3.add(gr,bx(W+.5,.5,H+.5,0x6a5140,0,-.55,0));scene.add(world3);
- const s=Math.max(W,H)*.8;Object.assign(L.shadow.camera,{left:-s,right:s,top:s,bottom:-s});L.shadow.camera.updateProjectionMatrix()}
+ if(ctl)ctl.maxDistance=Math.max(130,Math.max(W,H)*1.6);const s=Math.max(W,H)*.8;Object.assign(L.shadow.camera,{left:-s,right:s,top:s,bottom:-s});L.shadow.camera.updateProjectionMatrix()}
 
 function rebuild(){
- if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;NL=-1;PRM={};TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
- g.forEach((id,i)=>{if(!wk(id))return;const x=i%W,y=i/W|0,pm=pairM(x,y),m=rk(x,y)&~(pm&15);PRM[i]=pm&15;
-  const o=new THREE.Mesh(rg,rmat(m,id,pm));o.position.set(wx(x),.05+E(i),wz(y));o.renderOrder=1;
+ if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
+ g.forEach((id,i)=>{if(!wk(id))return;const x=i%W,y=i/W|0,m=rk(x,y);
+  const o=new THREE.Mesh(rg,rmat(m,id));o.position.set(wx(x),.05+E(i),wz(y));o.renderOrder=1;
   const hh=[[0,-1],[1,0],[0,1],[-1,0]].map(([a,b],k)=>m&(1<<k)?Math.max(el[i],el[(y+b)*W+x+a]):el[i]);
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
@@ -816,8 +845,7 @@ function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)
    for(let j=r.y;j<r.y+r.h;j++)for(let k=r.x;k<r.x+r.w;k++)g[j*W+k]=0;delete B[v]}
   else{money+=Math.floor((T[v]||T.road).c/2);g[i]=0}dirty=1}return 1}
  if(t.k=="a"){if(g[i]||hw[i])return 1;if(rv[i]){if(!dragging)toast("No airport on water.");return 1}if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=cc(t);g[i]=tool;dirty=1;return 1}
- if(t.k=="r"){const f=tool=="road4",P=f?[[x,y],PV?[x+1,y]:[x,y+1]]:[[x,y]],u=cc(t)/P.length;
-  for(const[a,b]of P){if(a>=W||b>=H||g[b*W+a])continue;if(tool!="dirt"&&tool!="path"){const j=b*W+a;g[j]="road";const bd=blk(a,b);g[j]=0;if(bd){toast("Roads can be at most 2 wide: that makes one 4-lane road.");continue}}if(money<u){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=u;g[b*W+a]=f?"road":tool;dirty=1}return 1}
+ if(t.k=="r"){const u=cc(t);if(x>=W||y>=H||g[y*W+x])return 1;if(money<u){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=u;g[y*W+x]=tool;dirty=1;return 1}
  if(tool=="water"){if(rv[i])return 1;if(g[i]&&isB(g[i])){toast("Can’t put water under a building.");return 1}if(money<cc(t)){toast("Not enough money for water ($"+t.c+").");return 0}money-=cc(t);rv[i]=1;el[i]=0;dirty=1;return 1}
  if(t.k=="t"){if(tl===i)return 1;tl=i;if(rv[i]){toast("Can’t reshape water.");return 1}if(g[i]&&isB(g[i])){toast("Clear the building first.");return 1}const up=tool=="raise";if(up?el[i]>=MXE:el[i]<=0)return 1;if(money<cc(t)){toast("Not enough money to raise land ($"+t.c+").");return 0}money-=cc(t);el[i]+=up?1:-1;dirty=1;return 1}
  if(tool=="hwy"||tool=="hwy2"){const t=T[tool],G2=tool=="hwy2"?64:0;if(hw[i]){if(!G2||hw[i]&64)return 1;if(money<cc(t)/2){toast("Not enough money to upgrade.");return 0}money-=cc(t)/2;hw[i]|=64;dirty=1;return 1}if(g[i]&&(isB(g[i])||T[g[i]].k=="a")){toast("Highways can’t go through buildings or airport strips.");return 1}if(money<cc(t)){toast("Not enough money for a highway ($"+t.c+").");return 0}money-=cc(t);hw[i]=32|G2;dirty=1;return 1}
@@ -828,7 +856,7 @@ function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)
  if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}
  const fr=tool=="wind"&&FW;money-=cc(t);if(fr){FW=0;toast("Your free wind turbine is up! 🌬️")}const u=nu++;B[u]={id:tool,x,y,r:rot,w,h,col:t.tint?pcol[tool]:undefined,free:fr?1:undefined};
  for(let j=y;j<y+eh;j++)for(let k=x;k<x+ew;k++)g[j*W+k]=u;dirty=1;return 1}
-function walk(p){let[x,y]=last;while(x!=p[0]||y!=p[1]){const a=x,b=y;if(x!=p[0]){x+=Math.sign(p[0]-x);PV=0}else{y+=Math.sign(p[1]-y);PV=1}if(!put(x,y))break;if(tool=="hwy"||tool=="hwy2")lk(a,b,x,y)}last=[x,y];ui()}
+function walk(p){let[x,y]=last;while(x!=p[0]||y!=p[1]){const a=x,b=y;if(x!=p[0])x+=Math.sign(p[0]-x);else y+=Math.sign(p[1]-y);if(!put(x,y))break;if(tool=="hwy"||tool=="hwy2")lk(a,b,x,y)}last=[x,y];ui()}
 
 cv.onpointerdown=e=>{ptrs.add(e.pointerId);tl=-1;hov=cell(e);
  if(e.button||e.shiftKey||ptrs.size>1){pend=dragging=0;return}
