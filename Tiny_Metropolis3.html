@@ -281,10 +281,12 @@ f13:{n:"Greenhouse Farm",e:"🥬",c:300,k:"f",jobs:5,inc:5,pol:0,t:1,d:"A glass 
 f14:{n:"Auto Factory",e:"🚗",c:12000,k:"f",jobs:160,inc:130,pol:3,t:3,w:3,h:3,d:"A huge assembly hall with a lot full of new cars."},
 f15:{n:"Data Center",e:"💾",c:6000,k:"f",jobs:20,inc:55,pol:0,t:2,w:2,h:1,d:"Windowless racks with glowing blue lights. Clean and profitable."}});
 Object.assign(T,{
+toll:{n:"Toll Booth",e:"🚧",c:600,k:"o",t:1,d:"A toll gantry for highways."},
+concert:{n:"Concert Stage",e:"🎤",c:9000,k:"p",jobs:30,inc:40,fun:350,joy:.03,t:2,w:2,h:2,mus:1,d:"A compact open-air stage with a big screen, speakers and a cheering crowd."},
 trk:{n:"Race Track",e:"🏁",c:30,k:"a",d:"Drag to lay a race circuit ($30/tile). Tiles join up and curve on their own. Build a loop and race cars will start racing around it. Needs dry, empty land."},
 grand1:{n:"Grandstand",e:"🏟️",c:2500,k:"p",jobs:12,inc:30,fun:400,joy:.01,t:2,w:2,h:1,d:"Covered tiered seating. Build it beside a race track."},
 pit1:{n:"Pit Garage",e:"🔧",c:1800,k:"c",jobs:14,inc:14,svc:0,t:2,w:2,h:1,d:"A row of garage bays and a pit wall. Build it beside a race track."}});
-const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","base","church1"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
+const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
 const cv=$("cv");
@@ -362,12 +364,12 @@ tick.n=0;
 function toast(m,d=2200){const e=$("toast");e.textContent=m;e.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>e.style.opacity=0,d)}
 
 function sel(t){tool=t;if(T[t].s)showStyle(T[t].s);$("colw").hidden=!T[t].tint;if(T[t].tint)$("pc").value=pcol[t];$("rot").style.display="hfcpu".includes(T[t].k)?"":"none";document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
- const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: clicking does nothing, so you can look around freely. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?(o.d||"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road."):o.k=="a"?o.d:o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access. A highway’s last tile tapers with merge lines: touch a road to its end and cars exit onto it.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (3 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
- o.k=="l"?"Street Lamp: click anywhere on a tile (even a road’s edge) to place it exactly there. Glows at night. Bulldoze a tile to remove its lamps.":o.k=="h"?o.n+" ("+fp(o)+"): houses "+o.cap+" citizens. "+(o.d?o.d+" ":"")+"Nicer homes make people happier.":
+ const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: you can look around freely. Click a Concert Stage to open its music player. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?(o.d||"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road."):o.k=="a"?o.d:o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access. A highway’s last tile tapers with merge lines: touch a road to its end and cars exit onto it.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (3 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
+ tool=="toll"?("Toll Booth: click a straight piece of highway to build a toll gantry ($"+o.c+"). Every car on the highway pays $"+TOLL+" as it drives through, and slows a little. Bulldoze to remove (50% refund)."):o.k=="l"?"Street Lamp: click anywhere on a tile (even a road’s edge) to place it exactly there. Glows at night. Bulldoze a tile to remove its lamps.":o.k=="h"?o.n+" ("+fp(o)+"): houses "+o.cap+" citizens. "+(o.d?o.d+" ":"")+"Nicer homes make people happier.":
  o.k=="g"?o.n+": "+o.d+" Click or drag to plant ($"+o.c+" each) on empty land. Cleans the air for homes within 4 tiles, so plant several near factories. Bulldoze to remove.":
  o.k=="u"?o.n+" ("+fp(o)+"): "+(o.d?o.d+" ":"")+(o.pwr?"generates "+o.pwr+" power. ":"")+(o.tre?"treats water for "+o.tre+" citizens"+(o.twr?"":" (needs a water tower to deliver it; untreated sewage pollutes rivers)")+". ":"")+(o.twr?"delivers water to "+o.twr+" citizens"+(o.tre?"":" (needs a treatment plant)")+". ":"")+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.pol?", pollution "+"●".repeat(o.pol):"")+". Must touch a road.":
  o.k=="f"?o.n+" ("+fp(o)+"): "+o.jobs+" jobs, +$"+o.inc+"/s, pollution "+"●".repeat(o.pol)+". Keep away from homes.":
- o.bs?o.n+": "+o.d+" ($"+o.c+"/tile)":o.pk?o.n+" ("+fp(o)+"): "+o.d+" "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s. Must touch a road.":o.st?o.n+" ("+fp(o)+"): "+o.d+" Needs a road touching it and track along its platform side (press R to turn it). "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s.":o.bt?o.n+" ("+fp(o)+"): "+o.d+" Needs a road behind it and water in front: press R so it faces the water. "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s.":(o.cop||o.fir||o.hlt||o.edu)?o.n+" ("+fp(o)+"): "+o.d+" Covers "+(o.cop||o.fir||o.hlt||o.edu)+" citizens, "+o.jobs+" jobs. Must touch a road.":o.lm?o.n+" ("+fp(o)+"): "+o.d+" Fun for "+o.fun+" citizens, "+o.jobs+" jobs, +$"+o.inc+"/s, happiness +"+Math.round(o.joy*100)+"%. Only one per city. Must touch a road.":o.k=="p"?o.n+" ("+fp(o)+"): fun for "+o.fun+" citizens, "+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.grn?", freshens nearby air":"")+(o.joy?", boosts happiness +"+Math.round(o.joy*100)+"%":"")+(o.tint?". Pick an outer color below":"")+".":
+ o.bs?o.n+": "+o.d+" ($"+o.c+"/tile)":o.pk?o.n+" ("+fp(o)+"): "+o.d+" "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s. Must touch a road.":o.st?o.n+" ("+fp(o)+"): "+o.d+" Needs a road touching it and track along its platform side (press R to turn it). "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s.":o.bt?o.n+" ("+fp(o)+"): "+o.d+" Needs a road behind it and water in front: press R so it faces the water. "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s.":(o.cop||o.fir||o.hlt||o.edu)?o.n+" ("+fp(o)+"): "+o.d+" Covers "+(o.cop||o.fir||o.hlt||o.edu)+" citizens, "+o.jobs+" jobs. Must touch a road.":o.lm?o.n+" ("+fp(o)+"): "+o.d+" Fun for "+o.fun+" citizens, "+o.jobs+" jobs, +$"+o.inc+"/s, happiness +"+Math.round(o.joy*100)+"%. Only one per city. Must touch a road.":o.k=="p"?o.n+" ("+fp(o)+"): fun for "+o.fun+" citizens, "+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.grn?", freshens nearby air":"")+(o.joy?", boosts happiness +"+Math.round(o.joy*100)+"%":"")+(o.tint?". Pick an outer color below":"")+"."+(o.mus?" Click it with ✋ No tool to open the music player.":""):
  o.n+" ("+fp(o)+"): "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s."+(o.gov?" Choose ✋ No tool (Esc), then click it to elect senators.":"")}
 
 const GRN=[["🌱 Grass","#8dbb68","#97c571"],["🏖️ Sand","#e3cf9a","#ead9a8"],["🏜️ Desert","#cf9a64","#d8a572"],["🍂 Autumn","#b09a52","#bba65e"],["❄️ Snow","#eef3f8","#f8fbfe"],["🪨 Rock","#8a8f94","#949a9f"]];let GI=(()=>{try{return Math.min(GRN.length-1,Math.max(0,+localStorage.getItem("tm_ground")||0))}catch(e){return 0}})();
@@ -510,9 +512,9 @@ function cars(dt){if(!carG){carG=new THREE.Group();scene.add(carG)}
  if(spT<=0){spT=.25;const R=[],Hh=[];g.forEach((v,i)=>{if(rd(v))R.push(i)});hw.forEach((v,i)=>{if(v)Hh.push(i)});
   if(CR.filter(c=>!c.k).length<Math.min(40,R.length>>1))spawn(0,R);[["police","cop",3],["fire","fir",2],["amb","hlt",2],["sbus","edu",2]].forEach(([t,k,n])=>{const np=Object.keys(B).filter(u=>okB[u]&&T[B[u].id][k]&&!T[B[u].id].ct).length;if(np&&CR.filter(c=>c.m.userData.pc==t).length<np*n)spawn(0,R,t)});if(CR.filter(c=>c.k).length<Math.min(30,Hh.length))spawn(1,Hh)}
  for(let n=CR.length-1;n>=0;n--){const c=CR[n];let dead=!nb(c).length,v=c.v;
-  if(!dead){if(!c.k&&g[c.y*W+c.x]=="dirt")v*=.6;for(const o of CR)if(o!==c&&o.k==c.k&&o.x==c.x&&o.y==c.y&&o.d1==c.d1&&o.ln==c.ln&&o.s>c.s&&o.s-c.s<.36)v=Math.min(v,o.v*.9);
+  if(!dead){if(!c.k&&g[c.y*W+c.x]=="dirt")v*=.6;if(c.k&&TB[c.y*W+c.x])v*=.6;for(const o of CR)if(o!==c&&o.k==c.k&&o.x==c.x&&o.y==c.y&&o.d1==c.d1&&o.ln==c.ln&&o.s>c.s&&o.s-c.s<.36)v=Math.min(v,o.v*.9);
    c.s+=v*dt;
-   while(c.s>=1&&!dead){c.s-=1;c.x+=DIR[c.d1][0];c.y+=DIR[c.d1][1];c.d0=c.d1;if(c.x<0||c.y<0||c.x>=W||c.y>=H)dead=true;else{if(c.k==1&&!hw[c.y*W+c.x]&&rd(g[c.y*W+c.x])){c.k=0;c.ln=0;c.v=Math.min(c.v,1.5)}if(!pick(c))dead=true}}}
+   while(c.s>=1&&!dead){c.s-=1;c.x+=DIR[c.d1][0];c.y+=DIR[c.d1][1];c.d0=c.d1;if(c.x<0||c.y<0||c.x>=W||c.y>=H)dead=true;else{if(c.k==1&&TB[c.y*W+c.x])tollHit();if(c.k==1&&!hw[c.y*W+c.x]&&rd(g[c.y*W+c.x])){c.k=0;c.ln=0;c.v=Math.min(c.v,1.5)}if(!pick(c))dead=true}}}
   if(dead){carG.remove(c.m);CR.splice(n,1);continue}
   place(c)}}
 /* ---- road types, pedestrians ---- */
@@ -663,6 +665,10 @@ function race(dt){if(!rcG){rcG=new THREE.Group();scene.add(rcG)}dt=Math.min(dt,.
   o.m.position.set(px-dz/L*l,.065+E(o.y*W+o.x),pz+dx/L*l);if(Math.hypot(dx,dz)>.05)o.m.rotation.y=Math.atan2(dx,dz)}}
 /* ---- bridge styles and elevated roads ---- */
 let BS={};
+const TOLL=5;let TB={},TH=0;
+function tollHit(){const f=TOLL*senMul()*IM;money+=f;if(++TH%15==0)toast("🚧 Tolls collected: +$"+Math.round(f*15))}
+function tollRender(){for(const k in TB){const i=+k,m0=hw[i]&15;if(!hw[i]||m0==15||wk(g[i])||![1,2,4,5,8,10].includes(m0)){delete TB[k];continue}
+ const x=i%W,y=i/W|0,ax=HF[m0]||m0,o=mk("toll");o.rotation.y=ax==10?D:0;o.position.set(wx(x),E(i)+.07,wz(y));cityG.add(o)}}
 function bgOK(x,y,t){const i=y*W+x;if(x<0||y<0||x>=W||y>=H||hw[i])return 0;const v=g[i];return t.vi?!rv[i]&&(!v||v=="road"):!!rv[i]&&(!v||v=="road")}
 function putBg(x,y,t){const i=y*W+x;if(!bgOK(x,y,t)){if(!dragging)toast(t.vi?"Elevated roads go on empty land or over an existing road.":"Bridges go over water tiles.");return 1}
  const c=BS[i];if(c&&c.s==tool)return 1;if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}
@@ -889,6 +895,18 @@ proto.f12=G(bx(.98,.03,.98,0xb8c0c8),bx(.5,.3,.3,0xdfe6ee,-.2,.03,-.25),cy(.1,.6
 proto.f13=G(bx(.96,.02,.96,0x9a7a4a),bx(.6,.2,.44,0xbfe8dc,-.05,.02,-.1),ro(.5,.16,0xdff6f0,.22),bx(.5,.03,.05,0x4fb35a,-.05,.04,-.1),bx(.1,.08,.14,0xd9433b,.34,.02,.3),bx(.3,.03,.05,0x4fb35a,-.2,.02,.32),bx(.3,.03,.05,0x7ac84a,-.2,.02,.4));
 proto.f14=G(bx(.98,.03,.98,0x9aa3ad),bx(.9,.3,.5,0xdfe6ee,0,.03,-.25),...[-.3,0,.3].map(x=>bx(.28,.12,.5,0x3b8fd9,x,.33,-.25)),gl(.4,.08,.02,0x4a9ae0,0,.2,.005),...[-.3,-.1,.1,.3].flatMap((x,i)=>[bx(.14,.06,.08,[0xd9433b,0x3b8fd9,0xf2c230,0x2f8f4e][i],x,.03,.3),bx(.14,.06,.08,[0x2f8f4e,0xf2c230,0x3b8fd9,0xd9433b][i],x,.03,.42)]));
 proto.f15=G(bx(.98,.3,.6,0x4a5560),gl(.9,.03,.02,0x4ac8ff,0,.12,.305,0x2a9aff),gl(.9,.03,.02,0x4ac8ff,0,.2,.305,0x2a9aff),...[-.3,0,.3].map(x=>cy(.07,.05,0xcfd4d9,x,.3,0,12)),bx(.14,.1,.14,0x9aa0a6,.38,.3,-.2));
+{const CR2=[[-.3,.12],[-.12,.2],[.14,.14],[.3,.24],[-.22,.32],[.04,.36],[.26,.4],[-.38,.28]],CL=[0xd9433b,0x3b8fd9,0xf2c230,0x2f8f4e,0x7a4bd0,0xe8742a],
+ ln=[[-.3,0xff5aa0,0xff2a80],[-.1,0x5ad0ff,0x20a0ff],[.1,0xffd24a,0xffb040],[.3,0xa05aff,0x7a2aff]];
+ proto.concert=G(pad(0x6fbf6a,.98),bx(.92,.14,.36,0x3a3f4a,0,.03,-.3),bx(.94,.5,.04,0x1d2230,0,.17,-.47),gl(.62,.3,.02,0x4ac8ff,0,.24,-.44,0x2a9aff),
+  bx(.04,.62,.04,0x9aa0a8,-.44,.17,-.18),bx(.04,.62,.04,0x9aa0a8,.44,.17,-.18),bx(.94,.04,.06,0x9aa0a8,0,.77,-.18),bx(.96,.04,.46,0x2d3640,0,.69,-.32),
+  ...ln.map(([x,c,e])=>gl(.07,.05,.07,c,x,.64,-.18,e)),
+  ...[-.4,.4].flatMap(x=>[bx(.1,.28,.1,0x222831,x,.17,-.08),gl(.06,.06,.02,0xcfd4d9,x,.3,-.025,0x8a9aa6)]),
+  bx(.9,.04,.02,0xcfd3d7,0,.03,.06),bx(.16,.12,.12,0xf2f4f6,0,.03,.4),bx(.18,.02,.14,0xd9433b,0,.15,.4),
+  ...CR2.flatMap(([x,z],i)=>[cy(.016,.05,CL[i%6],x,.03,z,6),sp(.02,0xf2c9a0,x,.1,z)]))}
+proto.toll=G(bx(.06,.62,.06,0x6b7078,-.46,0,0),bx(.06,.62,.06,0x6b7078,.46,0,0),bx(1,.1,.12,0x8d939a,0,.6,0),
+ gl(.44,.12,.02,0x1f9d62,0,.62,.065,0x1f9d62),gl(.44,.12,.02,0x1f9d62,0,.62,-.065,0x1f9d62),
+ gs(.025,0x3ddc84,-.3,.56,.07,0x3ddc84),gs(.025,0xe03030,.3,.56,.07,0xe03030),gs(.025,0x3ddc84,-.3,.56,-.07,0x3ddc84),gs(.025,0xe03030,.3,.56,-.07,0xe03030),
+ bx(.1,.14,.26,0xf2f4f6,0,0,0),bx(.12,.03,.3,0x1f9d62,0,.14,0));
 proto.grand1=G(bx(.98,.03,.9,0x9aa0a8),bx(.98,.08,.22,0x3b8fd9,0,.03,.25),bx(.98,.16,.22,0xd9433b,0,.03,.03),bx(.98,.24,.22,0x3b8fd9,0,.03,-.19),...[-.46,.46].map(x=>cy(.02,.34,0x888888,x,.03,-.38,6)),bx(.98,.03,.74,0xeceff1,0,.37,-.1),bx(.98,.05,.03,0xd9433b,0,.4,.27));
 proto.pit1=G(bx(.98,.22,.4,0xdfe6ee,0,0,-.2),bx(1,.03,.44,0xd9433b,0,.22,-.2),...[-.32,0,.32].map(x=>gl(.24,.14,.02,0x4a9ae0,x,.03,.005,0x2a7ad0)),bx(.98,.06,.04,0xf2f4f6,0,0,.3),bx(.98,.02,.042,0xd9433b,0,.04,.3),cy(.05,.1,0x222222,.4,0,.15,8),cy(.05,.08,0x222222,.4,.1,.15,8));
 proto.us10=G(bx(.62,.8,.5,0,0,0,0,wt(5,3,"#9a4a38","#ffeaa6")),bx(.66,.05,.54,0x6a3a2a,0,.8),cy(.1,.16,0x7a5a3a,-.15,.85,0,10),cn2(.11,.07,0x5a4030,-.15,1.01,0),bx(.2,.06,.12,0xc8c0b0,0,0,.31),bx(.04,.5,.1,0x333333,.33,.15,.1));
@@ -1092,7 +1110,7 @@ function rebuild(){
   const hh=[[0,-1],[1,0],[0,1],[-1,0]].map(([a,b],k)=>m&(1<<k)?Math.max(el[i],el[(y+b)*W+x+a]):el[i]);
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
- arender();trender();wrender();hrender();bgRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
+ arender();trender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
   if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=(T[b.id].bh||T[b.id].t*.6+.7)+(big?1:0);o.add(sp)}
   else if(UF&&T[b.id].k=="h")[1,2].forEach((m,k)=>{if(UF&m){const sp=new THREE.Sprite(BUB[k]);sp.scale.set(.42,.42,1);sp.position.set(UF==3?(k?.22:-.22):0,T[b.id].t*.6+.8,0);o.add(sp)}})
   o.position.set(wx(r.x)+(r.w-1)/2,E(r.y*W+r.x),wz(r.y)+(r.h-1)/2);cityG.add(o)}
@@ -1107,7 +1125,8 @@ function cell(e){const r=cv.getBoundingClientRect();
  const p=new THREE.Vector3();for(let L=MXE;L>0;L--){PL.constant=-L*EH;if(ray.ray.intersectPlane(PL,p)){const x=Math.floor(p.x+W/2),y=Math.floor(p.z+H/2);if(x>=0&&y>=0&&x<W&&y<H&&el[y*W+x]==L){PL.constant=0;FX=[p.x+W/2-x,p.z+H/2-y];return[x,y]}}}PL.constant=0;if(!ray.ray.intersectPlane(PL,p))return null;
  const x=Math.floor(p.x+W/2),y=Math.floor(p.z+H/2);FX=[p.x+W/2-x,p.z+H/2-y];return x>=0&&y>=0&&x<W&&y<H?[x,y]:null}
 
-function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)&&B[v]&&T[B[v].id].gov)openSenate();return 1}
+function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)&&B[v]){if(T[B[v].id].gov)openSenate();else if(B[v].id=="concert")openMusic()}return 1}
+ if(tool=="toll"){const m=hw[i]&15;if(![1,2,4,5,8,10].includes(m)){if(!dragging)toast("Tolls go on a straight stretch of highway.");return 1}if(wk(g[i])){toast("Not on an overpass — pick plain highway.");return 1}if(TB[i])return 1;if(money<cc(t)){toast("Not enough money for a toll booth ($"+t.c+").");return 0}money-=cc(t);TB[i]=1;dirty=1;return 1}
  if(tool=="lamp"){const v=g[i];if(v&&isB(v)){toast("Lamps go beside buildings, not inside them.");return 1}if(hw[i]){toast("No lamps on highways.");return 1}if(rv[i]&&!v){toast("Can’t put a lamp on water.");return 1}
   const ox=Math.max(-.42,Math.min(.42,FX[0]-.5)),oz=Math.max(-.42,Math.min(.42,FX[1]-.5));
   if(LP.some(l=>l.x==x&&l.y==y&&Math.hypot(l.ox-ox,l.oz-oz)<.2))return 1;
@@ -1117,9 +1136,9 @@ function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)
   if(money<cc(t)){toast("Not enough money for a tree ($"+t.c+").");return 0}
   money-=cc(t);const q={x,y,id:tool,s:1+((x*7+y*13)%5)*.08,ry:((x*31+y*17)%8)*.8,ox:(((x*53+y*29)%7)-3)*.04,oz:(((x*19+y*43)%7)-3)*.04};
   if(ex>=0)TR[ex]=q;else TR.push(q);dirty=1;return 1}
- if(tool=="bull"){const ti=TR.findIndex(q=>q.x==x&&q.y==y);if(ti>=0){money+=Math.floor(T[TR[ti].id].c/2);TR.splice(ti,1);dirty=1;return 1}const lc=LP.filter(l=>l.x==x&&l.y==y).length;if(lc){LP=LP.filter(l=>l.x!=x||l.y!=y);money+=lc*Math.floor(T.lamp.c/2);dirty=1;return 1}if(hw[i]){money+=Math.floor(T.hwy.c/2);hw[i]=0;D4.forEach(([a,b],k)=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<W&&ny<H)hw[ny*W+nx]&=~[8,2,1,4][k]});dirty=1;return 1}if(rv[i]&&!g[i]){rv[i]=0;dirty=1;return 1}const v=g[i];if(v){if(isB(v)){const b=B[v],r=rc(b);money+=b.free?0:Math.floor(T[b.id].c/2);
+ if(tool=="bull"){const ti=TR.findIndex(q=>q.x==x&&q.y==y);if(ti>=0){money+=Math.floor(T[TR[ti].id].c/2);TR.splice(ti,1);dirty=1;return 1}const lc=LP.filter(l=>l.x==x&&l.y==y).length;if(lc){LP=LP.filter(l=>l.x!=x||l.y!=y);money+=lc*Math.floor(T.lamp.c/2);dirty=1;return 1}if(TB[i]){delete TB[i];money+=Math.floor(T.toll.c/2);dirty=1;return 1}if(hw[i]){money+=Math.floor(T.hwy.c/2);hw[i]=0;D4.forEach(([a,b],k)=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<W&&ny<H)hw[ny*W+nx]&=~[8,2,1,4][k]});dirty=1;return 1}if(rv[i]&&!g[i]){rv[i]=0;dirty=1;return 1}const v=g[i];if(v){if(isB(v)){const b=B[v],r=rc(b);money+=b.free?0:Math.floor(T[b.id].c/2);
    for(let j=r.y;j<r.y+r.h;j++)for(let k=r.x;k<r.x+r.w;k++)g[j*W+k]=0;delete B[v]}
-  else{money+=Math.floor((T[v]||T.road).c/2);g[i]=0}dirty=1}return 1}
+  else{money+=Math.floor((T[v]||T.road).c/2);g[i]=0;if(BS[i]){el[i]=BS[i].b||0;delete BS[i]}if(rv[i])el[i]=0}dirty=1}return 1}
  if(t.k=="a"){if(g[i]||hw[i])return 1;if(rv[i]){if(!dragging)toast(tool=="rail"?"Rails can’t go on water.":tool=="trk"?"Race tracks can’t go on water.":"No airport on water.");return 1}if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=cc(t);g[i]=tool;dirty=1;return 1}
  if(t.bs)return putBg(x,y,t);
  if(t.k=="r"){const u=cc(t);if(x>=W||y>=H||g[y*W+x])return 1;if(money<u){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=u;g[y*W+x]=tool;dirty=1;return 1}
@@ -1155,7 +1174,7 @@ $("exp").onclick=()=>{
  const cost=EXPC[nex];if(money<cost)return toast("Expanding costs $"+cost.toLocaleString()+". You have $"+Math.floor(money).toLocaleString()+".");
  const nw=W+XW,nh=H+XH,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){ng[y*nw+x]=g[y*W+x];n2[y*nw+x]=hw[y*W+x];n3[y*nw+x]=rv[y*W+x];n4[y*nw+x]=el[y*W+x]}
- money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
+ {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
 
 const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)},cl=h=>new THREE.Color(h),TC=cl(0),
 RP=(q,u,o)=>{const k=u<q[1][0]?0:1,a=q[k],b=q[k+1],t=(u-a[0])/(b[0]-a[0]);return typeof a[1]=="number"?a[1]+(b[1]-a[1])*t:o.copy(a[1]).lerp(b[1],t)},
@@ -1178,9 +1197,9 @@ function draw(){
  camKeys();ctl.update();
  const dt=cd();sky(dt);SPN.forEach(q=>q.rotation.z-=dt*2);try{cars(dt)}catch(e){console.error(e)}try{peds(dt)}catch(e){console.error(e)}try{planes(dt)}catch(e){console.error(e)}try{boats(dt)}catch(e){console.error(e)}try{race(dt)}catch(e){console.error(e)}try{trains(dt)}catch(e){console.error(e)}hl.visible=!!hov&&tool!="none";
  if(hov){const[x,y]=hov,t=T[tool],bd=!!proto[tool],w=t.w||1,h=t.h||1,ew=bd&&rot&1?h:w,eh=bd&&rot&1?w:h,occ=g[y*W+x];
-  const red=tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t));
+  const red=tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):tool=="toll"?(!hw[y*W+x]||TB[y*W+x]||money<cc(t)):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t));
   hl.material.color.set(red?0xe03c3c:0xffffff);hl.scale.set(ew,1,eh);hl.position.set(wx(x)+(ew-1)/2,.09+E(y*W+x),wz(y)+(eh-1)/2);
-  if(ghost){ghost.visible=tool=="lamp"||T[tool].k=="g"||(!!fits(x,y,ew,eh)&&(!t.bt||bfw(x,y,ew,eh,rot)));ghost.position.set(wx(x)+(ew-1)/2,E(y*W+x),wz(y)+(eh-1)/2);ghost.rotation.y=rot*D;if(tool=="lamp"){ghost.position.x+=FX[0]-.5;ghost.position.z+=FX[1]-.5}}}
+  if(ghost){ghost.visible=tool=="toll"?(!!hw[y*W+x]&&!TB[y*W+x]):tool=="lamp"||T[tool].k=="g"||(!!fits(x,y,ew,eh)&&(!t.bt||bfw(x,y,ew,eh,rot)));ghost.position.set(wx(x)+(ew-1)/2,E(y*W+x),wz(y)+(eh-1)/2);ghost.rotation.y=tool=="toll"?((HF[hw[y*W+x]&15]||hw[y*W+x]&15)==10?D:0):rot*D;if(tool=="lamp"){ghost.position.x+=FX[0]-.5;ghost.position.z+=FX[1]-.5}}}
  else if(ghost)ghost.visible=false;
  $("exp").style.opacity=nex<MX&&money>=EXPC[nex]?1:.5;
  renderer.render(scene,cam)}
@@ -1189,8 +1208,8 @@ function fit(){const r=$("stage").getBoundingClientRect();
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(r.width,r.height);
  cam.aspect=r.width/r.height;cam.updateProjectionMatrix()}
 
-function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);nex=d.x||0;$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
+function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);nex=d.x||0;$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};TB=d.tb&&typeof d.tb=="object"?d.tb:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
  if(d.v==2){g=d.g;B=d.B||{};nu=d.u||1}
  else{g=d.g.map(v=>v&&v!="road"?0:v);B={};nu=1;d.g.forEach((v,i)=>{if(v&&v!="road"&&T[v]){const u=nu++;B[u]={id:v,x:i%W,y:i/W|0,r:0,w:1,h:1};g[i]=u}})}}}catch(e){}}
 
@@ -1208,7 +1227,7 @@ $("gnd").onclick=()=>{GI=(GI+1)%GRN.length;try{localStorage.setItem("tm_ground",
 $("name").onfocus=e=>e.target.select();
 $("name").oninput=()=>{save();ui()};
 $("new").onclick=e=>{const b=e.target;
- if(b.dataset.s){B={};LP=[];TR=[];nu=1;g=Array(30*20).fill(0);hw=Array(30*20).fill(0);rv=Array(30*20).fill(0);el=Array(30*20).fill(0);W=30;H=20;nex=0;world();dirty=1;updExp();money=2000;pop=0;won=0;FW=1;RVP=0;SF=0;BS={};SEN=[null,null,null,null,null];$("name").value="My Little City";delete b.dataset.s;b.textContent="↺ New city";save();ui()}
+ if(b.dataset.s){B={};LP=[];TR=[];nu=1;g=Array(30*20).fill(0);hw=Array(30*20).fill(0);rv=Array(30*20).fill(0);el=Array(30*20).fill(0);W=30;H=20;nex=0;world();dirty=1;updExp();money=2000;pop=0;won=0;FW=1;RVP=0;SF=0;BS={};TB={};SEN=[null,null,null,null,null];$("name").value="My Little City";delete b.dataset.s;b.textContent="↺ New city";save();ui()}
  else{b.dataset.s=1;b.textContent="Click again to reset";setTimeout(()=>{delete b.dataset.s;b.textContent="↺ New city"},3000)}};
 window.addEventListener("resize",fit);
 const ADMIN_CODE="metro-admin";let adm=0,pen=0,penT;
@@ -1403,8 +1422,10 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.7.0",
+const VER="1.9.0",
 LOG=[
+["1.9.0","Toll booths & concert music",["New Toll Booth (Roads tab): click a straight stretch of highway to build a toll gantry. Every car that drives through pays $5 and slows down a little.","Concert Stage is now smaller (2×2) and cheaper ($9,000).","With ✋ No tool selected, click a Concert Stage to open a music player. The Built-in beats tab has four original instrumentals (two rage-trap style, two moody late-night style) made live in your browser: no files needed.","The two rage-trap beats are now much heavier: stacked synth leads, hard chord stabs, distorted 808s, crashes and risers. New Calm & relaxing tab with four soft original pieces: Slow Tide, Paper Lanterns, Quiet Rain and Morning Garden.","You can also add your own mp3 files under the Ken Carson and Drake tabs. Those are saved in your browser only. Music keeps playing after you close the player."]],
+["1.8.0","Concert stage & bridge fixes",["New Concert Stage (3×3) in Recreation: big screen, speakers, glowing stage lights and a crowd. Lights up at night.","Fixed: expanding your city no longer resets bridges and elevated roads back to normal roads.","Fixed: bulldozing a bridge or elevated road now restores the original terrain instead of leaving random raised land or raised water behind."]],
 ["1.7.0","Race circuits",["New Motorsport section: Race Track, Grandstand and Pit Garage.","Drag to lay a circuit; tiles join up and curve on their own. Build a loop and race cars start racing around it.","Race cars use both sides of the track and speed through the corners."]],
 ["1.6.0","Main menu & update log",["New main menu: continue, new city, save slots and this update log.","Version badge in the top bar so you can tell which update you're on."]],
 ["1.5.0","More industry",["Greenhouse Farm, Brewery, Textile Mill, Data Center, Chemical Plant, Steel Mill, Oil Refinery and Auto Factory."]],
@@ -1454,6 +1475,129 @@ function closeMenu(){window.MENU=0;q("mm").classList.remove("on")}
 q("menub").onclick=menu;
 addEventListener("keydown",e=>{if(e.key!="Escape")return;if(q("ul").classList.contains("on"))closeLog();else if(window.MENU)closeMenu()},true);
 menu();
+})();
+</script>
+<style>
+#mp-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:21}#mp-m.on{display:flex}
+.mp-box{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:16px;width:min(94vw,420px);max-height:86vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.mp-box button,.mp-add{font:inherit;font-weight:600;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;text-align:center}.mp-box button.on{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.mp-r{display:flex;gap:8px;flex-wrap:wrap}.mp-r>*{flex:1;min-width:80px}.mp-tr{display:flex;flex-direction:column;gap:4px}
+.mp-t{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:4px 6px}.mp-t.cur{border-color:var(--good)}.mp-t span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mp-t button{padding:2px 8px;border-width:1px;min-width:0}
+</style>
+<div id="mp-m"><div class="mp-box"><b>🎤 Concert Stage · Music player</b><small id="mp-i" style="color:var(--mut)"></small><div class="mp-r" id="mp-ar"></div><div class="mp-r"><label class="mp-add" id="mp-a">➕ Add songs<input id="mp-f" type="file" accept="audio/*" multiple hidden></label><button id="mp-p">▶ Play</button><button id="mp-nx">⏭</button></div><small id="mp-n" style="color:var(--mut)"></small><div class="mp-tr" id="mp-l"></div><button id="mp-x">Close</button></div></div>
+<script>
+/* Original instrumentals, synthesized live with Web Audio. No samples, no lyrics. */
+window.TMB=(()=>{
+const NF=n=>440*Math.pow(2,(n-69)/12),SC={min:[0,2,3,5,7,8,10],phr:[0,1,3,5,7,8,10],dor:[0,2,3,5,7,9,10],maj:[0,2,4,5,7,9,11]},
+rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296},
+TR=[
+ {cat:"beat",name:"Rage Mode",tag:"heavy rage trap, 156 BPM",bpm:156,root:54,sc:"min",prog:[0,5,2,6],st:"rage",seed:7,vol:.3},
+ {cat:"beat",name:"Neon Static",tag:"heavy rage trap, 148 BPM",bpm:148,root:57,sc:"phr",prog:[0,5,6,4],st:"rage2",seed:19,vol:.3},
+ {cat:"beat",name:"Midnight Drive",tag:"moody trap, 72 BPM",bpm:72,root:50,sc:"min",prog:[0,5,2,6],st:"moody",seed:21},
+ {cat:"beat",name:"Cold Lights",tag:"late-night trap, 68 BPM",bpm:68,root:53,sc:"dor",prog:[0,3,5,4],st:"moody2",seed:33},
+ {cat:"calm",name:"Slow Tide",tag:"ambient, 58 BPM",bpm:58,root:55,sc:"maj",prog:[0,5,3,4],st:"calm1",seed:41,vol:.5},
+ {cat:"calm",name:"Paper Lanterns",tag:"lo-fi chill, 76 BPM",bpm:76,root:52,sc:"maj",prog:[0,5,1,4],st:"calm2",seed:52,vol:.5},
+ {cat:"calm",name:"Quiet Rain",tag:"rainy ambient, 54 BPM",bpm:54,root:50,sc:"dor",prog:[0,3,0,6],st:"calm3",seed:63,vol:.5},
+ {cat:"calm",name:"Morning Garden",tag:"soft acoustic, 66 BPM",bpm:66,root:57,sc:"maj",prog:[0,4,5,3],st:"calm4",seed:74,vol:.5}];
+let cx=null,bus=null,nb=null,timer=0,on=0,idx=-1,pat=null,step=0,nt=0;const cv={};
+const sd=(c,i)=>{const L=SC[c.sc],k=L.length;return c.root+L[((i%k)+k)%k]+12*Math.floor(i/k)};
+const curve=k=>cv[k]||(cv[k]=(()=>{const a=new Float32Array(256);for(let i=0;i<256;i++)a[i]=Math.tanh(k*(i/128-1));return a})());
+const env=(g,t,a,d,v)=>{g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+d)},
+snd=(n,amt)=>{const g=cx.createGain();g.gain.value=amt;n.connect(g);g.connect(bus.d)},
+O=(ty,f,t,dur,det,dst)=>{const o=cx.createOscillator();o.type=ty;o.frequency.setValueAtTime(f,t);o.detune.value=det||0;o.connect(dst);o.start(t);o.stop(t+dur);return o},
+G=v=>{const g=cx.createGain();g.gain.value=v;return g},
+noise=(t,dur,ty,f,q,v,d,send)=>{const s=cx.createBufferSource();s.buffer=nb;const b=cx.createBiquadFilter();b.type=ty;b.frequency.value=f;b.Q.value=q;const g=cx.createGain();env(g,t,.001,d,v);s.connect(b);b.connect(g);g.connect(bus.m);if(send)snd(g,send);s.start(t,Math.random()*.4);s.stop(t+dur)},
+kick=(t,v)=>{const o=cx.createOscillator(),g=cx.createGain();o.frequency.setValueAtTime(170,t);o.frequency.exponentialRampToValueAtTime(44,t+.11);env(g,t,.002,.3,v);o.connect(g);g.connect(bus.m);o.start(t);o.stop(t+.45)},
+sub=(t,m,len,v,dist,sl)=>{const g=cx.createGain(),ws=cx.createWaveShaper(),f=NF(m),o=cx.createOscillator();ws.curve=curve(dist||1.6);env(g,t,.006,len,v);o.type="sine";o.frequency.setValueAtTime(sl?NF(m+sl):f,t);o.frequency.exponentialRampToValueAtTime(f,t+.07);o.connect(g);o.start(t);o.stop(t+len+.1);const h=G(.12);O("triangle",f*2,t,len+.1,0,h);h.connect(g);g.connect(ws);ws.connect(bus.m)},
+clap=(t,v)=>{[0,.011,.022].forEach(o=>noise(t+o,.08,"bandpass",1700,.9,v*.6,.05,0));noise(t+.03,.35,"bandpass",1500,.7,v*.7,.22,.3)},
+hat=(t,v,op)=>noise(t,op?.3:.09,"highpass",7500,.4,v*.5,op?.14:.03,0),
+lead=(t,m,len,v)=>{const f=NF(m),fl=cx.createBiquadFilter(),g=cx.createGain(),ws=cx.createWaveShaper();fl.type="lowpass";fl.frequency.setValueAtTime(5200,t);fl.frequency.exponentialRampToValueAtTime(1400,t+len);fl.Q.value=3;ws.curve=curve(9);env(g,t,.004,len,v);[["sawtooth",-14],["sawtooth",-5],["sawtooth",5],["sawtooth",14],["square",0]].forEach(([ty,d])=>O(ty,f,t,len+.1,d,fl));fl.connect(ws);ws.connect(g);g.connect(bus.m);snd(g,.18)},
+stab=(t,ms,len,v)=>{const fl=cx.createBiquadFilter(),g=cx.createGain(),ws=cx.createWaveShaper();fl.type="lowpass";fl.frequency.setValueAtTime(4200,t);fl.frequency.exponentialRampToValueAtTime(900,t+len);fl.Q.value=2;ws.curve=curve(6);env(g,t,.002,len,v);ms.forEach(m=>{const f=NF(m);O("sawtooth",f,t,len+.1,-9,fl);O("sawtooth",f,t,len+.1,9,fl)});fl.connect(ws);ws.connect(g);g.connect(bus.m);snd(g,.12)},
+crash=(t,v)=>noise(t,1.6,"highpass",4200,.3,v,1.4,.25),
+riser=(t,len,v)=>{const s=cx.createBufferSource();s.buffer=nb;const b=cx.createBiquadFilter(),g=cx.createGain();b.type="bandpass";b.Q.value=1.2;b.frequency.setValueAtTime(300,t);b.frequency.exponentialRampToValueAtTime(9000,t+len);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+len);g.gain.linearRampToValueAtTime(.0001,t+len+.05);s.connect(b);b.connect(g);g.connect(bus.m);s.start(t,Math.random()*.4);s.stop(t+len+.1)},
+bell=(t,m,len,v)=>{const f=NF(m),g=cx.createGain();env(g,t,.003,len,v);O("sine",f,t,len+.1,0,g);const h=G(.3);O("sine",f*2.01,t,len+.1,0,h);h.connect(g);const k=G(.1);O("triangle",f*3.99,t,len+.1,0,k);k.connect(g);g.connect(bus.m);snd(g,.5)},
+pluck=(t,m,len,v)=>{const f=NF(m),g=cx.createGain(),fl=cx.createBiquadFilter();fl.type="lowpass";fl.frequency.setValueAtTime(3000,t);fl.frequency.exponentialRampToValueAtTime(500,t+len);env(g,t,.004,len,v);O("triangle",f,t,len+.1,0,fl);O("sine",f*2,t,len+.1,4,fl);fl.connect(g);g.connect(bus.m);snd(g,.5)},
+pad=(t,ms,len,v,soft)=>ms.forEach(m=>{const f=NF(m),fl=cx.createBiquadFilter(),g=cx.createGain(),at=soft?1.2:.5;fl.type="lowpass";fl.frequency.value=soft?600:800;fl.Q.value=.7;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+at);g.gain.linearRampToValueAtTime(v*.7,t+len*.8);g.gain.linearRampToValueAtTime(.0001,t+len);[-7,7].forEach(d=>O(soft?"triangle":"sawtooth",f,t,len+.1,d,fl));fl.connect(g);g.connect(bus.m);snd(g,.25)}),
+rh=(t,m,len,v)=>{const f=NF(m),g=cx.createGain();env(g,t,.004,len,v);O("sine",f,t,len+.1,0,g);const h=cx.createGain();env(h,t,.002,.35,.35);O("sine",f*2,t,.5,0,h);h.connect(g);const k=G(.08);O("triangle",f*4,t,.3,0,k);k.connect(g);g.connect(bus.m);snd(g,.3)},
+drone=(t,m,len,v)=>{const g=cx.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+1);g.gain.linearRampToValueAtTime(v,t+len-1);g.gain.linearRampToValueAtTime(.0001,t+len);O("sine",NF(m),t,len+.1,0,g);g.connect(bus.m)},
+wash=(t,len,v)=>{const s=cx.createBufferSource();s.buffer=nb;const b=cx.createBiquadFilter(),g=cx.createGain();b.type="lowpass";b.frequency.value=700;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+len*.5);g.gain.linearRampToValueAtTime(.0001,t+len);s.connect(b);b.connect(g);g.connect(bus.m);s.start(t,Math.random()*.4);s.stop(t+len+.05)};
+function build(c){const r=rng(c.seed),bars=c.prog.length*2,P=[],cat=c.st[0],rage=cat=="r",bl=c.st=="rage2",r2=c.st=="moody2",st=c.st,
+ mo=[...Array(8)].map(()=>r()<.18?-1:(r()*3|0)),oc=[...Array(8)].map(()=>r()<.25?12:0);
+ for(let b=0;b<bars;b++){const dg=c.prog[b%c.prog.length],ch=[sd(c,dg),sd(c,dg+2),sd(c,dg+4)],c7=sd(c,dg+6),last=b==bars-1,B={ch,k:Array(16).fill(0),cl:Array(16).fill(0),h:Array(16).fill(0),ba:Array(16).fill(null),me:[],pad:null};
+  let ks=[];
+  if(rage){ks=[0,3,6,10];[13,15,11].forEach(i=>{if(r()<.5)ks.push(i)});B.cl[8]=1;B.cl[4]=0;if(last)for(let i=8;i<16;i++)if(i!=8&&r()<.85)B.cl[i]=.4+(i-8)*.09;
+   for(let i=0;i<16;i++)B.h[i]=i%2==0?.6:.35;if(r()<.5)B.h[6]=2;B.h[14]=2;if(b%2==1)[12,13,14,15].forEach(i=>B.h[i]=3);
+   B.stabs=[0,3,6,10].filter(()=>r()<.9);if(b%4==0)B.crash=1;if(last)B.rise=1;
+   for(let i=0;i<16;i++){const j=i%8,m=mo[j];if(m<0)continue;
+    if(bl){if(i%2==0&&r()<.8)B.me.push({i,m:ch[m]+12+oc[j],len:.8,ty:"bell"});if(i%4==0)B.me.push({i,m:ch[m]+12,len:.22,ty:"lead",v:.85})}
+    else{B.me.push({i,m:ch[m]+12+(last&&i>11?12:oc[j]),len:.14,ty:"lead"});if(i%2==1)B.me.push({i,m:ch[m],len:.12,ty:"lead",v:.7})}
+    if(i%2==1)B.me.push({i,m:ch[(i>>1)%3]+24,len:.12,ty:"pluck",v:.4})}}
+  else if(cat=="m"){ks=[0,10];if(r()<.5)ks.push(7);if(r()<.4)ks.push(13);B.cl[8]=1;
+   for(let i=0;i<16;i++)B.h[i]=i%2==0?(r()<.7?.35:0):(r()<.2?.15:0);if(b%4==3)[14,15].forEach(i=>B.h[i]=3);
+   B.pad=r2?null:ch.map(m=>m+12);
+   if(r2){ch.forEach((m,n)=>{B.me.push({i:0,m:m+12,len:1.6,ty:"rh",off:n*.04});B.me.push({i:8,m:m+12+(n==2?12:0),len:1.2,ty:"rh",off:n*.04,v:.6})});[2,6,10,13].forEach(i=>{if(r()<.45)B.me.push({i,m:ch[r()*3|0]+24,len:1,ty:"bell"})})}
+   else[0,3,6,8,10,12,14].forEach(i=>{if(r()<.5)B.me.push({i,m:ch[r()*3|0]+(r()<.2?24:12),len:.35,ty:"pluck"})})}
+  else if(st=="calm1"){B.pad=[ch[0],ch[1],ch[2],c7].map(m=>m+12);B.soft=1;B.pv=.05;B.drone=ch[0]-12;B.wash=b%2==0;
+   for(let i=0;i<16;i+=2){const q=(i/2)%4;if(r()<.88)B.me.push({i,m:[ch[0],ch[1],ch[2],ch[1]][q]+(q==3?24:12),len:1.3,ty:"rh",v:.7})}
+   [4,12].forEach(i=>{if(r()<.5)B.me.push({i,m:ch[r()*3|0]+24,len:1.8,ty:"bell",v:.6})})}
+  else if(st=="calm2"){ks=[0,10];B.kv=.5;B.bv=.5;B.cl[8]=.3;for(let i=0;i<16;i++)B.h[i]=i%2==0?.2:(r()<.3?.1:0);B.rain=.3;B.rv=.035;
+   [0,8].forEach(i=>{if(i==0||r()<.6)ch.forEach((m,n)=>B.me.push({i,m:m+12,len:1.4,ty:"rh",off:n*.03,v:.6}))});
+   [2,5,7,10,13].forEach(i=>{if(r()<.45)B.me.push({i,m:sd(c,[0,1,2,4,5,7,8][r()*7|0])+12,len:.9,ty:"bell",v:.55})})}
+  else if(st=="calm3"){B.pad=ch.map(m=>m+12);B.soft=1;B.pv=.05;B.drone=ch[0]-12;B.wash=b%2==1;B.rain=2.2;B.rv=.05;
+   [0,6,10].forEach(i=>{if(r()<.45)B.me.push({i,m:ch[r()*3|0]+24,len:2.4,ty:"bell",v:.5})})}
+  else{B.pad=ch.map(m=>m+12);B.soft=1;B.pv=.04;ks=[0];B.kv=.3;B.bv=.45;for(let i=1;i<16;i+=2)B.h[i]=r()<.6?.12:0;
+   for(let i=0;i<16;i+=2)B.me.push({i,m:[ch[0],ch[1],ch[2],ch[1]][(i/2)%4]+12,len:.55,ty:"pluck",v:.9});
+   [6,14].forEach(i=>{if(r()<.5)B.me.push({i,m:ch[r()*3|0]+24,len:1.2,ty:"bell",v:.5})})}
+  ks.sort((x,y)=>x-y).forEach((i,n)=>{B.k[i]=1;B.ba[i]={n:(ks[n+1]??16)-i,sl:cat=="c"?0:(r()<.25?-5:0),dist:rage?11:0,v:B.bv}});
+  P.push(B)}return P}
+function sched(s,t){const c=TR[idx],d=60/c.bpm/4,B=pat[Math.floor(s/16)%pat.length],i=s%16,T=t+((c.st[0]=="m"||c.st=="calm2")&&i%2?d*.1:0);
+ if(B.k[i])kick(T,B.kv||.95);if(B.ba[i]){const e=B.ba[i];sub(T,B.ch[0]-12,Math.max(.15,e.n*d-.03),e.v||.8,e.dist,e.sl)}
+ if(B.cl[i])clap(T,B.cl[i]);const h=B.h[i];if(h){hat(T,h==3?.5:h==2?.6:h,h==2);if(h==3)hat(T+d/2,.4,0)}
+ if(i==0){if(B.crash)crash(T,.45);if(B.rise)riser(T,16*d,.3);if(B.wash)wash(T,Math.min(5.2,16*d),.2);if(B.drone)drone(T,B.drone,16*d,.28);if(B.pad)pad(T,B.pad,16*d,B.pv||.06,B.soft)}
+ if(B.stabs&&B.stabs.includes(i))stab(T,B.ch.map(m=>m+12),.16,.13);
+ if(B.rain){const n=Math.floor(B.rain)+(Math.random()<B.rain%1?1:0);for(let k=0;k<n;k++)noise(T+Math.random()*d,.04,"highpass",4000+Math.random()*3500,.5,B.rv*(.4+Math.random()),.025,0)}
+ B.me.forEach(e=>{if(e.i!=i)return;const tt=T+(e.off||0),v=e.v||1;if(e.ty=="lead")lead(tt,e.m,Math.max(.08,e.len+.02),.12*v);else if(e.ty=="bell")bell(tt,e.m,e.len,.22*v);else if(e.ty=="pluck")pluck(tt,e.m,e.len,.25*v);else rh(tt,e.m,e.len,.2*v)})}
+function tick(){while(nt<cx.currentTime+.2){sched(step,nt);nt+=60/TR[idx].bpm/4;step++}}
+function stop(){clearInterval(timer);if(bus&&cx){const b=bus;b.m.gain.setTargetAtTime(0,cx.currentTime,.04);setTimeout(()=>{try{b.m.disconnect();b.d.disconnect()}catch(e){}},700)}bus=null;on=0}
+function play(i){if(!cx){cx=new(window.AudioContext||window.webkitAudioContext)();nb=cx.createBuffer(1,cx.sampleRate*6,cx.sampleRate);const a=nb.getChannelData(0);for(let k=0;k<a.length;k++)a[k]=Math.random()*2-1}
+ cx.resume();stop();idx=i;pat=build(TR[i]);const m=cx.createGain(),co=cx.createDynamicsCompressor(),d=cx.createDelay(1),fb=cx.createGain(),lp=cx.createBiquadFilter();
+ m.gain.value=TR[i].vol||.42;co.threshold.value=-14;co.ratio.value=6;m.connect(co);co.connect(cx.destination);
+ d.delayTime.value=60/TR[i].bpm*.75;fb.gain.value=.3;lp.type="lowpass";lp.frequency.value=2500;d.connect(lp);lp.connect(fb);fb.connect(d);lp.connect(m);
+ bus={m,d};step=0;nt=cx.currentTime+.08;on=1;timer=setInterval(tick,30);tick()}
+return{tracks:TR,play,stop,on:()=>on,tap:()=>bus&&bus.m,ctx:()=>cx}})();
+</script>
+<script>
+(()=>{
+const ART=[["Ken Carson","🧛"],["Drake","🦉"],["Built-in beats","🎹"],["Calm & relaxing","🌿"]],$q=id=>document.getElementById(id),au=new Audio(),mem=[];
+let sel=2,lib=[],cur=-1,db=null,url="";
+const idb=()=>new Promise(r=>{try{const o=indexedDB.open("tm_music",1);o.onupgradeneeded=()=>o.result.createObjectStore("f",{keyPath:"id",autoIncrement:true});o.onsuccess=()=>r(o.result);o.onerror=()=>r(null)}catch(e){r(null)}}),
+all=()=>new Promise(r=>{if(!db)return r(mem.slice());const x=db.transaction("f").objectStore("f").getAll();x.onsuccess=()=>r(x.result);x.onerror=()=>r([])}),
+add=rec=>new Promise(r=>{if(!db){rec.id=mem.length+1;mem.push(rec);return r()}const t=db.transaction("f","readwrite");t.objectStore("f").add(rec);t.oncomplete=()=>r();t.onerror=()=>r()}),
+del=id=>new Promise(r=>{if(!db){const i=mem.findIndex(x=>x.id==id);if(i>=0)mem.splice(i,1);return r()}const t=db.transaction("f","readwrite");t.objectStore("f").delete(id);t.oncomplete=()=>r();t.onerror=()=>r()}),
+AL=()=>TMB.tracks.map((t,i)=>({id:"b"+i,name:t.name+" · "+t.tag,beat:i,cat:t.cat})),BE=()=>AL().filter(x=>x.cat==(sel==2?"beat":"calm")),
+mine=()=>sel>=2?BE():lib.filter(x=>x.artist==sel),
+rec=id=>typeof id=="string"?AL()[+id.slice(1)]:lib.find(x=>x.id==id),
+pl=()=>{const r=rec(cur);return r?(r.beat!==undefined?!!TMB.on():!au.paused):false};
+function playRec(r){if(r.beat!==undefined){au.pause();TMB.play(r.beat)}else{TMB.stop();if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(r.blob);au.src=url;au.play().catch(()=>{})}cur=r.id;render()}
+function tog(r){if(r.id==cur){if(pl()){r.beat!==undefined?TMB.stop():au.pause()}else if(r.beat!==undefined)playRec(r);else au.play().catch(()=>{})}else playRec(r);render()}
+function next(){const l=mine();if(!l.length)return;const i=l.findIndex(x=>x.id==cur);playRec(l[(i+1)%l.length])}
+au.onended=()=>{if(typeof cur=="number")next()};au.onplay=au.onpause=()=>render();
+function render(){const ar=$q("mp-ar");ar.replaceChildren();
+ ART.forEach((a,i)=>{const b=document.createElement("button");b.textContent=a[1]+" "+a[0];b.className=i==sel?"on":"";b.onclick=()=>{sel=i;render()};ar.append(b)});
+ $q("mp-a").style.display=sel>=2?"none":"";
+ $q("mp-i").textContent=sel==3?"Slow, soft original pieces to unwind to: no lyrics, no files needed. They loop until you skip or stop.":sel==2?"Original instrumentals made for this game: no lyrics, no files needed. They loop until you skip or stop.":"Add your own mp3 files for "+ART[sel][0]+". They’re saved in this browser for you only.";
+ const l=mine(),t=$q("mp-l"),pp=pl();t.replaceChildren();
+ if(!l.length){const m=document.createElement("small");m.style.color="var(--mut)";m.textContent="No "+ART[sel][0]+" songs yet. Tap “Add songs” and pick your mp3 files.";t.append(m)}
+ l.forEach(r=>{const d=document.createElement("div");d.className="mp-t"+(r.id==cur?" cur":"");const n=document.createElement("span");n.textContent=r.name;const p=document.createElement("button");p.textContent=r.id==cur&&pp?"⏸":"▶";p.onclick=()=>tog(r);d.append(n,p);
+  if(r.beat===undefined){const x=document.createElement("button");x.textContent="🗑";x.onclick=async()=>{if(r.id==cur){au.pause();cur=-1}await del(r.id);lib=await all();render()};d.append(x)}t.append(d)});
+ $q("mp-p").textContent=pp?"⏸ Pause":"▶ Play";$q("mp-p").className=pp?"on":"";
+ const c=rec(cur);$q("mp-n").textContent=c&&pp?"🎶 Now playing: "+c.name:""}
+$q("mp-p").onclick=()=>{const r=rec(cur);if(r)tog(r);else{const l=mine();if(l.length)playRec(l[0])}};
+$q("mp-nx").onclick=next;
+$q("mp-f").onchange=async e=>{for(const f of e.target.files)await add({artist:sel,name:f.name.replace(/\.[^.]+$/,""),blob:f});e.target.value="";lib=await all();render()};
+$q("mp-x").onclick=()=>$q("mp-m").classList.remove("on");$q("mp-m").onclick=e=>{if(e.target.id=="mp-m")e.target.classList.remove("on")};
+window.openMusic=()=>{render();$q("mp-m").classList.add("on")};
+idb().then(d=>{db=d;return all()}).then(a=>{lib=a;render()});
 })();
 </script>
 </body></html>
