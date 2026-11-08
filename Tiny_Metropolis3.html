@@ -59,6 +59,22 @@ footer{display:flex;flex-wrap:wrap;gap:10px 22px;padding:10px 14px;background:va
 #menub,#verb{font:inherit;font-weight:600;color:var(--ink);background:none;border:1px solid var(--line);border-radius:8px;padding:3px 10px;cursor:pointer}#verb{font-size:12px;color:var(--mut)}#verb.new{color:var(--acc);border-color:var(--acc)}
 #gnd,#exp{font:inherit;font-weight:600;color:var(--acc);background:none;border:1px solid var(--acc);border-radius:8px;padding:3px 10px;cursor:pointer}
 #tod{display:flex;align-items:center;gap:6px}#tsl{width:96px;accent-color:var(--acc)}#clk{font-variant-numeric:tabular-nums;min-width:38px}#tpl{font:inherit;color:var(--mut);background:none;border:1px solid var(--line);border-radius:8px;padding:1px 8px;cursor:pointer}
+#stage{min-height:min(38vh,320px)}
+#tb{display:block}
+.dk-panel{margin-bottom:6px;animation:dkin .18s ease-out}
+@keyframes dkin{from{opacity:0;transform:translateY(6px)}}
+.dk-subs{display:flex;gap:4px;overflow-x:auto;margin-bottom:6px;padding-bottom:2px}
+.dk-subs .chip{flex:none;font-size:12px;padding:4px 12px;white-space:nowrap}
+.dk-items{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity}
+.dk-items .t{flex:none;width:88px;scroll-snap-align:start;text-align:center}
+.dk-items .t b{font-weight:600}
+.dk-cats{display:flex;gap:4px;overflow-x:auto;padding:4px;background:var(--bg);border:2px solid var(--line);border-radius:14px}
+.dk-c{flex:1 0 66px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:0;border-radius:10px;background:none;color:var(--mut);font:inherit;font-size:11px;font-weight:600;line-height:1.15;text-align:center;cursor:pointer}
+.dk-c span{font-size:24px;line-height:1.1}
+.dk-c:hover{background:var(--panel);color:var(--ink)}
+.dk-c.on{background:var(--acc);color:var(--bg)}
+.dk-c:focus-visible,.dk-subs .chip:focus-visible,.dk-items .t:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.dk-panel{animation:none}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -77,7 +93,7 @@ window.TM_FIREBASE={
 };
 </script>
 </head><body>
-<header><span id="pen" title="Rename your city">✏️</span><input id="name" maxlength="24" value="My Little City" aria-label="City name" spellcheck="false"><span id="goal"></span><span id="info"></span><span id="tod" title="Time of day"><span id="ti">☀️</span><input id="tsl" type="range" min="0" max="24" step="0.01" value="10" aria-label="Time of day"><b id="clk">10:00</b><button id="tpl" title="Pause / resume the day cycle">⏸</button></span><button id="rot" title="Rotate building (R)">⟳ Rotate (R)</button><button id="riv" title="Generate a river (replaces the old one). Bulldoze water to remove it.">🌊 Generate river</button><button id="menub" title="Main menu">☰ Menu</button><button id="verb" title="Update log"></button><button id="gnd" title="Change the ground: grass, sand, desert, autumn, snow or rock"></button><button id="exp"></button><button id="new">↺ New city</button></header>
+<header><span id="pen" title="Rename your city">✏️</span><input id="name" maxlength="24" value="My Little City" aria-label="City name" spellcheck="false"><span id="goal"></span><span id="info"></span><span id="tod" title="Time of day"><span id="ti">☀️</span><input id="tsl" type="range" min="0" max="24" step="0.01" value="10" aria-label="Time of day"><b id="clk">10:00</b><button id="tpl" title="Pause / resume the day cycle">⏸</button></span><button id="rot" title="Rotate building (R)">⟳ Rotate (R)</button><button id="nwb" title="Daily news">📰 News<i id="nwd"></i></button><button id="riv" title="Generate a river (replaces the old one). Bulldoze water to remove it.">🌊 Generate river</button><button id="menub" title="Main menu">☰ Menu</button><button id="verb" title="Update log"></button><button id="exp"></button><button id="new">↺ New city</button></header>
 <div id="stage"><canvas id="cv"></canvas><div id="toast"></div></div>
 <footer>
 <div id="hud"><div class="row"><div><small>Money</small><b id="money"></b><em id="inc"></em></div><div><small>Happiness</small><b id="hap"></b></div></div><div id="pop"></div><div id="util" title="Power and water: used / produced"></div><div id="bars"></div></div>
@@ -289,6 +305,7 @@ pit1:{n:"Pit Garage",e:"🔧",c:1800,k:"c",jobs:14,inc:14,svc:0,t:2,w:2,h:1,d:"A
 const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
+let GND=Array(W*H).fill(0),SLUM={},OUT=0,SLT=0,SLCD=0,SLG=null,SLM={},GGEO=null;
 const cv=$("cv");
 const at=(x,y)=>x>=0&&y>=0&&x<W&&y<H?g[y*W+x]:0;
 const D4=[[1,0],[-1,0],[0,1],[0,-1]];
@@ -305,6 +322,7 @@ function calc(){
   if(t.k=="h"){s.cap+=t.cap;s.pq+=t.cap*t.q;s.tx+=t.cap*t.tax;hs.push([x,y,t])}
   else if(t.k=="u"){s.jobs+=t.jobs;s.pr+=t.inc||0;s.ps+=t.pwr||0;s.tre+=t.tre||0;s.twr+=t.twr||0;if(t.pol)fs.push([x,y,t.pol])}
   else{s.jobs+=t.jobs;s.pr+=t.inc;s.dp+=(t.k=="f"?1:.5)*t.jobs;s.dw+=.3*t.jobs;if(t.k=="c"){s.svc+=t.svc;s.cop+=t.cop||0;s.fir+=t.fir||0;s.hlt+=t.hlt||0;s.edu+=t.edu||0;s.joy+=t.joy||0}else if(t.k=="p"){s.fun+=t.fun;s.joy+=t.joy||0;if(t.grn)ps.push([x,y,t.grn])}else fs.push([x,y,t.pol])}}
+ {let ni=0,ns=0,ri=0;for(const k in SLUM){const z=SLUM[k];if(z.st){const c=4*z.lv;s.cap+=c;s.pq+=c*.35;s.tx+=c*.3;s.cl+=c*.55;ns++}else{ni++;ri+=5*z.lv}}s.sli=ni;s.sls=ns;s.slr=ri}
  TR.forEach(q=>ps.push([q.x,q.y,T[q.id].grn]));
  hs.forEach(([x,y,t])=>{let p=0;fs.forEach(([a,b,q])=>{const d=Math.hypot(a-x,b-y);if(d<5)p+=q*(1-d/5)});ps.forEach(([a,b,q])=>{const d=Math.hypot(a-x,b-y);if(d<4)p-=q*(1-d/4)});s.cl+=t.cap*(1-Math.min(1,Math.max(0,p)/2.5))});
  pop=Math.min(pop,s.cap);
@@ -312,9 +330,9 @@ function calc(){
  s.a=s.cap?s.cl/s.cap:1;s.q=s.cap?s.pq/s.cap:1;
  s.r=pop?Math.min(1,s.fun/pop):1;s.pl=pop<30?1:Math.min(1,s.cop/(pop*.35));s.fr=pop<30?1:Math.min(1,s.fir/(pop*.3));s.hl=pop<30?1:Math.min(1,s.hlt/(pop*.25));s.ed=pop<30?1:Math.min(1,s.edu/(pop*.3));
  const sat=(a,d)=>!s.cap?1:d>0?Math.min(1,a/d):a>0?1:0;s.sw=Math.min(s.tre,s.twr);s.pw=sat(s.ps,pop+s.dp);s.wt=sat(s.sw,(pop+s.dw)*(1+.6*RVP));
- s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.12,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);
+ s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.12,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,s.hap*(self.POLF?POLF.h:1));if(!HL){const sp=Math.min(.35,.02*s.sli+.006*s.sls)+Math.min(.15,OUT);s.hap=Math.max(0,s.hap*(1-sp))}
  const staff=s.jobs?Math.min(1,pop/s.jobs):0;
- s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul();
+ s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul()*(self.POLF?POLF.i:1);
  return s}
 
 function ui(){
@@ -323,7 +341,7 @@ function ui(){
  $("inc").textContent="+$"+S.inc.toFixed(1)+"/s";
  const h=Math.round(S.hap*100),he=$("hap");
  he.textContent=h+"%";he.style.color=h>=75?"var(--good)":h>=45?"var(--warn)":"var(--bad)";
- $("pop").textContent="👥 "+Math.floor(pop)+" citizens (room for "+S.cap+") · "+Math.round(pop*S.hap)+" happy";
+ $("pop").textContent="👥 "+Math.floor(pop)+" citizens (room for "+S.cap+") · "+Math.round(pop*S.hap)+" happy"+(S.sli?" · 🏚️ "+S.sli+" slum"+(S.sli>1?"s":""):"");
  {const wb=document.querySelector('.t[data-t="wind"] i');if(wb)wb.textContent=FW?"FREE · 1×1":"$"+T.wind.c+" · 1×1";
   const c=(v,t)=>'<span style="color:var(--'+(v<.98?"bad":"good")+')">'+t+"</span>";
   $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+S.ps)+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP))+"/"+S.sw)+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
@@ -332,7 +350,7 @@ function ui(){
  document.querySelectorAll(".t").forEach(b=>{const o=T[b.dataset.t];b.classList.toggle("no",cc(o)>money||(o.lm&&o.lm>nex))});
  document.querySelectorAll(".t[data-lm]").forEach(b=>{const o=T[b.dataset.t],i=b.querySelector("i"),built=Object.values(B).some(q=>q.id==b.dataset.t);i.textContent=built?"✓ built":o.lm>nex?"🔒 Expand city":"$"+o.c.toLocaleString()+" · "+o.w+"×"+o.h});
  const m=[[RVP>.15?1-RVP:1,"The river is polluted by untreated sewage — build more Water Treatment."],[S.pw,S.ps>0?"Not enough energy — citizens are complaining. Build more power (wind, solar or a power plant).":"No electricity! Citizens are complaining — build a wind turbine, solar farm or power plant."],[S.wt,!S.tre&&!S.twr?"Citizens have no water! Build a Water Well, or a Water Treatment plant plus a Water Tower.":!S.tre?"The water isn’t treated — build a Water Treatment plant.":!S.twr?"Water can’t reach homes — build a Water Tower.":"Not enough water — citizens are complaining. Add more treatment and towers."],[S.j,"Citizens need jobs — build factories or shops."],[S.s,"Not enough shopping — add commercial buildings."],[S.a,"Smog is bothering residents — keep factories 5+ tiles from homes."],[S.r,"Citizens want things to do — build parks, a pool or a stadium."],[S.pl,"Crime is rising — build a Police Station."],[S.fr,"Fires could spread — build a Fire Station."],[S.hl,"Citizens are getting sick — build a Clinic or Hospital."],[S.ed,"Kids need schooling — build an Elementary, Secondary or High School, a University or a Library (educated citizens pay more tax)."]].sort((a,b)=>a[0]-b[0])[0];
- $("tip").textContent=S.bad?"🚫 Some buildings aren’t touching a road, so they’re inactive.":!S.cap?"Start by drawing a road, then place a home next to it.":m[0]<.98?m[1]:pop<S.cap?"Citizens are moving in…":"Everyone is thriving — keep growing!";
+ $("tip").textContent=S.bad?"🚫 Some buildings aren’t touching a road, so they’re inactive.":!S.cap?"Start by drawing a road, then place a home next to it.":m[0]<.98?m[1]:S.sli?"🏚️ Illegal slums! There are more jobs than homes. Evict them or support them (Slums tab), or build more housing.":pop<S.cap?"Citizens are moving in…":"Everyone is thriving — keep growing!";
  const nm=$("name").value||"Your city",met=pop>=150&&S.hap>=.9;
  $("goal").textContent=met?"✅ "+nm+" is thriving!":"Goal: 150 citizens at 90%+ happiness";
  if(met&&!won){won=1;toast("🎉 "+nm+" is thriving! 150+ citizens at 90%+ happiness.",6000)}}
@@ -350,7 +368,7 @@ function tick(){
  else if(S.hap<.3&&pop>pi)pop=Math.max(pi,pop-Math.max(1,pop*.06));
  if(pop>=1&&tick.n%16==8){const c=complaint();if(c)toast(c,4500)}
  {const ws=pop+S.dw,tf=ws>0?Math.min(1,S.tre/ws):1;RVP=rv.includes(1)?Math.max(0,Math.min(1,RVP+(tf<1?(1-tf)*.02-.004:-.015))):0}
- ui();money+=S.inc;ui();
+ ui();money+=S.inc;ui();try{slumTick()}catch(e){console.error(e)}
  if(pop>=30&&S.pl<.7&&Math.random()<.05){const l=Math.floor(Math.min(money*.03,500));money-=l;toast("🚨 Crime wave! Thieves stole $"+l+". Build more police.",4000)}
  else if(S.cop>0&&Math.random()<.02)toast("👮 Police caught a burglar red-handed!",3000);
  {let m=0;try{m=+localStorage.getItem(K+"_ms")||0}catch(e){}const MS=[[100,500],[250,1500],[500,5000],[1000,15000],[2500,50000],[5000,150000]];
@@ -395,12 +413,13 @@ gl=(w,h,d,c,x=0,y=0,z=0,e)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d)
 gs=(r,c,x,y,z,e)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,8,6),gm(c,e));m.position.set(x,y,z);m.userData.ns=1;return m};
 
 function rmat(m,ty="road"){const K=m+ty;if(pat.has(K))return pat.get(K);
- const cur={3:[1,0,1],6:[1,1,2],12:[0,1,3],9:[0,0,0]}[m],dt=ty=="dirt",pt=ty=="path";
+ const cur={3:[1,0,1],6:[1,1,2],12:[0,1,3],9:[0,0,0]}[m],dt=ty=="dirt",cb=ty=="cobble",pt=ty=="path"||cb;
  const t=new THREE.CanvasTexture(cvs(128,(x,Z)=>{const h=Z/2;if(!pt){x.fillStyle=dt?"#8a6d45":"#b4b8bc";x.fillRect(0,0,Z,Z)}
   const st=(w,col,dash)=>{x.lineWidth=w;x.strokeStyle=x.fillStyle=col;x.setLineDash(dash||[]);x.beginPath();
    if(cur)x.arc(cur[0]*Z,cur[1]*Z,h,cur[2]*D,cur[2]*D+D);
    else[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]].forEach(([a,b,k])=>{if(m&k){x.moveTo(h,h);x.lineTo(h+a*h,h+b*h)}});
    x.stroke();if(!cur&&!dash)x.fillRect(h-w/2,h-w/2,w,w)};
+  if(cb){st(Z*.8,"#6f685d");st(Z*.72,"#b9b0a0");x.globalCompositeOperation="source-atop";for(let i=0;i<8;i++)for(let j=0;j<8;j++){x.fillStyle=["#a89f8f","#c6bdad","#b3aa9a","#9d9485","#bdb3a2"][(i*7+j*3+(i&j))%5];x.fillRect(i*Z/8+1.5,j*Z/8+1.5,Z/8-3,Z/8-3)}return}
   if(pt){st(Z*.36,"#b9a984");st(Z*.26,"#e0d3ae");return}
   st(Z*.82,dt?"#7e6240":"#dfe2e5");st(Z*.7,dt?"#b08652":"#464b52");
   if(dt){st(Z*.03,"#96703f",[Z*.05,Z*.09]);return}
@@ -518,8 +537,8 @@ function cars(dt){if(!carG){carG=new THREE.Group();scene.add(carG)}
   if(dead){carG.remove(c.m);CR.splice(n,1);continue}
   place(c)}}
 /* ---- road types, pedestrians ---- */
-const wk=v=>v=="road"||v=="dirt"||v=="path",rd=v=>v=="road"||v=="dirt";let PD=[],pdG,pT=0,PGB,PGH;
-function rk(x,y){const t=g[y*W+x];return[0,1,2,3].reduce((a,k)=>{const X=x+DIR[k][0],Y=y+DIR[k][1];if(X<0||Y<0||X>=W||Y>=H)return a;const j=Y*W+X,q=g[j];return a|((t=="path"?wk(q):rd(q)||(hw[j]&15)==DIR[k][2])?DIR[k][2]:0)},0)}
+const wk=v=>v=="road"||v=="dirt"||v=="path"||v=="cobble",rd=v=>v=="road"||v=="dirt";let PD=[],pdG,pT=0,PGB,PGH;
+function rk(x,y){const t=g[y*W+x];return[0,1,2,3].reduce((a,k)=>{const X=x+DIR[k][0],Y=y+DIR[k][1];if(X<0||Y<0||X>=W||Y>=H)return a;const j=Y*W+X,q=g[j];return a|(((t=="path"||t=="cobble")?wk(q):rd(q)||(hw[j]&15)==DIR[k][2])?DIR[k][2]:0)},0)}
 const PCL=[0xd9433b,0x3b8fd9,0xf2c230,0x2f8f4e,0x7a4bd0,0xe8742a,0x2fd0a0,0xf2f4f6,0x1f5fa8],PSK=[0xf2c9a0,0xd9a577,0x9a6b45,0x6b4428],PMT={},pmt=c=>PMT[c]||(PMT[c]=mat({color:c}));
 function mkPed(){const o=new THREE.Group(),b=new THREE.Mesh(PGB||(PGB=new THREE.CylinderGeometry(.016,.022,.075,6)),pmt(pk(PCL))),h=new THREE.Mesh(PGH||(PGH=new THREE.SphereGeometry(.022,6,5)),pmt(pk(PSK)));
  b.position.y=.06;h.position.y=.125;b.castShadow=true;o.add(b,h);return o}
@@ -533,7 +552,7 @@ function pplace(c,dt=1){const[ax,az]=DIR[c.d0],[qx,qz]=DIR[c.d1],cx=wx(c.x),cz=w
  px=u*u*P0x+2*u*s*Cx+s*s*P1x,pz=u*u*P0z+2*u*s*Cz+s*s*P1z,tx=2*u*(Cx-P0x)+2*s*(P1x-Cx),tz=2*u*(Cz-P0z)+2*s*(P1z-Cz);
  if(tx*tx+tz*tz>1e-4){c.hx=tx;c.hz=tz}
  const n=Math.hypot(c.hx,c.hz)||1,hx=c.hx/n,hz=c.hz/n,i=c.y*W+c.x,t=g[i];
- const sg=c.sd,tg=t=="path"?c.j:(t=="dirt"?.4:.45)*sg;c.lat=c.lat===undefined?tg:c.lat+(tg-c.lat)*Math.min(1,dt*8);const off=c.lat;
+ const sg=c.sd,tg=(t=="path"||t=="cobble")?c.j:(t=="dirt"?.4:.45)*sg;c.lat=c.lat===undefined?tg:c.lat+(tg-c.lat)*Math.min(1,dt*8);const off=c.lat;
  c.m.position.set(px-hz*off,E(i)+.03+Math.abs(Math.sin(performance.now()/110+c.j*90))*.006,pz+hx*off);c.m.rotation.y=Math.atan2(hx,hz)}
 function peds(dt){if(!pdG){pdG=new THREE.Group();scene.add(pdG)}
  dt=Math.min(dt,.1);pT-=dt;
@@ -689,8 +708,8 @@ const RG={};function rgeo(c,bo,L){const k=c+","+L+bo;if(RG[k])return RG[k];
  for(let v=0;v<P.count;v++){const px=P.getX(v),pz=P.getZ(v),h=EH*c[(pz>0?2:0)+(px>0?1:0)];
   if(bo){P.setX(v,px*.98);P.setZ(v,pz*.98);P.setY(v,P.getY(v)>0?h-.02:-.05-EH*L)}else P.setY(v,h)}
  G.computeVertexNormals();return RG[k]=G}
-function trender(){el.forEach((l,i)=>{if(!l||BS[i]||rv[i])return;const x=i%W,y=i/W|0,k=(x&1)==(y&1)?1:0,n=k+"_"+l;
- const m=TM[n]||(TM[n]=[SD,SD,mat({color:new THREE.Color(k?0x97c571:0x8dbb68).offsetHSL(0,0,.03*l)}),SD,SD,SD]);
+function trender(){el.forEach((l,i)=>{if(!l||BS[i]||rv[i])return;const x=i%W,y=i/W|0,k=(x&1)==(y&1)?1:0,gi=GND[i]|0,n=k+"_"+l+"_"+gi;
+ const m=TM[n]||(TM[n]=[SD,SD,mat({color:new THREE.Color(GRN[gi][k?2:1]).offsetHSL(0,0,.03*l)}),SD,SD,SD]);
  const b=new THREE.Mesh(BGS[l]||(BGS[l]=new THREE.BoxGeometry(1,l*EH,1)),m);b.position.set(wx(x),l*EH/2,wz(y));b.castShadow=b.receiveShadow=true;cityG.add(b)})}
 const WM=[mat({color:0xe9dca8}),mat({color:0x4fa8e0})];WM.forEach((m,k)=>{m.polygonOffset=true;m.polygonOffsetFactor=m.polygonOffsetUnits=-1-k});
 function wrender(){rv.forEach((v,i)=>{if(!v)return;const x=i%W,y=i/W|0,a=new THREE.Mesh(rg,WM[0]),b=new THREE.Mesh(rg,WM[1]);
@@ -1061,7 +1080,7 @@ proto.gov1=G(bx(.9,.05,.8,0xd8d2c0),bx(.7,.36,.5,0xefe8d8,0,.05,-.05),...[-.27,-
    P.push(bx(.5,.07,.07,S,0,yb),bx(.5,.04,.072,0,0,yb+.015,0,wt(1,10,"#7f9bb8",GY)),lg(-1),lg(1));
    proto.lm5=G(...P)}
  }
- Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
+ SDGP();HOUSEP();Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
 
 const CK={},CV=[0,0];let CT=0;
 function camKeys(){const n=performance.now(),dt=Math.min((n-(CT||n))/1000,.1);CT=n;
@@ -1097,20 +1116,20 @@ function init3d(){
 
 function world(){
  if(world3)scene.remove(world3);world3=new THREE.Group();
- const t=new THREE.CanvasTexture(cvs(64,x=>{x.fillStyle=GRN[GI][1];x.fillRect(0,0,64,64);x.fillStyle=GRN[GI][2];x.fillRect(0,0,32,32);x.fillRect(32,32,32,32)}));
+ const t=new THREE.CanvasTexture(cvs(64,x=>{x.fillStyle=GRN[0][1];x.fillRect(0,0,64,64);x.fillStyle=GRN[0][2];x.fillRect(0,0,32,32);x.fillRect(32,32,32,32)}));
  t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(W/2,H/2);
  const gr=new THREE.Mesh(rg.clone().scale(W,1,H),mat({map:t}));gr.receiveShadow=true;
  world3.add(gr,bx(W+.5,.5,H+.5,0x6a5140,0,-.55,0));scene.add(world3);
  if(ctl)ctl.maxDistance=Math.max(130,Math.max(W,H)*1.6);const s=Math.max(W,H)*.8;Object.assign(L.shadow.camera,{left:-s,right:s,top:s,bottom:-s});L.shadow.camera.updateProjectionMatrix()}
 
 function rebuild(){
- bgFix();if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
+ bgFix();slumFix();if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
  g.forEach((id,i)=>{if(!wk(id))return;const x=i%W,y=i/W|0,m=rk(x,y);
   const o=new THREE.Mesh(rg,rmat(m,id));o.position.set(wx(x),.05+E(i),wz(y));o.renderOrder=1;
   const hh=[[0,-1],[1,0],[0,1],[-1,0]].map(([a,b],k)=>m&(1<<k)?Math.max(el[i],el[(y+b)*W+x+a]):el[i]);
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
- arender();trender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
+ arender();trender();groundRender();slumRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
   if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=(T[b.id].bh||T[b.id].t*.6+.7)+(big?1:0);o.add(sp)}
   else if(UF&&T[b.id].k=="h")[1,2].forEach((m,k)=>{if(UF&m){const sp=new THREE.Sprite(BUB[k]);sp.scale.set(.42,.42,1);sp.position.set(UF==3?(k?.22:-.22):0,T[b.id].t*.6+.8,0);o.add(sp)}})
   o.position.set(wx(r.x)+(r.w-1)/2,E(r.y*W+r.x),wz(r.y)+(r.h-1)/2);cityG.add(o)}
@@ -1125,7 +1144,7 @@ function cell(e){const r=cv.getBoundingClientRect();
  const p=new THREE.Vector3();for(let L=MXE;L>0;L--){PL.constant=-L*EH;if(ray.ray.intersectPlane(PL,p)){const x=Math.floor(p.x+W/2),y=Math.floor(p.z+H/2);if(x>=0&&y>=0&&x<W&&y<H&&el[y*W+x]==L){PL.constant=0;FX=[p.x+W/2-x,p.z+H/2-y];return[x,y]}}}PL.constant=0;if(!ray.ray.intersectPlane(PL,p))return null;
  const x=Math.floor(p.x+W/2),y=Math.floor(p.z+H/2);FX=[p.x+W/2-x,p.z+H/2-y];return x>=0&&y>=0&&x<W&&y<H?[x,y]:null}
 
-function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)&&B[v]){if(T[B[v].id].gov)openSenate();else if(B[v].id=="concert")openMusic()}return 1}
+function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v=="slum"&&SLUM[i]){slumInfo(i);return 1}if(v&&isB(v)&&B[v]){if(T[B[v].id].gov)openSenate();else if(B[v].id=="concert")openMusic()}return 1}
  if(tool=="toll"){const m=hw[i]&15;if(![1,2,4,5,8,10].includes(m)){if(!dragging)toast("Tolls go on a straight stretch of highway.");return 1}if(wk(g[i])){toast("Not on an overpass — pick plain highway.");return 1}if(TB[i])return 1;if(money<cc(t)){toast("Not enough money for a toll booth ($"+t.c+").");return 0}money-=cc(t);TB[i]=1;dirty=1;return 1}
  if(tool=="lamp"){const v=g[i];if(v&&isB(v)){toast("Lamps go beside buildings, not inside them.");return 1}if(hw[i]){toast("No lamps on highways.");return 1}if(rv[i]&&!v){toast("Can’t put a lamp on water.");return 1}
   const ox=Math.max(-.42,Math.min(.42,FX[0]-.5)),oz=Math.max(-.42,Math.min(.42,FX[1]-.5));
@@ -1136,15 +1155,15 @@ function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)
   if(money<cc(t)){toast("Not enough money for a tree ($"+t.c+").");return 0}
   money-=cc(t);const q={x,y,id:tool,s:1+((x*7+y*13)%5)*.08,ry:((x*31+y*17)%8)*.8,ox:(((x*53+y*29)%7)-3)*.04,oz:(((x*19+y*43)%7)-3)*.04};
   if(ex>=0)TR[ex]=q;else TR.push(q);dirty=1;return 1}
- if(tool=="bull"){const ti=TR.findIndex(q=>q.x==x&&q.y==y);if(ti>=0){money+=Math.floor(T[TR[ti].id].c/2);TR.splice(ti,1);dirty=1;return 1}const lc=LP.filter(l=>l.x==x&&l.y==y).length;if(lc){LP=LP.filter(l=>l.x!=x||l.y!=y);money+=lc*Math.floor(T.lamp.c/2);dirty=1;return 1}if(TB[i]){delete TB[i];money+=Math.floor(T.toll.c/2);dirty=1;return 1}if(hw[i]){money+=Math.floor(T.hwy.c/2);hw[i]=0;D4.forEach(([a,b],k)=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<W&&ny<H)hw[ny*W+nx]&=~[8,2,1,4][k]});dirty=1;return 1}if(rv[i]&&!g[i]){rv[i]=0;dirty=1;return 1}const v=g[i];if(v){if(isB(v)){const b=B[v],r=rc(b);money+=b.free?0:Math.floor(T[b.id].c/2);
+ if(tool=="bull"){if(g[i]=="slum")return slumEvict(i);const ti=TR.findIndex(q=>q.x==x&&q.y==y);if(ti>=0){money+=Math.floor(T[TR[ti].id].c/2);TR.splice(ti,1);dirty=1;return 1}const lc=LP.filter(l=>l.x==x&&l.y==y).length;if(lc){LP=LP.filter(l=>l.x!=x||l.y!=y);money+=lc*Math.floor(T.lamp.c/2);dirty=1;return 1}if(TB[i]){delete TB[i];money+=Math.floor(T.toll.c/2);dirty=1;return 1}if(hw[i]){money+=Math.floor(T.hwy.c/2);hw[i]=0;D4.forEach(([a,b],k)=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<W&&ny<H)hw[ny*W+nx]&=~[8,2,1,4][k]});dirty=1;return 1}if(rv[i]&&!g[i]){rv[i]=0;dirty=1;return 1}const v=g[i];if(v){if(isB(v)){const b=B[v],r=rc(b);money+=b.free?0:Math.floor(T[b.id].c/2);
    for(let j=r.y;j<r.y+r.h;j++)for(let k=r.x;k<r.x+r.w;k++)g[j*W+k]=0;delete B[v]}
   else{money+=Math.floor((T[v]||T.road).c/2);g[i]=0;if(BS[i]){el[i]=BS[i].b||0;delete BS[i]}if(rv[i])el[i]=0}dirty=1}return 1}
  if(t.k=="a"){if(g[i]||hw[i])return 1;if(rv[i]){if(!dragging)toast(tool=="rail"?"Rails can’t go on water.":tool=="trk"?"Race tracks can’t go on water.":"No airport on water.");return 1}if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=cc(t);g[i]=tool;dirty=1;return 1}
  if(t.bs)return putBg(x,y,t);
  if(t.k=="r"){const u=cc(t);if(x>=W||y>=H||g[y*W+x])return 1;if(money<u){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=u;g[y*W+x]=tool;dirty=1;return 1}
- if(tool=="water"){if(rv[i])return 1;if(g[i]&&isB(g[i])){toast("Can’t put water under a building.");return 1}if(money<cc(t)){toast("Not enough money for water ($"+t.c+").");return 0}money-=cc(t);rv[i]=1;el[i]=0;dirty=1;return 1}
- if(t.k=="t"){if(tl===i)return 1;tl=i;if(rv[i]){toast("Can’t reshape water.");return 1}if(g[i]&&isB(g[i])){toast("Clear the building first.");return 1}const up=tool=="raise";if(up?el[i]>=MXE:el[i]<=0)return 1;if(money<cc(t)){toast("Not enough money to raise land ($"+t.c+").");return 0}money-=cc(t);el[i]+=up?1:-1;dirty=1;return 1}
- if(tool=="hwy"||tool=="hwy2"){const t=T[tool],G2=tool=="hwy2"?64:0;if(hw[i]){if(!G2||hw[i]&64)return 1;if(money<cc(t)/2){toast("Not enough money to upgrade.");return 0}money-=cc(t)/2;hw[i]|=64;dirty=1;return 1}if(g[i]&&(isB(g[i])||T[g[i]].k=="a")){toast("Highways can’t go through buildings or airport strips.");return 1}if(money<cc(t)){toast("Not enough money for a highway ($"+t.c+").");return 0}money-=cc(t);hw[i]=32|G2;dirty=1;return 1}
+ if(tool=="water"){if(rv[i])return 1;if(g[i]=="slum"){toast("Clear the slum first.");return 1}if(g[i]&&isB(g[i])){toast("Can’t put water under a building.");return 1}if(money<cc(t)){toast("Not enough money for water ($"+t.c+").");return 0}money-=cc(t);rv[i]=1;el[i]=0;dirty=1;return 1}
+ if(t.k=="s")return paintTile(i);if(t.k=="z")return slumTool(i);if(t.k=="t"){if(tl===i)return 1;tl=i;if(rv[i]){toast("Can’t reshape water.");return 1}if(g[i]&&isB(g[i])){toast("Clear the building first.");return 1}const up=tool=="raise";if(up?el[i]>=MXE:el[i]<=0)return 1;if(money<cc(t)){toast("Not enough money to raise land ($"+t.c+").");return 0}money-=cc(t);el[i]+=up?1:-1;dirty=1;return 1}
+ if(tool=="hwy"||tool=="hwy2"){const t=T[tool],G2=tool=="hwy2"?64:0;if(hw[i]){if(!G2||hw[i]&64)return 1;if(money<cc(t)/2){toast("Not enough money to upgrade.");return 0}money-=cc(t)/2;hw[i]|=64;dirty=1;return 1}if(g[i]&&(isB(g[i])||g[i]=="slum"||T[g[i]].k=="a")){toast("Highways can’t go through buildings or airport strips.");return 1}if(money<cc(t)){toast("Not enough money for a highway ($"+t.c+").");return 0}money-=cc(t);hw[i]=32|G2;dirty=1;return 1}
  {const v=g[i];if(t.tint&&same(v,tool)){B[v].col=pcol[tool];dirty=1;toast("Recolored!");return 1}}
  if(t.lm){if(t.lm>nex){toast("🔒 Expand your city to unlock the "+t.n+".");return 1}if(Object.values(B).some(q=>q.id==tool)){toast("You can only build one "+t.n+".");return 1}}
  const w=t.w||1,h=t.h||1,ew=rot&1?h:w,eh=rot&1?w:h;
@@ -1158,9 +1177,9 @@ function walk(p){let[x,y]=last;while(x!=p[0]||y!=p[1]){const a=x,b=y;if(x!=p[0])
 cv.onpointerdown=e=>{ptrs.add(e.pointerId);tl=-1;hov=cell(e);
  if(e.button||e.shiftKey||ptrs.size>1){pend=dragging=0;return}
  cv.setPointerCapture(e.pointerId);if(!hov)return;
- if("rwvtxga".includes(T[tool].k)){dragging=1;last=hov;put(hov[0],hov[1]);ui()}else pend=1};
+ if("rwvtxgas".includes(T[tool].k)){dragging=1;last=hov;put(hov[0],hov[1]);ui()}else pend=1};
 cv.onpointermove=e=>{hov=cell(e);
- if(dragging&&hov){if("rwvtga".includes(T[tool].k))walk(hov);else{put(hov[0],hov[1]);ui()}}};
+ if(dragging&&hov){if("rwvtgas".includes(T[tool].k))walk(hov);else{put(hov[0],hov[1]);ui()}}};
 cv.onpointerup=e=>{hov=cell(e);
  if(pend&&hov&&ptrs.size==1){put(hov[0],hov[1]);ui()}
  pend=dragging=0;ptrs.delete(e.pointerId);save()};
@@ -1172,9 +1191,9 @@ function updExp(){const l=T["lm"+(nex+1)];$("exp").textContent=nex<MX?"⬆ Expan
 $("exp").onclick=()=>{
  if(nex>=MX)return toast("Your city is already at maximum size.");
  const cost=EXPC[nex];if(money<cost)return toast("Expanding costs $"+cost.toLocaleString()+". You have $"+Math.floor(money).toLocaleString()+".");
- const nw=W+XW,nh=H+XH,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0);
- for(let y=0;y<H;y++)for(let x=0;x<W;x++){ng[y*nw+x]=g[y*W+x];n2[y*nw+x]=hw[y*W+x];n3[y*nw+x]=rv[y*W+x];n4[y*nw+x]=el[y*W+x]}
- {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
+ const nw=W+XW,nh=H+XH,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0),n5=Array(nw*nh).fill(0);
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){ng[y*nw+x]=g[y*W+x];n2[y*nw+x]=hw[y*W+x];n3[y*nw+x]=rv[y*W+x];n4[y*nw+x]=el[y*W+x];n5[y*nw+x]=GND[y*W+x]|0}
+ {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}{const ns={};for(const k in SLUM){const i=+k;ns[(i/W|0)*nw+i%W]=SLUM[k]}SLUM=ns}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;GND=n5;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
 
 const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)},cl=h=>new THREE.Color(h),TC=cl(0),
 RP=(q,u,o)=>{const k=u<q[1][0]?0:1,a=q[k],b=q[k+1],t=(u-a[0])/(b[0]-a[0]);return typeof a[1]=="number"?a[1]+(b[1]-a[1])*t:o.copy(a[1]).lerp(b[1],t)},
@@ -1197,7 +1216,7 @@ function draw(){
  camKeys();ctl.update();
  const dt=cd();sky(dt);SPN.forEach(q=>q.rotation.z-=dt*2);try{cars(dt)}catch(e){console.error(e)}try{peds(dt)}catch(e){console.error(e)}try{planes(dt)}catch(e){console.error(e)}try{boats(dt)}catch(e){console.error(e)}try{race(dt)}catch(e){console.error(e)}try{trains(dt)}catch(e){console.error(e)}hl.visible=!!hov&&tool!="none";
  if(hov){const[x,y]=hov,t=T[tool],bd=!!proto[tool],w=t.w||1,h=t.h||1,ew=bd&&rot&1?h:w,eh=bd&&rot&1?w:h,occ=g[y*W+x];
-  const red=tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):tool=="toll"?(!hw[y*W+x]||TB[y*W+x]||money<cc(t)):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t));
+  const red=T[tool].k=="z"?(occ!="slum"||money<cc(t)):T[tool].k=="s"?!!rv[y*W+x]:tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):tool=="toll"?(!hw[y*W+x]||TB[y*W+x]||money<cc(t)):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t));
   hl.material.color.set(red?0xe03c3c:0xffffff);hl.scale.set(ew,1,eh);hl.position.set(wx(x)+(ew-1)/2,.09+E(y*W+x),wz(y)+(eh-1)/2);
   if(ghost){ghost.visible=tool=="toll"?(!!hw[y*W+x]&&!TB[y*W+x]):tool=="lamp"||T[tool].k=="g"||(!!fits(x,y,ew,eh)&&(!t.bt||bfw(x,y,ew,eh,rot)));ghost.position.set(wx(x)+(ew-1)/2,E(y*W+x),wz(y)+(eh-1)/2);ghost.rotation.y=tool=="toll"?((HF[hw[y*W+x]&15]||hw[y*W+x]&15)==10?D:0):rot*D;if(tool=="lamp"){ghost.position.x+=FX[0]-.5;ghost.position.z+=FX[1]-.5}}}
  else if(ghost)ghost.visible=false;
@@ -1208,26 +1227,52 @@ function fit(){const r=$("stage").getBoundingClientRect();
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(r.width,r.height);
  cam.aspect=r.width/r.height;cam.updateProjectionMatrix()}
 
-function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);nex=d.x||0;$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};TB=d.tb&&typeof d.tb=="object"?d.tb:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
+function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB,gm:GND,sl:SLUM,ot:OUT,st:SLT}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);GND=d.gm&&d.gm.length==W*H?d.gm:Array(W*H).fill(GI|0);SLUM=d.sl&&typeof d.sl=="object"&&!Array.isArray(d.sl)?d.sl:{};OUT=+d.ot||0;SLT=+d.st||0;nex=d.x||0;$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};TB=d.tb&&typeof d.tb=="object"?d.tb:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
  if(d.v==2){g=d.g;B=d.B||{};nu=d.u||1}
  else{g=d.g.map(v=>v&&v!="road"?0:v);B={};nu=1;d.g.forEach((v,i)=>{if(v&&v!="road"&&T[v]){const u=nu++;B[u]={id:v,x:i%W,y:i/W|0,r:0,w:1,h:1};g[i]=u}})}}}catch(e){}}
 
 const ST={cl:["h1","h4","h2","h5","h3","h6","h8","h7","h9","h10","h11"],eu:["eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","eu11","eu12","eu13"],us:["us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","us11","us12","us13"],as:["as1","as4","as2","as5","as3","as6","as7","as8"],su:["su1","su2","su3","su4","su5","su6","su7"],me:["me1","me2","me3","me4","me5","me6","me7"]};
-function showStyle(s){document.querySelectorAll(".t[data-s]").forEach(b=>b.hidden=b.dataset.s!=s);document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.c==s))}
-const CHIPS=`<div class="chips">${[["cl","🏠 Classic"],["eu","🏰 European"],["us","🗽 American"],["as","⛩️ Asian"],["su","🏭 Soviet"],["me","🌴 Mediterranean / N. Africa"]].map(([k,l])=>`<button class="chip" data-c="${k}">${l}</button>`).join("")}</div>`;
-$("tb").innerHTML=GR.map(([n,ids])=>`<div class="grp"><small>${n}</small>${n=="Housing"?CHIPS:""}<div class="bs">${ids.map(id=>`<button class="t" data-t="${id}"${T[id].s?` data-s="${T[id].s}"`:""}${T[id].lm?` data-lm="${T[id].lm}"`:""} title="${T[id].n}"><span>${T[id].e}</span><b>${T[id].n}</b><i>${T[id].k=="n"?"just look":T[id].k=="x"?"refund":"$"+T[id].c+("hfcpu".includes(T[id].k)?" · "+(T[id].w||1)+"×"+(T[id].h||1):"")}</i></button>`).join("")}</div></div>`).join("");
-$("tb").onclick=e=>{const c=e.target.closest(".chip");
- if(c){const q=Object.values(ST).find(a=>a.includes(tool)),i=q?q.indexOf(tool):0;sel(ST[c.dataset.c][i]||ST[c.dataset.c][0]);return}
+function showStyle(){}
+const dkG=Object.fromEntries(GR),dkPk=(...n)=>n.flatMap(k=>dkG[k]||[]);
+const dkSTY=[["cl","🏠","Classic"],["eu","🏰","European"],["us","🗽","American"],["as","⛩️","Asian"],["su","🏭","Soviet"],["me","🌴","Mediterranean"]];
+const dkCATS=[
+{e:"🛣️",n:"Roads",subs:[["Roads",dkG.Roads]]},
+{e:"🏘️",n:"Housing",subs:dkSTY.map(([k,e,n])=>[e+" "+n,ST[k]])},
+{e:"🏭",n:"Industry",subs:[["Industry",dkG.Industry]]},
+{e:"⚡",n:"Utilities",subs:[["⚡ Power",dkG.Utilities],["💧 Water",dkG.Water]]},
+{e:"🏬",n:"Commerce",subs:[["Commerce",dkG.Commerce]]},
+{e:"🏥",n:"Health & Education",subs:[["🏥 Health",dkG.Health],["📚 Education",dkPk("Library","Elementary School","Secondary School","High School","University")]]},
+{e:"🚓",n:"Public Safety",subs:[["🚓 Police & Law",dkG["Law Enforcement"]],["🚒 Fire & Rescue",dkG["Fire & Rescue"]],["🏛️ Government",dkG.Government]]},
+{e:"🚆",n:"Transport",subs:[["🚆 Rail",dkG.Railway],["✈️ Airport",dkG.Airport],["⚓ Waterfront",dkG.Waterfront],["🏁 Motorsport",dkG.Motorsport],["🅿️ Parking",dkG.Parking]]},
+{e:"🎡",n:"Recreation",subs:[["Recreation",dkG.Recreation]]},
+{e:"🗼",n:"Landmarks",subs:[["Landmarks",dkG.Landmarks]]},
+{e:"🌲",n:"Terrain & Trees",subs:[["⛰️ Terrain",dkG.Terrain],["🌳 Trees",dkG.Trees]]}
+];
+const dkLOC={};dkCATS.forEach((c,ci)=>c.subs.forEach((s,si)=>s[1].forEach(id=>dkLOC[id]=dkLOC[id]||[ci,si])));
+const dkCost=id=>{const o=T[id];return o.lbl?o.lbl:o.k=="n"?"just look":o.k=="x"?"refund":"$"+o.c+("hfcpu".includes(o.k)?" · "+(o.w||1)+"×"+(o.h||1):"")};
+const dkTile=id=>`<button class="t" data-t="${id}"${T[id].lm?` data-lm="${T[id].lm}"`:""} title="${T[id].n}"><span>${T[id].e}</span><b>${T[id].n}</b><i>${dkCost(id)}</i></button>`;
+$("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+let dkCur={c:0,s:0,o:1};
+function dkDock(){const c=dkCATS[dkCur.c];
+ $("dkp").hidden=!dkCur.o;$("dks").hidden=c.subs.length<2;
+ $("dks").innerHTML=c.subs.map((s,i)=>`<button class="chip${i==dkCur.s?" on":""}" data-s="${i}">${s[0]}</button>`).join("");
+ document.querySelectorAll(".dk-items").forEach(p=>p.hidden=p.dataset.p!=dkCur.c+"."+dkCur.s);
+ document.querySelectorAll(".dk-c").forEach(b=>b.classList.toggle("on",!!dkCur.o&&b.dataset.c==dkCur.c))}
+$("tb").onclick=e=>{
+ const k=e.target.closest(".dk-c");
+ if(k){const c=+k.dataset.c,l=dkLOC[tool];if(dkCur.o&&dkCur.c==c)dkCur.o=0;else dkCur={c,s:l&&l[0]==c?l[1]:0,o:1};dkDock();return}
+ const s=e.target.closest("#dks .chip");if(s){dkCur.s=+s.dataset.s;dkDock();return}
  const b=e.target.closest(".t");if(b)sel(b.dataset.t==tool&&tool!="none"?"none":b.dataset.t)};
-showStyle("cl");
+const dkSel=sel;sel=t=>{dkSel(t);const l=dkLOC[t];if(t!="none"&&l&&!(dkCur.o&&dkCATS[dkCur.c].subs[dkCur.s][1].includes(t))){dkCur={c:l[0],s:l[1],o:1};dkDock()}};
+dkDock();
+if(window.ResizeObserver)new ResizeObserver(()=>{try{fit()}catch(e){}}).observe($("stage"));
 $("bars").innerHTML=["Jobs","Shops","Clean air","Homes","Fun","Power","Water","Safety","Fire","Health","Schools"].map((n,i)=>`<div>${n}<i><u id="b${i}"></u></i></div>`).join("");
 $("pc").oninput=e=>{pcol[tool]=e.target.value;ghostFor=null};
-$("gnd").onclick=()=>{GI=(GI+1)%GRN.length;try{localStorage.setItem("tm_ground",GI)}catch(e){}$("gnd").textContent=GRN[GI][0];world();dirty=1};$("gnd").textContent=GRN[GI][0];
 $("name").onfocus=e=>e.target.select();
 $("name").oninput=()=>{save();ui()};
 $("new").onclick=e=>{const b=e.target;
- if(b.dataset.s){B={};LP=[];TR=[];nu=1;g=Array(30*20).fill(0);hw=Array(30*20).fill(0);rv=Array(30*20).fill(0);el=Array(30*20).fill(0);W=30;H=20;nex=0;world();dirty=1;updExp();money=2000;pop=0;won=0;FW=1;RVP=0;SF=0;BS={};TB={};SEN=[null,null,null,null,null];$("name").value="My Little City";delete b.dataset.s;b.textContent="↺ New city";save();ui()}
+ if(b.dataset.s){B={};LP=[];TR=[];nu=1;g=Array(30*20).fill(0);hw=Array(30*20).fill(0);rv=Array(30*20).fill(0);el=Array(30*20).fill(0);GND=Array(30*20).fill(0);SLUM={};OUT=0;SLT=0;SLCD=0;W=30;H=20;nex=0;world();dirty=1;updExp();money=2000;pop=0;won=0;FW=1;RVP=0;SF=0;BS={};TB={};SEN=[null,null,null,null,null];$("name").value="My Little City";delete b.dataset.s;b.textContent="↺ New city";save();ui()}
  else{b.dataset.s=1;b.textContent="Click again to reset";setTimeout(()=>{delete b.dataset.s;b.textContent="↺ New city"},3000)}};
 window.addEventListener("resize",fit);
 const ADMIN_CODE="metro-admin";let adm=0,pen=0,penT;
@@ -1253,8 +1298,337 @@ $("riv").onclick=()=>{genRiver();dirty=1;save();toast("River generated! Roads an
 $("a-pop").onclick=()=>{pop=S.cap;ui();save();am("Homes filled to "+S.cap+".")};
 $("a-exp").onclick=()=>{if(nex>=MX)return am("Already at max size.");money+=EXPC[nex];$("exp").onclick();$("a-money").value=Math.floor(money);am("City expanded for free.")};
 $("tsl").oninput=e=>{TOD=+e.target.value;lastMM=-1};$("tsl").onpointerdown=()=>sdrag=1;addEventListener("pointerup",()=>sdrag=0);$("tpl").onclick=e=>{AUTO^=1;e.target.textContent=AUTO?"⏸":"▶"};
+/* ===== SDG add-on: items (must exist before load() so saved cities with them restore) ===== */
+Object.assign(T,{
+sdg_hous:{n:"Social Housing",e:"🏘️",c:500,k:"h",cap:20,tax:.45,q:.8,t:2,s:"cl",sdg:[1,10,11],nw:1,d:"Affordable homes for families on low incomes."},
+sdg_food:{n:"Food Bank",e:"🥫",c:500,k:"c",jobs:6,inc:0,svc:30,t:1,sdg:[2,1],nw:1,d:"Free meals and groceries for families in need."},
+sdg_train:{n:"Job Training Center",e:"🧰",c:2500,k:"c",jobs:14,inc:6,svc:0,edu:120,ct:1,t:1,sdg:[4,8,1],nw:1,d:"Vocational courses and apprenticeships."},
+sdg_child:{n:"Childcare Center",e:"🧸",c:1400,k:"c",jobs:12,inc:2,svc:20,edu:60,ct:1,t:1,sdg:[5,4,8],nw:1,d:"Affordable childcare so parents can work and study."},
+sdg_women:{n:"Women’s Enterprise Hub",e:"💜",c:1800,k:"c",jobs:16,inc:12,svc:25,t:1,sdg:[5,8,10],nw:1,d:"Mentoring, micro-loans and workspace for women entrepreneurs."},
+sdg_mind:{n:"Wellbeing Center",e:"🧘",c:2200,k:"c",jobs:12,inc:1,svc:0,hlt:150,joy:.004,ct:1,t:1,sdg:[3],nw:1,d:"Counselling and calm spaces for mental health."},
+sdg_comm:{n:"Community Center",e:"🤝",c:1400,k:"p",jobs:6,inc:0,fun:70,joy:.006,t:1,sdg:[10,16,11],nw:1,d:"A welcoming hall for classes, clubs and neighbours."},
+sdg_garden:{n:"Community Garden",e:"🥕",c:300,k:"p",jobs:2,inc:1,fun:25,grn:.5,t:1,sdg:[2,11,15],nw:1,d:"Neighbours grow fresh vegetables together."},
+sdg_market:{n:"Farmers Market",e:"🍎",c:700,k:"c",jobs:8,inc:7,svc:40,t:1,sdg:[2,12,8],nw:1,d:"Local farmers sell fresh food directly."},
+sdg_vert:{n:"Vertical Farm",e:"🥬",c:3000,k:"f",jobs:18,inc:20,pol:0,t:2,sdg:[2,9,12],nw:1,d:"Stacked indoor farming under LED lights. Clean industry that needs little land or water."},
+sdg_ww:{n:"Wastewater Recycling",e:"♻️",c:1500,k:"u",jobs:6,tre:100,twr:50,t:1,sdg:[6,12,14],nw:1,d:"Cleans used water so it can be reused, and keeps rivers clean."},
+sdg_fount:{n:"Public Fountain",e:"💦",c:120,k:"u",jobs:0,tre:10,twr:10,t:1,sdg:[6,3],nw:1,d:"Free, safe drinking water for everyone."},
+sdg_batt:{n:"Battery Storage",e:"🔋",c:2600,k:"u",jobs:3,pwr:70,t:1,sdg:[7,13,9],nw:1,d:"Stores clean energy for the night."},
+sdg_bio:{n:"Biogas Plant",e:"🌾",c:3500,k:"u",jobs:10,inc:6,pwr:90,pol:.2,t:1,sdg:[7,12,13],nw:1,d:"Turns food and farm waste into clean power."},
+sdg_roof:{n:"Community Solar Co-op",e:"🔆",c:700,k:"u",jobs:1,pwr:24,t:1,sdg:[7,10],nw:1,d:"Shared rooftop solar so everyone can afford clean energy."},
+sdg_ccs:{n:"Carbon Capture Plant",e:"🌀",c:8000,k:"p",jobs:25,inc:20,fun:0,grn:2.4,t:2,w:2,h:2,sdg:[13,9],nw:1,d:"Pulls CO₂ and smog out of the air. Strongly cleans the air for homes nearby."},
+sdg_compost:{n:"Composting Facility",e:"🍂",c:900,k:"f",jobs:10,inc:6,pol:.1,t:1,sdg:[12,2,15],nw:1,d:"Turns food scraps into soil for farms and gardens."},
+sdg_repair:{n:"Repair Café",e:"🔧",c:800,k:"c",jobs:8,inc:6,svc:30,t:1,sdg:[12,1,8],nw:1,d:"Volunteers fix and reuse things instead of throwing them away."},
+sdg_eco:{n:"Eco Apartments",e:"🌿",c:1300,k:"h",cap:30,tax:1.4,q:1,t:2,s:"cl",sdg:[11,13,3],nw:1,d:"Green terraces, rooftop solar and shared gardens."},
+sdg_wild:{n:"Wildlife Reserve",e:"🦌",c:3800,k:"p",jobs:8,inc:4,fun:120,grn:1.6,t:2,w:2,h:2,sdg:[15,13],nw:1,d:"Protected habitat for deer, birds and bees."},
+sdg_wet:{n:"Wetland Reserve",e:"🦆",c:1800,k:"p",jobs:3,inc:0,fun:60,grn:1,t:1,w:2,h:2,sdg:[14,15,6,13],nw:1,d:"Reeds, ponds and a boardwalk that filter water and shelter wildlife."},
+sdg_nurs:{n:"Tree Nursery",e:"🌱",c:700,k:"p",jobs:4,inc:2,fun:20,grn:.8,t:1,sdg:[15,13],nw:1,d:"Grows saplings to replant your city."},
+sdg_marine:{n:"Marine Research Station",e:"🐠",c:3000,k:"c",jobs:12,inc:6,svc:10,bt:1,bo:["sail","fish"],t:1,sdg:[14,9],nw:1,d:"Studies and protects ocean life."},
+tmang:{n:"Mangrove",e:"🌿",c:30,k:"g",grn:.45,t:1,sdg:[14,13,15],nw:1,d:"Coastal trees that protect shores and store carbon."},
+tbamb:{n:"Bamboo",e:"🎋",c:20,k:"g",grn:.35,t:1,sdg:[13,15],nw:1,d:"Fast-growing grass that captures lots of carbon."},
+tmead:{n:"Wildflower Meadow",e:"🌼",c:12,k:"g",grn:.25,t:1,sdg:[15],nw:1,d:"Native flowers for bees and butterflies."},
+sdg_cowork:{n:"Co-working Hub",e:"💻",c:2800,k:"c",jobs:40,inc:20,svc:30,t:2,sdg:[8,9,5],nw:1,d:"Flexible desks for freelancers and start-ups."},
+sdg_lab:{n:"Innovation Lab",e:"🔬",c:6500,k:"c",jobs:45,inc:30,svc:20,edu:100,ct:1,t:2,w:2,h:2,sdg:[9,4,8],nw:1,d:"Research labs and an observatory dome."},
+sdg_fiber:{n:"Fibre Internet Hub",e:"📶",c:1800,k:"c",jobs:8,inc:12,svc:50,t:1,sdg:[9,10,4],nw:1,d:"Fast, affordable internet for every home."},
+sdg_bus:{n:"Bus Interchange",e:"🚌",c:1500,k:"c",jobs:10,inc:10,svc:40,t:1,sdg:[11,9,13],nw:1,d:"Public transport hub with shelters and bus bays."},
+sdg_bike:{n:"Bike Share Hub",e:"🚲",c:400,k:"c",jobs:2,inc:2,svc:18,t:1,sdg:[11,3,13],nw:1,d:"Docking station for shared bikes."},
+sdg_ev:{n:"EV Charging Station",e:"🔌",c:500,k:"c",jobs:3,inc:6,svc:14,t:1,sdg:[7,11,13],nw:1,d:"Solar-roofed chargers for electric cars."},
+sdg_legal:{n:"Legal Aid Office",e:"⚖️",c:1600,k:"c",jobs:10,inc:0,svc:0,cop:90,ct:1,t:1,sdg:[16,10,1],nw:1,d:"Free legal help so justice is open to everyone."},
+sdg_open:{n:"Open Government Hall",e:"🏛️",c:4000,k:"c",jobs:25,inc:2,svc:30,joy:.008,t:2,w:2,h:2,sdg:[16,17],nw:1,d:"A glass-fronted hall where decisions are made in public."},
+sdg_ngo:{n:"NGO Partnership Center",e:"🌐",c:3500,k:"c",jobs:20,inc:10,svc:20,t:1,sdg:[17,1,2],nw:1,d:"Charities, companies and the city working together."},
+sdg_summit:{n:"Global Summit Hall",e:"🌍",c:14000,k:"c",jobs:40,inc:45,svc:60,joy:.01,t:3,w:3,h:3,sdg:[17,16,13],nw:1,d:"A round assembly hall ringed by flags in the colors of the 17 goals."}
+});
+
+/* ===== More housing: Modern + Tropical styles ===== */
+Object.assign(T,{
+mo1:{n:"Tiny House",e:"🏡",c:90,k:"h",cap:3,tax:.4,q:.6,t:1,s:"mo",sdg:[11,1],d:"A snug little home with a big window and a deck. Very cheap."},
+mo2:{n:"Container Homes",e:"📦",c:320,k:"h",cap:10,tax:.75,q:.7,t:1,s:"mo",sdg:[11,12],d:"Recycled shipping containers stacked into bright homes."},
+mo3:{n:"Modern Villa",e:"🏠",c:300,k:"h",cap:8,tax:.85,q:.9,t:1,s:"mo",d:"Flat roofs, floor-to-ceiling glass and a plunge pool."},
+mo4:{n:"Co-living Block",e:"🏢",c:660,k:"h",cap:26,tax:1.2,q:.8,t:2,s:"mo",sdg:[11,10],d:"Small private rooms with shared kitchens and a roof garden."},
+mo5:{n:"Passive Townhouses",e:"☀️",c:460,k:"h",cap:16,tax:1,q:.9,t:2,w:2,h:1,s:"mo",sdg:[7,13,11],d:"Super-insulated rows with solar panels on every roof."},
+mo6:{n:"Glass Residences",e:"🌆",c:1650,k:"h",cap:58,tax:1.9,q:1,t:4,s:"mo",d:"A slim blue-glass high-rise with a glowing crown."},
+mo7:{n:"Terrace Gardens",e:"🌳",c:1400,k:"h",cap:46,tax:1.5,q:1,t:2,w:2,h:2,s:"mo",sdg:[11,13,3],d:"Stepped apartments with a green terrace on every level."},
+tr1:{n:"Stilt House",e:"🛖",c:120,k:"h",cap:4,tax:.5,q:.7,t:1,s:"tr",d:"An airy wooden house raised on posts, with a steep roof."},
+tr2:{n:"Beach Bungalow",e:"🏝️",c:180,k:"h",cap:5,tax:.6,q:.8,t:1,s:"tr",d:"A white bungalow with a thatched roof and a palm."},
+tr3:{n:"Teak Pavilion Villa",e:"🛕",c:330,k:"h",cap:8,tax:.8,q:.9,t:1,s:"tr",d:"A raised teak home under a tiered, red-tiled roof."},
+tr4:{n:"Longhouse Row",e:"🏘️",c:500,k:"h",cap:18,tax:1.05,q:.8,t:2,w:2,h:1,s:"tr",d:"Long thatched homes in a row, with shaded porches."},
+tr5:{n:"Palm Condos",e:"🌴",c:760,k:"h",cap:28,tax:1.3,q:.9,t:2,s:"tr",d:"Breezy mid-rise flats with teal balconies and palms."},
+tr6:{n:"Resort Villas",e:"🏖️",c:1500,k:"h",cap:46,tax:1.6,q:1,t:2,w:2,h:2,s:"tr",d:"Four thatched villas around a shared turquoise pool."},
+tr7:{n:"Seaview Tower",e:"🌅",c:1200,k:"h",cap:44,tax:1.6,q:.95,t:3,s:"tr",d:"A stepped white tower with sunny teal terraces."}});
+T.nmk={n:"Night Market",e:"🏮",c:900,k:"c",jobs:14,inc:14,svc:60,joy:.006,t:1,sdg:[8,11,12],d:"Glowing street-food stalls and string lights. Neighbours shop, eat and meet here after dark."};
+dkG.Commerce.push("nmk");dkLOC.nmk=[4,0];
+Object.assign(T,{
+mil1:{n:"Army Barracks",e:"🪖",c:2500,k:"c",jobs:30,inc:0,svc:0,pri:2,t:1,d:"Disciplined troops, bunk halls and a flag in the yard."},
+mil2:{n:"Military Academy",e:"🎖️",c:9000,k:"c",jobs:60,inc:6,svc:0,edu:200,pri:4,t:2,w:2,h:2,d:"Officer cadets train under a columned hall with a gold cupola."},
+mil3:{n:"Air Force Base",e:"🛩️",c:30000,k:"c",jobs:130,inc:30,svc:0,pri:8,t:2,w:3,h:3,d:"A runway, hangar and control tower with jets on the apron."},
+mil4:{n:"War Memorial",e:"🕊️",c:1200,k:"p",jobs:2,inc:0,fun:40,joy:.004,pri:3,t:1,d:"A stone obelisk with an eternal flame, honouring those who served."},
+mil5:{n:"Parade Ground",e:"🎺",c:6000,k:"p",jobs:10,inc:8,fun:120,joy:.006,pri:5,t:1,w:2,h:2,d:"Ranks of troops march past a reviewing stand under waving flags."}});
+Object.keys(T).forEach(id=>{const o=T[id];if(o.lm&&o.joy)o.pri=Math.round(o.joy*100)});
+dkCATS[6].subs.push(["🎖️ Military",["mil1","mil4","mil5","mil2","mil3"]]);["mil1","mil4","mil5","mil2","mil3"].forEach(id=>dkLOC[id]=[6,dkCATS[6].subs.length-1]);
+{const calc0=calc;calc=function(){const s=calc0();let p=0;for(const u in B)if(okB[u]){const q=T[B[u].id].pri;if(q)p+=q}
+ s.pri=p;s.pride=.15*(1-Math.exp(-p/20));s.hap=Math.min(1,s.hap*(1+s.pride));s.inc*=1+s.pride*.6;return s};
+ const ui0=ui;ui=function(){ui0.apply(this,arguments);if(S.pride>=.005)$("util").insertAdjacentHTML("beforeend",'<span style="color:var(--acc)" title="Pride from military and landmarks: more happiness and income">🎖️ Pride +'+Math.round(S.pride*100)+"%</span>")};
+ const sel2=sel;sel=t=>{sel2(t);const o=T[t];if(o&&o.pri)$("info").textContent+=" 🎖️ Boosts city pride (+"+o.pri+"): more happiness and income."}}
+ST.mo=["mo1","mo2","mo3","mo4","mo5","mo7","mo6"];ST.tr=["tr1","tr2","tr3","tr4","tr5","tr7","tr6"];
+[["🏙️ Modern","mo"],["🌺 Tropical","tr"]].forEach(([n,k])=>{dkCATS[1].subs.push([n,ST[k]]);ST[k].forEach(id=>dkLOC[id]=[1,dkCATS[1].subs.length-1])});
+/* ===== Skyscrapers ===== */
+Object.assign(T,{
+sk1:{n:"Spire Residences",e:"🏙️",c:2100,k:"h",cap:68,tax:2,q:1,t:4,s:"cl",d:"A slim blue tower crowned with a gold spire."},
+sk2:{n:"Gothic Tower Block",e:"🏛️",c:1700,k:"h",cap:58,tax:1.8,q:1,t:3,s:"eu",d:"Cream stone with four pinnacles and a green copper roof."},
+sk3:{n:"Supertall Condos",e:"🌆",c:3000,k:"h",cap:96,tax:2.6,q:1,t:4,s:"us",d:"Three setbacks of glass and a needle that disappears into the clouds."},
+sk4:{n:"Pencil Tower",e:"🗼",c:2500,k:"h",cap:76,tax:2.2,q:1,t:4,s:"us",d:"An ultra-slim luxury tower with a golden cap."},
+sk5:{n:"Bamboo Sky Garden",e:"🎋",c:2100,k:"h",cap:64,tax:1.9,q:1,t:3,s:"as",sdg:[11,13,3],d:"Green planters on every few floors and a pagoda roof."},
+sk6:{n:"Twisting Tower",e:"🌀",c:2700,k:"h",cap:82,tax:2.3,q:1,t:4,s:"mo",d:"Each floor turns a little, so the whole tower spirals upward."},
+sk7:{n:"Arcology",e:"🏗️",c:9500,k:"h",cap:210,tax:5.5,q:1,t:4,w:2,h:2,s:"mo",sdg:[11,9],d:"A city in one building: three towers on a green podium, joined by sky bridges."},
+sk8:{n:"Lotus Tower",e:"🪷",c:2000,k:"h",cap:62,tax:1.9,q:1,t:3,s:"tr",d:"A tapering white tower that ends in a pink lotus bloom."},
+sk9:{n:"Minaret Twin Towers",e:"🕌",c:1900,k:"h",cap:60,tax:1.8,q:1,t:3,s:"me",d:"Two slender towers with green domes and a sky bridge."},
+sk10:{n:"Financial Tower",e:"🏦",c:4200,k:"c",jobs:90,inc:70,svc:30,t:4,d:"A glass office skyscraper full of banks and trading floors."},
+sk11:{n:"Business Plaza Towers",e:"🏢",c:9000,k:"c",jobs:190,inc:150,svc:80,t:4,w:2,h:2,d:"Two office towers rising from a shared plaza and podium."}});
+{const ix={cl:0,eu:1,us:2,as:3,me:5,mo:6,tr:7};
+[["cl","sk1"],["eu","sk2"],["us","sk3"],["us","sk4"],["as","sk5"],["mo","sk6"],["mo","sk7"],["tr","sk8"],["me","sk9"]].forEach(([k,id])=>{ST[k].push(id);dkLOC[id]=[1,ix[k]]});
+["sk10","sk11"].forEach(id=>{dkG.Commerce.push(id);dkLOC[id]=[4,0]})}
+Object.assign(T,{
+metro:{n:"Metro Station",e:"🚇",c:3800,k:"c",jobs:20,inc:24,svc:90,t:2,sdg:[11,9,13],d:"An underground station entrance with a glowing M sign. Great for dense districts."},
+obs:{n:"Observation Tower",e:"🔭",c:7000,k:"p",jobs:12,inc:20,fun:220,joy:.012,pri:4,t:3,bh:3,d:"A tall concrete shaft with a glass viewing deck and a beacon. Boosts pride."},
+skypark:{n:"Sky Park",e:"🌳",c:1500,k:"p",jobs:3,inc:2,fun:90,grn:1.2,joy:.004,t:1,sdg:[11,15,13],d:"A raised garden park with trees, a pond and a path. Freshens the air nearby."}});
+dkG.Railway.push("metro");dkLOC.metro=[7,0];dkG.Recreation.push("obs","skypark");dkLOC.obs=[8,0];dkLOC.skypark=[8,0];
+Object.assign(T,{
+sk12:{n:"8 Spruce Street",e:"🏙️",c:4200,k:"h",cap:110,tax:3,q:1,t:4,pri:3,s:"us",d:"Gehry's rippling stainless-steel tower in New York. Its folded facade seems to twist as it climbs. Adds a little city pride."},
+vet1:{n:"Veterans Hospital",e:"🎖️",c:8000,k:"c",jobs:50,inc:4,svc:0,hlt:200,pri:2,t:2,w:2,h:2,d:"Free care for those who served, with a flag out front. Boosts health and a little pride."},
+vet2:{n:"Vet Clinic",e:"🐾",c:1200,k:"c",jobs:8,inc:6,svc:25,hlt:40,joy:.005,t:1,d:"Cares for the city's pets and farm animals. Happy owners, happy city."}});
+Object.keys(T).forEach(id=>{const o=T[id];if((o.k=="h"&&o.t>=4)||/^sk\d/.test(id))o.c*=2});
+T.cobble={n:"Cobblestone",e:"🪨",c:6,k:"r",d:"A charming stone street for walking. Pedestrians only, no cars, and buildings can connect to it."};
+dkG.Roads.splice(dkG.Roads.indexOf("path")+1,0,"cobble");dkLOC.cobble=[0,0];
+Object.assign(T,{
+dl1:{n:"Used Car Lot",e:"🚙",c:900,k:"c",jobs:8,inc:9,svc:20,t:1,d:"A small lot of second-hand cars under strings of flags."},
+dl2:{n:"Car Dealership",e:"🚗",c:3200,k:"c",jobs:24,inc:28,svc:45,t:2,d:"A glass showroom with new cars lined up out front."},
+dl3:{n:"EV Dealership",e:"🔋",c:4500,k:"c",jobs:20,inc:32,svc:40,t:2,sdg:[7,11,13],d:"Electric cars, solar panels on the roof and free charging posts."},
+dl4:{n:"Luxury Motors Showroom",e:"🏎️",c:12000,k:"c",jobs:50,inc:70,svc:60,joy:.006,t:2,w:2,h:2,d:"A gold-trimmed glass showroom for the finest cars in the city."}});
+dkCATS[4].subs.push(["🚗 Auto",["dl1","dl2","dl3","dl4"]]);["dl1","dl2","dl3","dl4"].forEach(id=>dkLOC[id]=[4,dkCATS[4].subs.length-1]);
+GRN.forEach((q,i)=>{const p=q[0].indexOf(" "),nm=q[0].slice(p+1);T["gr"+i]={n:nm,e:q[0].slice(0,p),c:0,k:"s",lbl:i?"paint tile":"erase paint",d:i?"Paint tiles "+nm.toLowerCase()+".":"Turn painted tiles back to grass."}});
+T.sevict={n:"Evict Slum",e:"🚜",c:0,k:"z",lbl:"$60 / level",d:"Clear a slum."};
+T.ssupp={n:"Support Slum",e:"🤝",c:0,k:"z",lbl:"$200 / level",d:"Legalise a slum."};
+{const gids=GRN.map((_,i)=>"gr"+i);
+dkCATS[10].subs.push(["🎨 Paint ground",gids]);gids.forEach(id=>dkLOC[id]=[10,dkCATS[10].subs.length-1]);
+dkCATS.push({e:"🏚️",n:"Slums",subs:[["🏚️ Slum control",["sevict","ssupp"]]]});
+{const ci=dkCATS.length-1;["sevict","ssupp"].forEach(id=>dkLOC[id]=[ci,0])}
+const sel3=sel;sel=t=>{sel3(t);const m=/^gr(\d)$/.exec(t);
+ if(m)$("info").textContent=+m[1]?"Paint ground ("+T[t].n+"): click or drag over tiles to turn just those tiles into "+T[t].n.toLowerCase()+". Water can’t be painted.":"Grass: click or drag over painted tiles to turn them back to grass.";
+ else if(t=="sevict")$("info").textContent="Evict Slum: click a slum to clear it ($60 per level). Residents are angry for a while (happiness drops), and new slums keep appearing while there are more jobs than homes.";
+ else if(t=="ssupp")$("info").textContent="Support Slum: click a slum ($200 per level) to give it water, power and legal status. It becomes a settlement with cheap homes (+4 per level) and no more crime, fires or disease, but it is low quality and still drags happiness down a little."}}
+
+ST.us.push("sk12");dkLOC.sk12=[1,2];dkG.Health.push("vet1","vet2");dkLOC.vet1=[5,0];dkLOC.vet2=[5,0];
+/* existing buildings also count toward goals */
+(()=>{const M={2:["f13"],3:["med1","hos1","pool","skate","court","park1","play","park2","garden"],4:["lib1","school1","school2","school3","uni1"],5:["school1","school2","school3","uni1"],
+6:["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"],7:["wind","wind2","solar","solar2","geo1","dam","nuc1"],8:["c6","bank1","c8"],
+9:["aterm","atwr","stn1","stn2","dock1","f15","f14","hang"],11:["park1","park2","play","garden","stn1","stn2"],12:["f7"],13:["wind","wind2","solar","solar2","geo1","dam","nuc1"],
+15:["park2","garden"],16:["pol1","pol2","pol3","jail","court1","court2","gov1","gov2"],17:["aterm","dock1","pier1","stn1","stn2"]};
+ Object.keys(M).forEach(k=>M[k].forEach(id=>{if(T[id])(T[id].sdg=T[id].sdg||[]).push(+k)}))})();
+/* dock: new Global Goals category */
+{const cat={e:"🌍",n:"Global Goals",subs:[
+ ["🤝 People",["sdg_hous","sdg_food","sdg_train","sdg_child","sdg_women","sdg_mind","sdg_comm","sdg_garden","sdg_market"]],
+ ["💧 Water & Energy",["sdg_ww","sdg_fount","sdg_batt","sdg_bio","sdg_roof","sdg_ev"]],
+ ["♻️ Climate & Waste",["sdg_ccs","sdg_compost","sdg_repair","sdg_vert","sdg_eco"]],
+ ["🌿 Nature",["sdg_wild","sdg_wet","sdg_nurs","sdg_marine","tmang","tbamb","tmead"]],
+ ["🏙️ Cities & Institutions",["sdg_cowork","sdg_lab","sdg_fiber","sdg_bus","sdg_bike","sdg_legal","sdg_open","sdg_ngo","sdg_summit"]]]};
+ dkCATS.push(cat);const ci=dkCATS.length-1;cat.subs.forEach((s,si)=>s[1].forEach(id=>{dkLOC[id]=[ci,si]}));
+ $("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+ dkDock()}
+function HOUSEP(){
+const P=proto,G=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
+ S=(r,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,8,6),mat({color:c}));m.position.set(x,y,z);return m},
+ pad=(c,k=.96)=>bx(k,.03,k,c),
+ R=(r,h,c,y,x=0,z=0,sx=1)=>{const m=ro(r,h,c,y);m.position.x=x;m.position.z=z;m.scale.x=sx;return m},
+ palm=(x,z,k=1)=>G(cy(.022*k,.36*k,0x8a6a3a,x,.03,z,6),S(.13*k,0x3fa04a,x,.42*k,z)),
+ W=(w,x,y,z)=>gl(w,.14,.02,0xbfe6ff,x,y,z,0xffc47a);
+P.nmk=G(pad(0x4a4a54),bx(.28,.14,.24,0x8a5a3a,-.25,.03,-.2),bx(.34,.04,.3,0xd9433b,-.25,.17,-.2),bx(.28,.14,.24,0x8a5a3a,.25,.03,-.2),bx(.34,.04,.3,0x2f8f8a,.25,.17,-.2),bx(.28,.14,.24,0x8a5a3a,0,.03,.25),bx(.34,.04,.3,0xf2c230,0,.17,.25),gs(.035,0xffd27a,-.25,.26,-.04,0xffb040),gs(.035,0xff8ab0,.25,.26,-.04,0xff4a90),gs(.035,0x8ae0ff,0,.26,.42,0x20a0ff),cy(.012,.3,0x888888,0,.03,-.02,5),gs(.04,0xffd27a,0,.36,-.02,0xffb040));
+P.metro=G(pad(0x8a8a90),bx(.6,.2,.4,0xcfd4d9,0,.03,0),bx(.66,.04,.46,0x2f6f9a,0,.23),gl(.24,.14,.02,0x2a2a32,0,.03,.205,0x555560),cy(.012,.35,0x888888,.28,.03,.28,5),gl(.16,.12,.03,0xd9433b,.28,.38,.28,0xd9433b),bx(.9,.01,.05,0x666670,0,.03,-.4));
+P.obs=G(pad(0x6fcf74),bx(.5,.08,.5,0x9a9a96,0,.03),cy(.05,1.6,0xe8e4dc,0,.11,0,8),...[[-.16,-.16],[.16,-.16],[0,.2]].map(([x,z])=>cy(.025,.5,0xcfd4d9,x,.11,z,6)),cy(.22,.1,0xcfd4d9,0,1.4,0,16),S(.16,0xbfe6ff,0,1.56,0),cy(.01,.4,0xaaaaaa,0,1.7,0,5),gs(.03,0xff3b2f,0,2.14,0,0xff2010));
+P.skypark=G(bx(.8,.12,.8,0xcfd4d9,0,.03),bx(.76,.04,.76,0x6fcf74,0,.15),bx(.1,.01,.76,0xe8d7a0,-.2,.19,0),gl(.22,.02,.2,0x4fc3f7,.15,.19,.1),...[[-.28,-.25],[.25,-.25],[.28,.3]].map(([x,z])=>G(cy(.03,.2,0x7a5230,x,.19,z,6),S(.16,0x2f8f4e,x,.42,z))),S(.07,0xf2a6c0,-.1,.22,.25));
+P.sk12=G(bx(.6,.1,.6,0x5d6772),...[...Array(14)].map((_,i)=>{const b=bx(.34+.05*Math.sin(i*.9),.26,.34+.05*Math.cos(i*.9),0,0,.1+i*.26,0,wt(2,4,"#a9b4c2","#ffeaa6"));b.rotation.y=Math.sin(i*.7)*.18;return b}),bx(.26,.2,.26,0x8a95a3,0,3.74),cy(.01,.4,0xaaaaaa,0,3.94,0,6),gs(.03,0xff3b2f,0,4.37,0,0xff2010));
+P.vet1=G(pad(0xc9d8c0),bx(.8,.3,.4,0xeaf0f4,0,.03,-.1),bx(.84,.03,.44,0x3b78b8,0,.33,-.1),bx(.36,.4,.3,0xeaf0f4,0,.03,.2),bx(.4,.03,.34,0x3b78b8,0,.43,.2),...[-.12,0,.12].map(x=>cy(.02,.28,0xf2f2ee,x,.03,.36,6)),gl(.12,.04,.02,0xd9433b,0,.3,.355,0xd9433b),gl(.04,.12,.02,0xd9433b,0,.26,.355,0xd9433b),W(.5,0,.1,.105),cy(.012,.5,0x888888,.38,.03,.4,5),gl(.14,.09,.01,0x3b78b8,.45,.42,.4,0x3b78b8));
+P.vet2=G(pad(0x9bd488),bx(.6,.26,.44,0xe8f2e8,-.04,.03),bx(.66,.04,.5,0x3fb0a0,-.04,.29),R(.4,.16,0x3fb0a0,.33,-.04),gl(.16,.12,.02,0xbfe6ff,-.2,.08,.225,0xffc47a),bx(.1,.18,.02,0x7a4b2a,.06,.03,.225),S(.05,0x3fb0a0,.3,.2,.2),S(.025,0x3fb0a0,.26,.26,.2),S(.025,0x3fb0a0,.34,.26,.2),bx(.12,.06,.07,0x9a6a3e,.3,.03,.34),S(.04,0x9a6a3e,.38,.1,.34));
+const car=(x,z,c,r=0)=>{const o=G(bx(.2,.05,.1,c,0,.03,0),bx(.11,.04,.085,0xdfe9f0,-.01,.08,0),gs(.012,0xfff3b0,.1,.06,.03,0xffe080),gs(.012,0xfff3b0,.1,.06,-.03,0xffe080));o.position.set(x,0,z);o.rotation.y=r;return o};
+P.dl1=G(pad(0x55555d),bx(.3,.2,.24,0xe8e0c8,-.28,.03,-.32),bx(.34,.03,.28,0xd9433b,-.28,.23,-.32),gl(.12,.1,.02,0xbfe6ff,-.28,.07,-.195,0xffc47a),car(-.15,.05,0xd9433b),car(.18,.05,0x3b78b8),car(-.15,.3,0xf2c230),car(.18,.3,0xeeeeee),cy(.01,.3,0x888888,-.4,.03,.4,5),cy(.01,.3,0x888888,.4,.03,.4,5),gl(.8,.01,.01,0xf2c230,0,.3,.4,0xf2c230));
+P.dl2=G(pad(0x6a6a72),bx(.9,.28,.4,0xdfe6ec,0,.03,-.3),bx(.94,.04,.44,0x2f6f9a,0,.31,-.3),gl(.8,.2,.02,0xbfe6ff,0,.07,-.095,0xffe2a0),gl(.5,.07,.03,0xd9433b,0,.34,-.08,0xd9433b),car(-.28,.15,0x3b78b8),car(0,.15,0xd9433b),car(.28,.15,0x2f2f36),car(0,.38,0xeeeeee));
+{const pn=bx(.6,.03,.26,0x2f4f8a,0,.36,-.3);pn.rotation.x=-.35;
+P.dl3=G(pad(0x7a8a82),bx(.8,.26,.4,0xf2f6f4,0,.03,-.3),bx(.84,.03,.44,0x3fb06a,0,.29,-.3),pn,gl(.7,.18,.02,0xbfe6ff,0,.07,-.095,0xc8ffd8),gl(.4,.06,.03,0x3fb06a,0,.33,-.08,0x3fb06a),...[-.25,0,.25].flatMap(x=>[bx(.04,.16,.04,0x3fb0a0,x,.03,.06),gs(.02,0x7affb0,x,.22,.06,0x3fe080),car(x,.26,x?0xeeeeee:0x3fb0a0,D)]));}
+P.dl4=G(pad(0x8a8a92),bx(.7,.36,.5,0xf2f2f0,0,.03,-.2),bx(.74,.03,.54,0xd4a62a,0,.39,-.2),gl(.6,.24,.02,0xbfe6ff,0,.08,.055,0xffe2a0),gl(.4,.06,.03,0xd4a62a,0,.44,.06,0xd4a62a),car(-.2,.32,0x1f1f26),car(.2,.32,0xb8232a),S(.07,0x2f8f4e,-.4,.08,.4),S(.07,0x2f8f4e,.4,.08,.4));
+const sky=(n,...a)=>{P[n]=G(...a)};
+{const Wt=(r,c,b="#8a9bb0",w="#ffeaa6")=>wt(r,c,b,w),ant=(h,y)=>[cy(.012,h,0xaaaaaa,0,y,0,6),gs(.03,0xff3b2f,0,y+h+.03,0,0xff2010)];
+sky("sk1",bx(.7,.12,.7,0x5d6772),bx(.44,2.4,.44,0,0,.12,0,Wt(20,4)),bx(.48,.05,.48,0x48525e,0,1.3),bx(.34,.4,.34,0x48525e,0,2.52),R(.18,.5,0xc9b25a,2.92),gs(.03,0xff3b2f,0,3.46,0,0xff2010));
+sky("sk2",bx(.6,.12,.6,0x8a8478),bx(.46,1.9,.46,0,0,.12,0,Wt(14,4,"#d8cdb0")),...[[-.2,-.2],[.2,-.2],[-.2,.2],[.2,.2]].map(([x,z])=>cy(.03,.3,0xc9bfa0,x,2.02,z,4)),R(.3,.5,0x2f6f5a,2.02),gs(.03,0xd4a62a,0,2.56,0));
+sky("sk3",bx(.76,.12,.76,0x5d6772),bx(.56,1.5,.56,0,0,.12,0,Wt(11,4,"#6a7f95")),bx(.44,1.2,.44,0,0,1.62,0,Wt(9,4,"#6a7f95")),bx(.32,.9,.32,0,0,2.82,0,Wt(6,3,"#6a7f95")),gl(.5,.04,.5,0xffd27a,0,1.6,0,0xffb040),gl(.38,.04,.38,0xffd27a,0,2.8,0,0xffb040),...ant(.9,3.72));
+sky("sk4",bx(.5,.1,.5,0x3a4652),bx(.28,3.3,.28,0,0,.1,0,Wt(26,3,"#2f3a48")),bx(.32,.12,.32,0xd4a62a,0,3.4),...ant(.6,3.52));
+sky("sk5",bx(.6,.1,.6,0x6b8a5a),bx(.46,1.8,.46,0,0,.1,0,Wt(12,4,"#e8e0c8")),...[.5,1,1.5].flatMap(y=>[bx(.56,.05,.56,0x4fb35a,0,y),S(.07,0x3f9b4a,.24,y+.1,.24),S(.07,0x3f9b4a,-.24,y+.1,-.24)]),R(.38,.22,0x2f4f4a,1.94),gs(.03,0xd4a62a,0,2.2,0));
+sky("sk6",bx(.7,.1,.7,0x3a4652),...[0,1,2,3,4,5].map(i=>{const b=bx(.44-i*.02,.38,.44-i*.02,0,0,.1+i*.38,0,Wt(2,4,"#5f8aa8","#bfe6ff"));b.rotation.y=i*.22;return b}),gl(.3,.06,.3,0x7ad0ff,0,2.4,0,0x20a0ff),...ant(.45,2.46));
+sky("sk7",bx(.94,.5,.94,0,0,0,0,Wt(4,6,"#6f8f78")),bx(.96,.04,.96,0x6fbf5a,0,.5),...[[-.26,-.22,1.5],[.26,-.22,1.8],[0,.26,1.3]].map(([x,z,h])=>bx(.28,h,.28,0,x,.52,z,Wt(12,3,"#6a8aa0"))),bx(.5,.06,.06,0xcfd4d9,0,1.1,-.22),bx(.06,.06,.5,0xcfd4d9,.13,1.4,.02),S(.07,0x3f9b4a,-.3,.58,.3),S(.07,0x3f9b4a,.34,.58,.3),gs(.03,0xff3b2f,.26,2.38,-.22,0xff2010));
+sky("sk8",bx(.62,.1,.62,0x2f8f8a),bx(.56,.8,.56,0,0,.1,0,Wt(4,3,"#f4efe6","#bfe6ff")),bx(.46,.7,.46,0,0,.9,0,Wt(4,3,"#f4efe6","#bfe6ff")),bx(.36,.6,.36,0,0,1.6,0,Wt(3,3,"#f4efe6","#bfe6ff")),bx(.6,.04,.6,0x2f8f8a,0,.9),bx(.5,.04,.5,0x2f8f8a,0,1.6),R(.34,.6,0xf2a6c0,2.2),gs(.035,0xd4a62a,0,2.84,0));
+sky("sk9",bx(.8,.14,.5,0xd9c49a),...[-.2,.2].flatMap(x=>[bx(.24,1.7,.24,0,x,.14,0,Wt(10,2,"#e0b890")),bx(.28,.04,.28,0xf0e0c0,x,.9),S(.14,0x2f8f6a,x,1.84,0),gs(.03,0xd4a62a,x,2.04,0)]),bx(.2,.08,.12,0xf0e0c0,0,1.0));
+sky("sk10",bx(.7,.15,.7,0x4a5260),bx(.5,2.6,.5,0,0,.15,0,Wt(22,5,"#3f6a8f","#bfe6ff")),bx(.54,.08,.54,0xd4a62a,0,2.75),gl(.3,.3,.3,0x7ad0ff,0,2.83,0,0x20a0ff),...ant(.5,3.13));
+sky("sk11",pad(0x8a8a90),bx(.9,.2,.5,0x5d6772,0,.03,0),bx(.3,1.8,.3,0,-.25,.23,-.1,Wt(14,3,"#3f6a8f","#bfe6ff")),bx(.3,1.5,.3,0,.25,.23,.1,Wt(12,3,"#3f6a8f","#bfe6ff")),bx(.34,.05,.34,0xd4a62a,-.25,2.03,-.1),bx(.34,.05,.34,0xd4a62a,.25,1.73,.1),gs(.03,0xff3b2f,-.25,2.2,-.1,0xff2010))}
+const flag=(x,z,c=0xd9433b)=>G(cy(.012,.5,0x888888,x,.03,z,5),gl(.14,.09,.01,c,x+.07,.42,z,c));
+P.mil1=G(pad(0x7a8a5a),bx(.8,.2,.3,0x6b7a50,0,.03,-.22),bx(.84,.03,.34,0x4a5240,0,.23,-.22),bx(.8,.2,.3,0x6b7a50,0,.03,.22),bx(.84,.03,.34,0x4a5240,0,.23,.22),W(.5,0,.08,-.065),gl(.5,.14,.02,0xbfe6ff,0,.08,.375,0xffc47a),flag(0,0));
+P.mil2=G(pad(0xc9bfa0),bx(.8,.22,.34,0xcfc4a8,0,.03,-.2),bx(.3,.42,.34,0xcfc4a8,0,.03,.12),bx(.86,.03,.38,0x6b5a46,0,.25,-.2),bx(.36,.03,.4,0x6b5a46,0,.45,.12),R(.2,.16,0xd4a62a,.48,0,.12),...[-.3,-.1,.1,.3].map(x=>cy(.025,.2,0xf2f2ee,x,.03,.0,6)),flag(.38,.3),flag(-.38,.3,0x3b78b8));
+{const jet=(x,z,r)=>{const j=G(bx(.06,.03,.22,0xaab0b8,0,0,0),bx(.2,.015,.05,0x8a9098,0,0,.02));j.position.set(x,.05,z);j.rotation.y=r;return j};
+P.mil3=G(pad(0x7a8a5a,.98),bx(.96,.02,.2,0x3a3a40,0,.03,.3),...[-.36,-.12,.12,.36].map(x=>bx(.1,.005,.025,0xffffff,x,.05,.3)),bx(.5,.2,.3,0x8a9070,-.2,.03,-.25),bx(.54,.03,.34,0x5a6048,-.2,.23,-.25),cy(.04,.45,0xcfd4d9,.32,.03,-.28,8),gl(.14,.07,.14,0xbfe6ff,.32,.48,-.28,0xffc47a),gs(.02,0xff3b2f,.32,.58,-.28,0xff2010),jet(.2,.1,0),jet(-.3,.1,0.4))}
+P.mil4=G(pad(0x6fb86a),bx(.5,.06,.5,0x9a9a96,0,.03),cy(.09,.62,0xd8d4cc,0,.09,0,4),bx(.12,.04,.12,0xd8d4cc,0,.71),gs(.045,0xffb040,.2,.16,.2,0xff8020),S(.07,0x2f8f4e,-.3,.1,.3),S(.07,0x2f8f4e,.3,.1,-.3),flag(-.3,-.3));
+{const sol=[];for(let i=0;i<4;i++)for(let j=0;j<3;j++)sol.push(bx(.05,.08,.05,0x4a5a3a,-.24+i*.16,.03,-.05+j*.14));
+P.mil5=G(pad(0x9a8a6a),...sol,bx(.56,.1,.16,0x6b4a2c,0,.03,-.38),bx(.6,.03,.2,0xd9433b,0,.25,-.38),cy(.012,.12,0x888888,-.26,.13,-.38,5),cy(.012,.12,0x888888,.26,.13,-.38,5),flag(-.42,.36),flag(.42,.36,0x3b78b8))}
+P.mo1=G(pad(0x9bd488),bx(.44,.26,.4,0xf2efe8,-.04,.03),bx(.52,.04,.46,0x3a4652,-.04,.29),W(.2,-.04,.08,.205),bx(.3,.03,.16,0xb08a5a,-.04,.03,.3),S(.07,0x4fb35a,.3,.1,.3));
+P.mo2=G(pad(0xd8d4cc),bx(.7,.2,.3,0xd9573b,0,.03,-.17),bx(.7,.2,.3,0x3b78b8,0,.03,.17),bx(.7,.2,.3,0xf2c230,.12,.23,0),W(.4,0,.08,.325),W(.4,.12,.28,.155),S(.07,0x4fb35a,-.38,.1,.3));
+P.mo3=G(pad(0x9bd488),bx(.6,.24,.46,0xf4f4f2,-.1,.03,-.08),bx(.46,.2,.4,0x7a5a3c,.05,.27,-.08),bx(.66,.03,.5,0xffffff,-.02,.47,-.08),W(.34,-.1,.08,.155),gl(.3,.02,.18,0x4fc3f7,-.05,.03,.33));
+P.mo4=G(bx(.7,.9,.5,0,0,0,0,wt(5,4,"#d4dce4","#ffeaa6")),bx(.74,.04,.54,0x5d6772,0,.9),bx(.74,.03,.1,0xf28a3a,0,.3,.3),bx(.74,.03,.1,0x3fb0a0,0,.6,.3),S(.08,0x4fb35a,-.2,.96,.1),S(.08,0x4fb35a,.2,.96,-.1));
+{const pn=bx(.7,.03,.3,0x2f4f8a,0,.56,0);pn.rotation.x=-.45;
+P.mo5=G(bx(.98,.5,.5,0xe8e6e0),bx(.98,.04,.54,0x6a6f76,0,.5),pn,W(.2,-.28,.2,.255),W(.2,.28,.2,.255),bx(.12,.24,.02,0x3b8f6a,0,0,.26))}
+P.mo6=G(bx(.7,.12,.7,0x3a4652),bx(.46,2.3,.46,0,0,.12,0,wt(18,4,"#4a6b88","#bfe6ff")),bx(.5,.05,.5,0x2f4a60,0,1.2),bx(.36,.5,.36,0x2f4a60,0,2.42),gl(.4,.05,.4,0x7ad0ff,0,2.38,0,0x20a0ff),cy(.012,.4,0xaaaaaa,0,2.92,0,6),gs(.03,0xff3b2f,0,3.32,0));
+P.mo7=G(pad(0x7a8a7a,.96),bx(.86,.9,.34,0,0,.03,-.28,wt(4,5,"#e8e0d0","#ffeaa6")),bx(.86,.6,.3,0,0,.03,.04,wt(3,5,"#e8e0d0","#ffeaa6")),bx(.86,.3,.3,0,0,.03,.34,wt(2,5,"#e8e0d0","#ffeaa6")),bx(.88,.04,.32,0x6fbf5a,0,.93,-.28),bx(.88,.04,.32,0x6fbf5a,0,.63,.04),bx(.88,.04,.32,0x6fbf5a,0,.33,.34),S(.07,0x3f9b4a,-.25,.7,.04),S(.07,0x4fb35a,.25,.4,.34),S(.07,0x3f9b4a,.2,1,-.28));
+P.tr1=G(pad(0x9bd488),...[[-.22,-.2],[.22,-.2],[-.22,.2],[.22,.2]].map(([x,z])=>cy(.03,.2,0x7a5230,x,.03,z,6)),bx(.56,.04,.5,0xb08a5a,0,.23),bx(.46,.22,.4,0xd9b382,0,.27),R(.44,.26,0x8a4a3a,.49),bx(.1,.2,.02,0x6a4a2c,0,.27,.205),bx(.12,.24,.03,0x7a5230,.12,.03,.28));
+P.tr2=G(pad(0xf0e2b0),bx(.54,.2,.4,0xfdf8ee,-.08,.03),R(.5,.26,0xc9a34a,.23,-.08),bx(.1,.1,.02,0x3b8fd9,-.22,.08,.205),W(.14,.02,.08,.205),palm(.32,.28),bx(.26,.03,.12,0xb08a5a,-.08,.03,.3));
+P.tr3=G(pad(0x9bd488),bx(.6,.07,.54,0x6b4a2c,0,.03),bx(.46,.22,.38,0x9a6a3e,0,.1),R(.5,.2,0xb5523b,.32),R(.3,.2,0xb5523b,.46),gs(.03,0xd4a62a,0,.68,0),W(.12,0,.12,.195));
+P.tr4=G(bx(.98,.3,.5,0,0,0,0,wt(2,4,"#d9bf94","#ffeaa6")),R(.5,.2,0x8a4a3a,.3,0,0,1.4),bx(.98,.04,.12,0xd9433b,0,.18,.3),bx(.12,.2,.02,0x6a4a2c,0,0,.255));
+P.tr5=G(bx(.7,1,.5,0,0,0,0,wt(4,3,"#f0e8d8","#ffeaa6")),bx(.74,.04,.54,0x2f8f8a,0,1),bx(.74,.03,.1,0x2f8f8a,0,.33,.3),bx(.74,.03,.1,0x2f8f8a,0,.66,.3),palm(-.3,.36),S(.08,0x4fb35a,.2,1.06,0));
+P.tr6=G(pad(0xf0e2b0),gl(.4,.02,.3,0x4fc3f7,0,.03,.08),...[[-.3,-.3],[.3,-.3],[-.3,.32],[.3,.32]].flatMap(([x,z])=>[bx(.26,.16,.24,0xfdf8ee,x,.03,z),R(.22,.14,0xc9a34a,.19,x,z)]),palm(0,-.36,.9));
+P.tr7=G(bx(.62,.9,.5,0,0,0,0,wt(5,3,"#f4efe6","#bfe6ff")),bx(.52,.6,.42,0,0,.94,0,wt(3,3,"#f4efe6","#bfe6ff")),bx(.42,.5,.34,0,0,1.58,0,wt(3,2,"#f4efe6","#bfe6ff")),bx(.66,.04,.54,0x2f8f8a,0,.9),bx(.56,.04,.46,0x2f8f8a,0,1.54),bx(.46,.04,.38,0x2f8f8a,0,2.08),S(.08,0x4fb35a,0,2.16,0),palm(.34,.3,.9))}
+/* 3D models for the new items (called at the end of protos()) */
+function SDGP(){
+const P=proto,Gp=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
+ Sp=(r,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,8,6),mat({color:c}));m.position.set(x,y,z);return m},
+ Cn=(r,h,c,x,y,z,n=10)=>{const m=new THREE.Mesh(new THREE.ConeGeometry(r,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m},
+ Dm=(r,c,x,y,z,sy=1)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,14,8,0,Math.PI*2,0,Math.PI/2),mat({color:c}));m.position.set(x,y,z);m.scale.y=sy;return m},
+ Tor=(r,t,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,6,18),mat({color:c}));m.position.set(x,y,z);return m},
+ Rf=(r,h,c,y,x=0,z=0)=>{const m=ro(r,h,c,y);m.position.x=x;m.position.z=z;return m},
+ Pad=(c,k=.96)=>bx(k,.03,k,c),
+ Tr=(x,z,k=1)=>Gp(cy(.04*k,.22*k,0x7a5230,x,0,z,6),Sp(.2*k,0x2f8f4e,x,.36*k,z)),
+ Pn=(x,y,z,w=.36,d=.28)=>{const m=bx(w,.03,d,0x1f4a8a,x,y,z);m.rotation.x=-.45;return m},
+ WIN=(w,h,x,y,z)=>gl(w,h,.02,0xfff4d0,x,y,z,0xffe9a8);
+/* --- people --- */
+P.sdg_hous=Gp(bx(.7,.8,.56,0,0,0,0,wt(4,3,"#e9c9a0","#ffeaa6")),bx(.74,.04,.6,0x6b7a88,0,.8),bx(.7,.03,.12,0x4fa8e0,0,.27,.34),bx(.7,.03,.12,0xf2c230,0,.53,.34),bx(.12,.16,.02,0x7a4b2a,0,0,.285),Sp(.07,0x3f9b4a,-.3,.1,.36));
+P.sdg_food=Gp(bx(.72,.34,.58,0xf0e0c0),bx(.78,.04,.64,0x3f7a4a,0,.34),bx(.72,.04,.2,0x3f9b4a,0,.26,.38),gl(.3,.1,.02,0xff7a7a,0,.18,.295,0xff5a5a),bx(.14,.1,.14,0xc9a36a,-.26,0,.44),bx(.14,.1,.14,0xb08a5a,-.08,0,.46),Sp(.05,0xd9433b,.2,.08,.44),Sp(.05,0xf2c230,.3,.08,.4));
+P.sdg_train=Gp(bx(.8,.36,.6,0xb9c4d6),bx(.84,.04,.64,0x2f4f8f,0,.36),bx(.28,.16,.28,0x9fb0c8,.22,.4,-.12),gl(.36,.08,.02,0x4a9ae0,0,.24,.305,0x2a7ad0),bx(.16,.2,.02,0x4a5560,-.22,0,.305),cy(.09,.03,0xf2c230,-.2,.4,.12,8),cy(.03,.05,0x555a60,-.2,.43,.12,6));
+P.sdg_child=Gp(Pad(0xbfe8a0),bx(.56,.26,.4,0xffe0a8,-.12,.03,-.14),Rf(.46,.2,0xe8742a,.29,-.12,-.14),WIN(.12,.1,-.2,.1,.065),bx(.1,.17,.02,0x7a4b2a,-.04,.03,.065),bx(.1,.2,.1,0x3b8fd9,.3,.03,.3),bx(.2,.03,.05,0xd9433b,.3,.2,.3),Sp(.04,0xf2c230,-.3,.07,.34),Sp(.04,0xd9433b,-.2,.07,.4),bx(.08,.08,.08,0x2f8f4e,-.1,.03,.38));
+P.sdg_women=Gp(bx(.7,.6,.55,0,0,0,0,wt(3,3,"#b88ad2","#fff4d0")),bx(.74,.04,.6,0x7a4a9a,0,.6),gl(.42,.1,.02,0xff7ac0,0,.46,.285,0xff4aa0),Tor(.07,.016,0xff7ac0,0,.8,0),bx(.016,.1,.016,0xff7ac0,0,.64,0),bx(.07,.016,.016,0xff7ac0,0,.69,0),bx(.12,.16,.02,0xe9d6f2,0,0,.285));
+P.sdg_mind=Gp(Pad(0xcfe8d8),cy(.32,.24,0xe6f4ef,0,.03,0,20),Dm(.3,0x7fd6c4,0,.27,0,.9),WIN(.12,.16,0,.03,.37),Tr(-.38,.34,.6),Tr(.38,-.34,.6),cy(.1,.01,0x4fc3f7,.3,.03,.36,12));
+P.sdg_comm=Gp(Pad(0xd8c9a0),bx(.7,.3,.5,0xf2d3a0,0,.03,-.06),Rf(.5,.2,0xc4694f,.33,0,-.06),bx(.5,.03,.14,0xe0d3ae,0,.03,.26),...[-.2,.2].map(x=>cy(.016,.2,0xfaf6ea,x,.03,.3,6)),cy(.008,.5,0x888888,-.4,.03,.38,5),bx(.1,.025,.01,0xd9433b,-.35,.46,.38),bx(.1,.025,.01,0xf2c230,-.35,.435,.38),bx(.1,.025,.01,0x3b8fd9,-.35,.41,.38),WIN(.16,.12,0,.1,.195));
+P.sdg_garden=Gp(Pad(0x9bd488),...[[-.27,0x4fb35a],[0,0xd9433b],[.27,0xf2a030]].flatMap(([x,c])=>[bx(.2,.07,.46,0x7a5230,x,.03,-.08),Sp(.06,c,x,.13,-.24),Sp(.06,c,x,.13,-.08),Sp(.06,c,x,.13,.08)]),bx(.28,.2,.2,0xb08a5a,-.2,.03,.36),Rf(.22,.1,0x8a5a3a,.23,-.2,.36),cy(.07,.14,0x3b8fd9,.28,.03,.36,8),Tr(.4,-.4,.5));
+P.sdg_market=Gp(Pad(0xe0d3ae),...[[-.22,-.15,0xd9433b],[.22,-.15,0x3b8fd9],[0,.25,0x3f9b4a]].flatMap(([x,z,c])=>[bx(.34,.03,.3,c,x,.3,z),bx(.34,.03,.04,0xffffff,x,.3,z+.13),bx(.3,.1,.22,0xc9a36a,x,.03,z),cy(.012,.3,0x8a6a4a,x-.15,.03,z-.12,5),cy(.012,.3,0x8a6a4a,x+.15,.03,z-.12,5),Sp(.045,0xd9433b,x-.08,.16,z),Sp(.045,0xf2c230,x+.02,.16,z),Sp(.045,0x4fb35a,x+.1,.16,z)]));
+P.sdg_vert=Gp(bx(.6,1.1,.5,0,0,0,0,wt(9,3,"#3f6f5a","#ffb0e0")),gl(.62,.04,.52,0xff5ad0,0,.3,0,0xff2aa0),gl(.62,.04,.52,0xff5ad0,0,.62,0,0xff2aa0),gl(.62,.04,.52,0xff5ad0,0,.94,0,0xff2aa0),bx(.5,.1,.4,0x9ee0b0,0,1.1),Sp(.08,0x4fb35a,-.12,1.26,0),Sp(.08,0x6fcf74,.12,1.24,.05),Pn(0,1.22,-.12,.3,.16));
+/* --- water & energy --- */
+P.sdg_ww=Gp(Pad(0xb8c0c8),cy(.2,.1,0xeceff1,-.22,.03,-.2,18),cy(.17,.02,0x4fc3f7,-.22,.13,-.2,18),cy(.2,.1,0xeceff1,.22,.03,-.2,18),cy(.17,.02,0x4fc3f7,.22,.13,-.2,18),bx(.7,.24,.3,0x8fa3b5,0,.03,.3),bx(.74,.04,.34,0x5d6772,0,.27,.3),gl(.34,.07,.02,0x7ae07a,0,.14,.455,0x3fcf5f),Dm(.1,0x6fcf74,.28,.31,.3),cy(.04,.34,0x9aa0a6,-.28,.03,.3,8));
+P.sdg_fount=Gp(Pad(0xd8d4c8),cy(.28,.1,0xcfc8b6,0,.03,0,18),cy(.24,.03,0x4fc3f7,0,.12,0,18),cy(.05,.2,0xcfc8b6,0,.03,0,8),Cn(.06,.14,0xbfe9ff,0,.2,0,8),Sp(.03,0xcfeeff,0,.38,0),Tr(-.38,-.38,.5),Tr(.38,.38,.5));
+P.sdg_batt=Gp(Pad(0x9aa3ad),...[-.27,0,.27].flatMap(x=>[bx(.22,.34,.62,0xeef2f2,x,.03,0),gl(.2,.04,.02,0x3fe07a,x,.2,.315,0x20c060),gl(.2,.04,.02,0x3fe07a,x,.28,.315,0x20c060),bx(.24,.03,.64,0x6fa08a,x,.37,0)]),bx(.94,.1,.04,0x777f88,0,.03,.46));
+P.sdg_bio=Gp(Pad(0xb8b4a0),cy(.26,.2,0x8bbf6a,-.18,.03,-.15,18),Dm(.26,0xcfe0c0,-.18,.23,-.15,.7),bx(.38,.26,.3,0xb8a47a,.2,.03,.25),bx(.42,.04,.34,0x6a5a3a,.2,.29,.25),cy(.04,.45,0x8a8a86,.32,.03,-.2,8),gs(.03,0xff9a3a,.32,.5,-.2,0xff6a20),WIN(.2,.06,.2,.14,.405));
+P.sdg_roof=Gp(Pad(0xc8d4b8),bx(.6,.3,.5,0xf0e6d0,0,.03,-.05),bx(.64,.04,.54,0x7a6a5a,0,.33,-.05),Pn(-.15,.4,-.05,.26,.32),Pn(.15,.4,-.05,.26,.32),bx(.12,.16,.02,0x7a4b2a,0,.03,.205),Tr(.38,.34,.6));
+P.sdg_ev=Gp(bx(.96,.02,.96,0x3f444b),...[[-.4,-.4],[.4,-.4],[-.4,.4],[.4,.4]].map(([x,z])=>cy(.02,.4,0x777f88,x,.02,z,6)),bx(.98,.03,.98,0x1f4a8a,0,.42,0),bx(.08,.22,.06,0xf2f4f6,-.2,.02,-.2),gl(.05,.05,.02,0x3fe07a,-.2,.16,-.165,0x20c060),bx(.08,.22,.06,0xf2f4f6,.2,.02,-.2),gl(.05,.05,.02,0x3fe07a,.2,.16,-.165,0x20c060),bx(.18,.07,.34,0x3b8fd9,-.2,.03,.1),bx(.14,.05,.18,0x9fc8e8,-.2,.1,.08),bx(.18,.07,.34,0xd9433b,.22,.03,.12),bx(.14,.05,.18,0x9fc8e8,.22,.1,.1));
+/* --- climate & waste --- */
+P.sdg_ccs=Gp(bx(.98,.03,.98,0xaab2ba),...[-.28,0,.28].flatMap(x=>[cy(.09,.7,0xd5dade,x,.03,-.2,14),cy(.1,.03,0x555a60,x,.73,-.2,14),bx(.17,.015,.025,0x333b44,x,.78,-.2),bx(.025,.015,.17,0x333b44,x,.78,-.2),gl(.2,.03,.2,0x3fe0c0,x,.4,-.2,0x20b098)]),bx(.7,.05,.05,0x8d939a,0,.12,.05),bx(.8,.24,.3,0x8fa3b5,0,.03,.3),bx(.84,.03,.34,0x4a6a5a,0,.27,.3),gl(.5,.06,.02,0x3fe0c0,0,.14,.455,0x20b098),Sp(.1,0xcfe8d0,-.32,.14,.05));
+P.sdg_compost=Gp(Pad(0xa89a7a),...[-.28,0,.28].map((x,i)=>bx(.18,.14,.62,[0x5a4030,0x4a3626,0x6b4a36][i],x,.03,-.1)),Sp(.05,0x8fbf6a,-.28,.2,-.2),Sp(.05,0x8fbf6a,.28,.2,-.05),bx(.5,.24,.2,0x7fb08a,0,.03,.34),bx(.54,.03,.24,0x4f7a58,0,.27,.34),WIN(.2,.08,0,.1,.445));
+P.sdg_repair=Gp(bx(.72,.34,.58,0xf2d870),bx(.76,.04,.62,0x5a4a3a,0,.34),WIN(.22,.14,-.2,.08,.295),Tor(.09,.025,0xe8742a,.2,.24,.3),Tor(.04,.012,0x555a60,.2,.24,.31),bx(.02,.18,.02,0x888888,.2,.1,.305),bx(.12,.1,.12,0xc9a36a,-.28,0,.44),Tor(.06,.01,0x222222,.25,.08,.42));
+P.sdg_eco=Gp(bx(.7,.32,.56,0,0,0,0,wt(2,3,"#e8e0d0","#ffeaa6")),bx(.74,.04,.6,0x6fbf5a,0,.32),bx(.6,.32,.48,0,0,.36,0,wt(2,3,"#e8e0d0","#ffeaa6")),bx(.64,.04,.52,0x6fbf5a,0,.68),bx(.5,.32,.4,0,0,.72,0,wt(2,3,"#e8e0d0","#ffeaa6")),bx(.54,.04,.44,0x6fbf5a,0,1.04),Sp(.09,0x3f9b4a,-.25,.4,.26),Sp(.08,0x4fb35a,.25,.74,.2),Sp(.08,0x4fb35a,-.2,1.12,.1),Pn(.1,1.1,-.05,.24,.24));
+/* --- nature --- */
+P.sdg_wild=Gp(Pad(0x7fc47a,.98),cy(.18,.02,0x4fa8c8,.22,.03,.2,16),Tr(-.3,-.3,.9),Tr(-.1,-.38,1),Tr(.3,-.32,.9),Tr(-.38,.1,.8),Tr(.38,-.05,.8),bx(.14,.07,.05,0xa8703a,-.1,.08,.1),...[[-.16,.08],[-.04,.08],[-.16,.12],[-.04,.12]].map(([x,z])=>bx(.02,.08,.02,0x8a5a2a,x,.01,z)),bx(.04,.05,.04,0xa8703a,-.2,.14,.1),bx(.12,.34,.12,0x8a5a3a,.36,.03,.3),bx(.2,.03,.2,0x6a4a2a,.36,.37,.3),Rf(.16,.1,0x5a8a4a,.4,.36,.3));
+P.sdg_wet=Gp(Pad(0x8fb878,.98),bx(.7,.02,.6,0x4fa8c8,0,.04,0),...[[-.25,-.2],[-.1,-.28],[.2,-.22],[.3,.1],[-.3,.15],[.05,.25]].map(([x,z])=>cy(.012,.22,0xb8a060,x,.04,z,4)),bx(.12,.03,.9,0x9a7248,.4,.04,0),cy(.05,.01,0x3f9b4a,-.1,.05,.05,8),cy(.05,.01,0x3f9b4a,.15,.05,-.05,8),Sp(.04,0xffffff,-.05,.1,.12),bx(.03,.04,.06,0xffffff,0,.1,.16));
+P.sdg_nurs=Gp(Pad(0x8b6b45),...[-.25,0,.25].flatMap(x=>[-.2,.15].flatMap(z=>[bx(.18,.03,.28,0x6a4a2c,x,.03,z),Cn(.05,.14,0x2f8f4a,x-.04,.06,z-.06,8),Cn(.05,.14,0x3fa05a,x+.04,.06,z+.06,8)])),bx(.34,.2,.2,0xbfe8dc,0,.03,.4),Rf(.26,.1,0xdff6f0,.23,0,.4));
+P.sdg_marine=Gp(bx(.5,.03,.36,0xb9a77f,0,0,-.22),bx(.44,.26,.32,0xdff2f2,0,.03,-.25),bx(.48,.04,.36,0x2f8f8a,0,.29,-.25),WIN(.14,.08,0,.1,-.085),Dm(.1,0x4fc3d8,.18,.3,-.25),bx(.3,.03,1,0x9a7248,0,.05,.82),...[[-.13,.5],[.13,.5],[-.13,.85],[.13,.85],[-.13,1.2],[.13,1.2]].map(([x,z])=>cy(.02,.13,0x5a4630,x,-.02,z,6)),cy(.006,.14,0x555555,0,.08,1.28,5),gs(.025,0xffe080,0,.24,1.28),bx(.12,.1,.14,0xd9433b,0,.08,.9));
+P.tmang=Gp(cy(.03,.22,0x6b4a3a,0,.12,0,6),Sp(.2,0x2f8f4a,0,.46,0),Sp(.13,0x3fa05a,.12,.38,.08),...[0,1,2,3].map(i=>{const m=bx(.015,.16,.015,0x6b4a3a,Math.cos(i*1.57)*.07,0,Math.sin(i*1.57)*.07);m.rotation.x=Math.sin(i*1.57)*.5;m.rotation.z=-Math.cos(i*1.57)*.5;return m}));
+P.tbamb=Gp(...[[0,0,.55],[.08,.05,.45],[-.07,.06,.5],[.03,-.08,.4]].map(([x,z,h])=>Gp(cy(.015,h,0x7ab84a,x,0,z,5),Sp(.06,0x5fa83a,x,h,z))));
+P.tmead=Gp(bx(.6,.03,.6,0x7ac84a),...[[-.2,-.15,0xf2c230],[.1,-.2,0xff7ac0],[.2,.1,0xffffff],[-.1,.2,0xff9a3a],[0,0,0xa05aff],[-.25,.1,0xd9433b]].map(([x,z,c])=>Gp(cy(.006,.1,0x3f8f3a,x,0,z,4),Sp(.03,c,x,.11,z))));
+/* --- cities & institutions --- */
+P.sdg_cowork=Gp(bx(.78,.4,.6,0,0,0,0,wt(3,5,"#6f8fb0","#ffeaa6")),bx(.82,.04,.64,0x3a4652,0,.4),bx(.6,.36,.5,0,0,.44,0,wt(3,4,"#6f8fb0","#ffeaa6")),bx(.64,.04,.54,0x3a4652,0,.8),gl(.4,.06,.02,0xff9a3a,0,.25,.305,0xff7a1a),Sp(.07,0x4fb35a,-.3,.84,.1),bx(.2,.06,.16,0x8a5a3a,.2,.84,.1));
+P.sdg_lab=Gp(bx(.98,.03,.98,0xcfd5db),bx(.9,.4,.5,0xeef2f6,0,.03,-.2),bx(.94,.04,.54,0x7a8a9a,0,.43,-.2),Dm(.2,0xe6edf4,-.25,.47,-.2),Dm(.14,0xe8ecef,.25,.52,-.2,.5),bx(.9,.3,.3,0xdff2ff,0,.03,.3),gl(.8,.08,.02,0x4ae0ff,0,.2,.455,0x20b0e0),bx(.94,.03,.34,0x7a8a9a,0,.33,.3));
+P.sdg_fiber=Gp(Pad(0xb8c0c8,.9),bx(.4,.26,.34,0x4a5560,0,.03,.1),gl(.3,.04,.02,0x4ae0ff,0,.18,.275,0x20b0e0),cy(.02,.8,0xe6e9ec,-.2,.03,-.25,6),bx(.2,.02,.02,0xcfd4d9,-.2,.6,-.25),bx(.14,.02,.02,0xcfd4d9,-.2,.5,-.25),gs(.04,0x4ae0ff,-.2,.86,-.25,0x20b0e0),Sp(.035,0xffffff,-.3,.62,-.25),Sp(.035,0xffffff,-.1,.62,-.25));
+P.sdg_bus=Gp(bx(.96,.02,.96,0x4a4f56),...[[-.28,-.15,0xe8742a],[.28,.1,0x3b8fd9]].flatMap(([x,z,c])=>[bx(.2,.14,.5,c,x,.02,z),gl(.206,.05,.4,0x9fd6f0,x,.08,z,0x6fa6c8)]),bx(.6,.03,.16,0x2f6f4a,0,.34,.38),cy(.012,.32,0x777f88,-.28,.02,.38,5),cy(.012,.32,0x777f88,.28,.02,.38,5),bx(.4,.05,.06,0x8a5a3a,0,.1,.38),cy(.008,.5,0x888888,.42,.02,.38,5),gl(.12,.1,.02,0x3b8fd9,.42,.5,.38,0x2a7ad0));
+{const bk=(x,z,c)=>[Tor(.055,.009,0x222222,x-.1,.075,z),Tor(.055,.009,0x222222,x+.1,.075,z),bx(.22,.016,.016,c,x,.095,z),bx(.016,.07,.016,c,x-.04,.1,z),bx(.05,.012,.03,0x222222,x-.05,.17,z)];
+P.sdg_bike=Gp(Pad(0xb5c4b0),bx(.9,.03,.06,0x6f7780,0,.03,-.4),...[[-.1,-.3,0xd9433b],[.1,-.1,0x3b8fd9],[-.1,.1,0xf2c230],[.1,.3,0x2f8f4e]].flatMap(([x,z,c])=>bk(x,z,c)),cy(.012,.35,0x888888,-.4,.03,-.4,5),gl(.18,.1,.02,0x3fe07a,-.4,.3,-.4,0x20c060))}
+P.sdg_legal=Gp(bx(.7,.03,.6,0xd0cab8),bx(.6,.3,.4,0xe6dcc8,0,.03,-.08),...[-.22,-.07,.07,.22].map(x=>cy(.02,.3,0xfaf6ea,x,.03,.2,8)),bx(.66,.04,.2,0xe3dccb,0,.33,.2),Rf(.42,.12,0xb8b0a0,.37,0,.12),cy(.008,.18,0xd4b24a,0,.49,.12,5),bx(.2,.012,.012,0xd4b24a,0,.67,.12),cy(.035,.008,0xd4b24a,-.1,.6,.12,10),cy(.035,.008,0xd4b24a,.1,.6,.12,10),WIN(.12,.18,0,.03,.125));
+P.sdg_open=Gp(bx(.98,.03,.98,0xe8e4d8),bx(.8,.34,.5,0xdff2ff,0,.03,-.1),gl(.76,.3,.02,0x9fd6f0,0,.05,.16,0x6fa6c8),bx(.86,.04,.56,0x3f6f9a,0,.37,-.1),Dm(.16,0xcfe8f5,0,.41,-.1,.8),bx(.9,.03,.3,0xd8d2c0,0,.03,.34),...[-.3,-.1,.1,.3].map(x=>cy(.02,.34,0xfaf6ea,x,.03,.22,8)),cy(.01,.4,0x888888,-.42,.03,.4,5),bx(.14,.08,.01,0x3b8fd9,-.35,.36,.4));
+P.sdg_ngo=Gp(bx(.7,.34,.56,0xf4ead2),bx(.74,.04,.6,0x3b8fd9,0,.34),Sp(.12,0x3b8fd9,0,.52,0),Sp(.045,0x4fb35a,-.05,.56,.1),Sp(.04,0x4fb35a,.06,.5,.1),Sp(.035,0x4fb35a,0,.62,-.1),...[-.28,-.14,0,.14,.28].map((x,i)=>Gp(cy(.006,.2,0x888888,x,0,.4,4),bx(.07,.04,.01,[0xE5243B,0xDDA63A,0x4C9F38,0x26BDE2,0xFD6925][i],x+.04,.15,.4))),WIN(.12,.14,0,0,.285));
+{const SC=[0xE5243B,0xDDA63A,0x4C9F38,0xC5192D,0xFF3A21,0x26BDE2,0xFCC30B,0xA21942,0xFD6925,0xDD1367,0xFD9D24,0xBF8B2E,0x3F7E44,0x0A97D9,0x56C02B,0x00689D,0x19486A];
+P.sdg_summit=Gp(bx(.98,.03,.98,0xe8e4d8),cy(.34,.26,0xf1ecdd,0,.03,0,28),Dm(.3,0xaee3f5,0,.29,0,.8),Sp(.07,0x3b8fd9,0,.56,0),Sp(.03,0x4fb35a,.03,.58,.05),bx(.3,.05,.12,0xd8d2c0,0,.03,.4),gl(.5,.04,.5,0xfff4d0,0,.27,0,0xffe9a8),...SC.map((c,i)=>{const a=i/17*Math.PI*2,x=Math.cos(a)*.44,z=Math.sin(a)*.44;return Gp(cy(.005,.22,0x999999,x,.03,z,4),bx(.07,.05,.012,c,x+.035,.17,z))}))}
+}
+
 load();sel("road");init3d();fit();updExp();ui();toast("WASD / arrows to move · Q/E rotate · Z/X or scroll to zoom · Esc or click a tool again to deselect",7000);
 setInterval(()=>{if(!window.MENU)tick()},1000);
+/* ---- paint ground tile by tile + slums ---- */
+function paintTile(i){const gi=+tool.slice(2);if(rv[i]){if(!dragging)toast("Water can’t be painted. Paint the land next to it.");return 1}if((GND[i]|0)==gi)return 1;GND[i]=gi;dirty=1;return 1}
+function groundRender(){
+ if(GGEO){GGEO.dispose();GGEO=null}
+ const ok=i=>GND[i]&&!rv[i]&&!(el[i]&&!BS[i]);let n=0;
+ for(let i=0;i<GND.length;i++)if(ok(i))n++;
+ if(!n)return;
+ const P=new Float32Array(n*18),C=new Float32Array(n*18),Nm=new Float32Array(n*18),cc2={};let o=0;
+ for(let i=0;i<GND.length;i++){if(!ok(i))continue;
+  const x=i%W,y=i/W|0,x0=wx(x)-.5,x1=x0+1,z0=wz(y)-.5,z1=z0+1,gi=GND[i],key=gi+"_"+((x+y)&1),
+  c=cc2[key]||(cc2[key]=new THREE.Color(GRN[gi][(x+y)&1?2:1])),v=[x0,z0,x0,z1,x1,z1,x0,z0,x1,z1,x1,z0];
+  for(let q=0;q<6;q++){P[o]=v[q*2];P[o+2]=v[q*2+1];C[o]=c.r;C[o+1]=c.g;C[o+2]=c.b;Nm[o+1]=1;o+=3}}
+ const G=new THREE.BufferGeometry();G.setAttribute("position",new THREE.BufferAttribute(P,3));G.setAttribute("normal",new THREE.BufferAttribute(Nm,3));G.setAttribute("color",new THREE.BufferAttribute(C,3));
+ const m=new THREE.Mesh(G,mat({vertexColors:true,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));m.position.y=.004;m.receiveShadow=true;cityG.add(m);GGEO=G}
+function slumFix(){
+ if(GND.length!=W*H)GND=Array(W*H).fill(0);
+ for(let i=0;i<GND.length;i++)if(!GRN[GND[i]])GND[i]=0;
+ for(const k in SLUM){const i=+k,z=SLUM[k];if(!z||g[i]!=="slum"||rv[i]||hw[i]){delete SLUM[k];continue}z.lv=Math.min(3,Math.max(1,z.lv|0));z.st=z.st?1:0}
+ for(let i=0;i<g.length;i++)if(g[i]==="slum"&&!SLUM[i])g[i]=0}
+function slumInfo(i){const z=SLUM[i];toast(z.st?"🤝 Supported settlement (level "+z.lv+"): "+4*z.lv+" cheap homes. Use 🚜 to clear it.":"🏚️ Illegal slum (level "+z.lv+"): about "+5*z.lv+" squatters. Evict 🚜 or support 🤝 it (Slums tab).",5000)}
+function slumEvict(i){const z=SLUM[i];if(!z){g[i]=0;dirty=1;return 1}
+ const c=60*z.lv;if(money<c){toast("Clearing this "+(z.st?"settlement":"slum")+" costs $"+c+".");return 0}
+ money-=c;OUT=Math.min(.3,OUT+.02*z.lv);const n=z.st?4*z.lv:5*z.lv;delete SLUM[i];g[i]=0;dirty=1;
+ toast("🚜 "+(z.st?"Settlement":"Slum")+" cleared. "+n+" residents were displaced and the public is angry.",4500);return 1}
+function slumTool(i){const z=SLUM[i];
+ if(g[i]!=="slum"||!z){if(!dragging)toast("Click a slum (the 🏚️ shacks on empty land).");return 1}
+ if(tool=="sevict")return slumEvict(i);
+ if(z.st){toast("This slum is already a supported settlement.");return 1}
+ const c=200*z.lv;if(money<c){toast("Supporting this slum costs $"+c+".");return 0}
+ money-=c;z.st=1;dirty=1;toast("🤝 Supported! Water, power and legal status: "+4*z.lv+" cheap homes.",4500);return 1}
+function slumSpawn(){
+ const fac=Object.values(B).filter(b=>{const t=T[b.id];return t&&t.k=="f"&&t.pol>=2}).map(b=>{const r=rc(b);return[r.x+r.w/2,r.y+r.h/2]}),
+ tt=new Set(TR.map(q=>q.y*W+q.x)),L=[];let tw=0;
+ for(let i=0;i<W*H;i++){if(g[i]||hw[i]||rv[i]||BS[i]||TB[i]||tt.has(i))continue;
+  const x=i%W,y=i/W|0;let near=0,adj=0,riv=0;
+  for(let j=-2;j<=2;j++)for(let k=-2;k<=2;k++){const X=x+k,Y=y+j;if(X<0||Y<0||X>=W||Y>=H)continue;const q=g[Y*W+X];
+   if(q&&q!=="slum"&&(isB(q)||wk(q)))near++;
+   if(Math.abs(j)<=1&&Math.abs(k)<=1&&(j||k)){if(q==="slum")adj++;if(rv[Y*W+X]==1)riv=1}}
+  if(!near&&!adj)continue;
+  let w=1+Math.min(near,4)*.5+adj*2+riv*1.5;fac.forEach(([a,b])=>{if(Math.hypot(a-x,b-y)<5)w+=1.5});
+  L.push([i,w]);tw+=w}
+ if(!L.length)return 0;
+ let r=Math.random()*tw,pick=L[L.length-1][0];for(const[i,w]of L){r-=w;if(r<=0){pick=i;break}}
+ g[pick]="slum";SLUM[pick]={lv:1,st:0};dirty=1;SLCD=12+(Math.random()*10|0);
+ toast(SLT++?"🏚️ Another slum has appeared. There are more jobs than homes.":"🏚️ A slum has appeared! Your city is so popular that people who can’t find homes are building shacks illegally. Evict them 🚜 or support them 🤝 (Slums tab), or build more homes.",SLT>1?4000:9000);
+ return 1}
+function slumTick(){
+ OUT=Math.max(0,OUT-.0012);if(SLCD>0)SLCD--;
+ const ks=Object.keys(SLUM),il=ks.filter(k=>!SLUM[k].st);let ri=0;il.forEach(k=>ri+=5*SLUM[k].lv);
+ const ni=il.length,vac=S.jobs-pop-ri,want=pop>=25&&S.hap>=.7&&pop>=S.cap-2&&vac>=6;
+ if(want&&!SLCD&&ni<12&&ni<1+pop/40&&Math.random()<.06)slumSpawn();
+ else if(want&&ni&&Math.random()<.015){const c=il.filter(k=>SLUM[k].lv<3);if(c.length){SLUM[pk(c)].lv++;dirty=1;toast("🏚️ A slum is getting bigger…",3000)}}
+ if(ni&&(S.hap<.55||vac<-8)&&Math.random()<.1){const k=pk(il);delete SLUM[k];g[+k]=0;dirty=1;toast("🏚️ A slum emptied out — "+(S.hap<.55?"the city isn’t attractive any more.":"there’s no work left here."),4000)}
+ if(ni){
+  if(S.pl<.95&&Math.random()<Math.min(.06,.012*ni)){const l=Math.floor(Math.min(money*.02,400));if(l>0){money-=l;toast("🚨 Break-ins near the slums! Thieves took $"+l+".",4000)}}
+  if(S.hl<.9&&pop>=10&&Math.random()<Math.min(.04,.008*ni)){pop=Math.max(0,pop-Math.ceil(pop*.02));toast("🤒 Disease is spreading in the slums. Build a clinic or support them.",4000)}
+  if(S.fr<.8&&Math.random()<Math.min(.04,.004*ni)){const k=pk(il),z=SLUM[k];if(z){OUT=Math.min(.3,OUT+.02*z.lv);delete SLUM[k];g[+k]=0;dirty=1;toast("🔥 Fire swept through a slum with no fire engines nearby. "+5*z.lv+" people lost their homes.",4500)}}}}
+function slumRender(){
+ if(!SLG){const sp=(e,c)=>new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cvs(64,x=>{x.fillStyle="#fff";x.strokeStyle=c;x.lineWidth=4;x.beginPath();x.arc(32,32,26,0,7);x.fill();x.stroke();x.font="30px serif";x.textAlign="center";x.textBaseline="middle";x.fillText(e,32,35)})),depthTest:false});
+  SLG={b:new THREE.BoxGeometry(1,1,1),c:new THREE.CylinderGeometry(1,1,1,8),bad:sp("🏚️","#d6453d"),ok:sp("🤝","#2f8f4e")}}
+ const M=c=>SLM[c]||(SLM[c]=mat({color:c})),
+ WALL=[0x9a7b5a,0x7d8a94,0xb0573a,0x6f7f6a,0xa89270,0x5c6b7a,0xc4a35a],ROOF=[0x8a6a4a,0x6e7a82,0xa14a2f,0x4f6f8f,0x9aa3a8,0xb8643f],
+ TARP=[0x3b8fd9,0xf0a030,0x2f8f4e,0xd9433b],PAS=[0xf2a6a0,0xf2d27a,0x9ad4b0,0x9cc2f0,0xe9b6e0,0xf4c78f];
+ for(const k in SLUM){const z=SLUM[k],i=+k,x=i%W,y=i/W|0,G=new THREE.Group();let sd=(Math.imul(i+1,2654435761)+12345)>>>0;
+  const R=()=>{sd=(Math.imul(sd,1664525)+1013904223)>>>0;return sd/4294967296},P=a=>a[R()*a.length|0],
+  box=(w,h,d,c,px,py,pz,ry,rz)=>{const m=new THREE.Mesh(SLG.b,M(c));m.scale.set(w,h,d);m.position.set(px,py+h/2,pz);if(ry)m.rotation.y=ry;if(rz)m.rotation.z=rz;m.castShadow=m.receiveShadow=true;G.add(m);return m},
+  cyl=(r,h,c,px,py,pz)=>{const m=new THREE.Mesh(SLG.c,M(c));m.scale.set(r,h,r);m.position.set(px,py+h/2,pz);m.castShadow=true;G.add(m)};
+  box(.96,.012,.96,z.st?0xb9b4a6:0x6b5a45,0,0,0);
+  const sl=[];for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)sl.push([a*.3,b*.3]);
+  for(let j=sl.length-1;j>0;j--){const r=R()*(j+1)|0,t=sl[j];sl[j]=sl[r];sl[r]=t}
+  const n=2*z.lv;
+  for(let j=0;j<n;j++){const[sx,sz]=sl[j],w=.17+R()*.1,d=.15+R()*.1,h=.09+R()*.09+(z.st?.03:0),ry=(R()-.5)*(z.st?.2:.7),px=sx+(R()-.5)*.05,pz=sz+(R()-.5)*.05;
+   box(w,h,d,z.st?P(PAS):P(WALL),px,.012,pz,ry);
+   box(w+.04,.018,d+.04,z.st?P([0xc0583a,0x8f9aa3]):P(ROOF),px,.012+h,pz,ry,(R()-.5)*(z.st?.04:.25));
+   if(!z.st&&R()<.45)box(w*.7,.012,d*.9,P(TARP),px,.03+h,pz,ry,.1)}
+  const[ex,ez]=sl[n];
+  if(z.st){cyl(.065,.12,0x4fa8e0,.38,.2,.38);cyl(.012,.2,0x666666,.38,.012,.38);cyl(.012,.5,0x6b4a2a,-.4,.012,.38);box(.14,.015,.015,0x6b4a2a,-.4,.5,.38)}
+  else{box(.08,.08,.08,0x8a6a48,ex,.012,ez,R()*3);cyl(.04,.1,0x3b6fa0,ex+.1,.012,ez-.08)}
+  const sp=new THREE.Sprite(z.st?SLG.ok:SLG.bad);sp.scale.set(.38,.38,1);sp.position.set(0,.5+.08*z.lv,0);G.add(sp);
+  G.position.set(wx(x),E(i),wz(y));cityG.add(G)}}
+
 (function loop(){draw();requestAnimationFrame(loop)})();
 </script><style>
 #sn-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:21}#sn-m.on{display:flex}
@@ -1274,7 +1648,7 @@ COST=50000,pk=a=>a[Math.random()*a.length|0],mk=(t,x,c)=>{const e=document.creat
 let pend=-1,last=-1;
 const roll=()=>{let x=Math.random()*100,i=0;for(;i<4&&(x-=RAR[i][1])>=0;i++);return i},price=()=>(SEN.some(Boolean)||SF)&&!FREE?COST:0;
 function view(){const b=document.getElementById("sn-b");b.replaceChildren();const full=SEN.every(Boolean),pr=price();
- b.append(mk("b","🏛️ City Senate"),mk("small","Senators boost your city’s income. Total bonus: +"+Math.round((senMul()-1)*100)+"%"));
+ b.append(mk("b","🏛️ City Senate"),mk("small","Senators boost your city’s income. Total bonus: +"+Math.round((senMul()-1)*100)+"%"));b.append(window.lawBtn?window.lawBtn():"",window.scBox?window.scBox():"");
  const row=mk("div",null,"sn-row");
  SEN.forEach((q,i)=>{const c=mk("div",null,"sn-c"+(i==last?" new":""));
   if(q&&i==pend){c.className="sn-c cnt";c.append(mk("div","🗳️","sn-e"),mk("small","Counting ballots…"))}
@@ -1422,18 +1796,38 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.9.0",
+const VER="1.28.0",
 LOG=[
-["1.9.0","Toll booths & concert music",["New Toll Booth (Roads tab): click a straight stretch of highway to build a toll gantry. Every car that drives through pays $5 and slows down a little.","Concert Stage is now smaller (2×2) and cheaper ($9,000).","With ✋ No tool selected, click a Concert Stage to open a music player. The Built-in beats tab has four original instrumentals (two rage-trap style, two moody late-night style) made live in your browser: no files needed.","The two rage-trap beats are now much heavier: stacked synth leads, hard chord stabs, distorted 808s, crashes and risers. New Calm & relaxing tab with four soft original pieces: Slow Tide, Paper Lanterns, Quiet Rain and Morning Garden.","You can also add your own mp3 files under the Ken Carson and Drake tabs. Those are saved in your browser only. Music keeps playing after you close the player."]],
-["1.8.0","Concert stage & bridge fixes",["New Concert Stage (3×3) in Recreation: big screen, speakers, glowing stage lights and a crowd. Lights up at night.","Fixed: expanding your city no longer resets bridges and elevated roads back to normal roads.","Fixed: bulldozing a bridge or elevated road now restores the original terrain instead of leaving random raised land or raised water behind."]],
-["1.7.0","Race circuits",["New Motorsport section: Race Track, Grandstand and Pit Garage.","Drag to lay a circuit; tiles join up and curve on their own. Build a loop and race cars start racing around it.","Race cars use both sides of the track and speed through the corners."]],
-["1.6.0","Main menu & update log",["New main menu: continue, new city, save slots and this update log.","Version badge in the top bar so you can tell which update you're on."]],
-["1.5.0","More industry",["Greenhouse Farm, Brewery, Textile Mill, Data Center, Chemical Plant, Steel Mill, Oil Refinery and Auto Factory."]],
-["1.4.0","More energy",["Wind Farm, Solar Array, Gas Power Plant, Geothermal Plant and Nuclear Plant."]],
-["1.3.0","Mediterranean / N. Africa + ground picker",["New Mediterranean / N. Africa housing tab: Riad House, Blue-Wash House, Kasbah, Medina Row, Domed Villa, Souk Flats, Marrakech Tower.","Ground button in the top bar: grass, sand, desert, autumn, snow or rock."]],
-["1.2.0","Soviet / brutalist housing",["New Soviet housing tab: Dacha, Khrushchyovka, Panel Tower, Brutalist Slab, Stalinist Tower, Microdistrict, Brutalist Tower."]],
-["1.1.0","Schools & more housing",["Education split into Library, Elementary School, Secondary School, High School and University.","Three new homes for each of the Classic, European, American and Asian styles."]],
-["1.0.0","Base game",["Roads, housing, power and water, rivers, map expansions and landmarks."]]],
+["1.28.0","Slums & tile-by-tile ground",["New 🏚️ Slums. When your city is so good that there are more jobs than homes, people who can’t find housing build illegal shacks on empty land. Slums hurt happiness and bring break-ins, disease and fires.","You decide what to do. 🚜 Evict a slum ($60 a level, with a public outcry), or 🤝 Support it ($200 a level) to turn it into a legal settlement with cheap homes. Both tools are in the new 🏚️ Slums tab, and the bulldozer clears slums too. Click a slum with ✋ No tool to see details.","Slums keep coming back while jobs outnumber homes, so build more housing too.","Ground is now painted tile by tile. In Terrain & Trees → 🎨 Paint ground, pick a material and click or drag over just the tiles you want. Grass erases paint. The old whole-map ground button is gone."],"Nov 8, 2026"],
+["1.27.0","Ground picker in Terrain",["New 🎨 Ground section in the Terrain & Trees tab: click Grass, Sand, Desert, Autumn, Snow or Rock to switch the ground right away, no more cycling through them. The current ground is highlighted, and the 🌱 button in the top bar still works too."],"Nov 8, 2026"],
+["1.26.0","Car dealerships",["New 🚗 Auto section in the Commerce tab with 4 dealerships: Used Car Lot ($900), Car Dealership ($3,200), EV Dealership ($4,500, counts toward the Global Goals) and Luxury Motors Showroom ($12,000, 2×2).","Each one adds jobs, income and services, and the bigger ones get more of each. The Luxury Showroom also adds a little happiness."],"Nov 8, 2026"],
+["1.25.0","Cobblestone streets",["New 🪨 Cobblestone street in the Roads tab ($6 a tile): a wide stone-paved street for walking. Pedestrians stroll along it, cars don't drive on it, and buildings that touch it still count as connected.","Cobblestone joins up with roads, dirt roads and footpaths, and curves at corners like the other streets."],"Nov 8, 2026"],
+["1.24.1","Pricier skyscrapers",["All skyscrapers now cost twice as much, including the older tall towers (Skyline Residences, Glass Spire, Art Deco and Glass Skyscrapers, Twin Towers, Setback Highrise, Neon Heights, Stalinist and Brutalist Towers) and the new ones, plus the two office towers. Their capacity and income are unchanged, so they now take longer to pay back."],"Nov 8, 2026"],
+["1.24.0","Vets & 8 Spruce Street",["New 🎖️ Veterans Hospital in the Health tab ($8,000, 2×2): lots of health coverage plus +2 city pride.","New 🐾 Vet Clinic in the Health tab ($1,200): some health coverage, services and happiness for pet owners.","New 🏙️ 8 Spruce Street at the end of the American housing tab ($4,200): the rippling steel New York tower, holding 110 people and adding +3 city pride."],"Nov 8, 2026"],
+["1.23.0","Metro, Observation Tower & Sky Park",["New 🚇 Metro Station in the Railway tab ($3,800): a big boost to services that suits dense, tall districts. Counts toward the Global Goals.","New 🔭 Observation Tower in the Recreation tab ($7,000): a tall viewing tower that adds fun, income and +4 city pride.","New 🌳 Sky Park in the Recreation tab ($1,500): a raised garden with trees and a pond that freshens the air nearby. Counts toward the Global Goals."],"Nov 8, 2026"],
+["1.22.0","Skyscrapers",["9 new tall homes, added to the end of their housing tabs: Spire Residences (Classic), Gothic Tower Block (European), Supertall Condos and Pencil Tower (American), Bamboo Sky Garden (Asian), Twisting Tower and Arcology (Modern), Lotus Tower (Tropical) and Minaret Twin Towers (Mediterranean).","The Arcology is a 2×2 mega-block that holds 210 people. Bamboo Sky Garden and Arcology also count toward the Global Goals.","2 new office towers in the Commerce tab: the Financial Tower (1×1) and the Business Plaza Towers (2×2), with lots of jobs and income."],"Nov 8, 2026"],
+["1.21.0","Military & city pride",["New 🎖️ Pride stat. Military buildings and every landmark now boost city pride, which adds happiness and income. Pride shows in the top bar once you have some, and it has diminishing returns, capping at +15%.","New 🎖️ Military tab under Public Safety: Army Barracks, War Memorial, Parade Ground, Military Academy and Air Force Base.","Landmarks now add pride too: the Statue of Liberty gives +2 and the biggest landmark gives +10."],"Nov 8, 2026"],
+["1.20.0","More housing & Night Market",["14 new homes in two new Housing tabs. 🏙️ Modern: Tiny House, Container Homes, Modern Villa, Co-living Block, Passive Townhouses, Terrace Gardens and Glass Residences. 🌺 Tropical: Stilt House, Beach Bungalow, Teak Pavilion Villa, Longhouse Row, Palm Condos, Resort Villas and Seaview Tower.","Homes range from $90 (Tiny House, room for 3) to $1,650 (Glass Residences, room for 58). Tiny House, Container Homes, Co-living Block, Passive Townhouses and Terrace Gardens also count toward the Global Goals.","New 🏮 Night Market in the Commerce tab ($900): street-food stalls with glowing lights that add jobs, income and a big boost to services."],"Nov 8, 2026"],
+["1.19.0","Global Goals (UN SDGs)",["New 🌍 SDGs button in the top bar: a dashboard that scores your city from 0 to 100 on all 17 UN Sustainable Development Goals. Reach 80 on a goal to achieve it: $5,000 once, plus +1.2% income and +0.6% happiness for every goal you hold. All 17 unlocks Agenda 2030: $250,000 and extra bonuses.","New 🌍 Global Goals build tab with 33 buildings and 3 plants: Social Housing, Food Bank, Job Training Center, Childcare Center, Women’s Enterprise Hub, Wellbeing Center, Community Center, Community Garden, Farmers Market, Vertical Farm, Wastewater Recycling, Public Fountain, Battery Storage, Biogas Plant, Community Solar Co-op, EV Charging Station, Carbon Capture Plant, Composting Facility, Repair Café, Eco Apartments, Wildlife Reserve, Wetland Reserve, Tree Nursery, Marine Research Station, Co-working Hub, Innovation Lab, Fibre Internet Hub, Bus Interchange, Bike Share Hub, Legal Aid Office, Open Government Hall, NGO Partnership Center, Global Summit Hall, plus Mangrove, Bamboo and Wildflower Meadow.","Many existing buildings (hospitals, schools, wind and solar, water plants, parks, police and more) now also count toward the goals.","The Daily news has an SDG progress line, and the info bar shows which goals a building supports."],"Nov 8, 2026"],
+["1.18.0","Protests & riots",["Unhappy citizens now protest. A crowd with signs appears on the map next to the building they are angry about: the Town Hall for jobs, crime, schools, taxes and budget cuts, a power plant for blackouts, a water plant for shortages, factories for smog, or homes for the rest. A floating label says why.","If a protest isn't fixed in 3 days it turns into a riot: flames, a red zone, damage every day and −3% income and happiness per riot.","Fix the cause and the protest ends by itself. The City hub has an Unrest list with the location, reason and how to fix it, and you can send police ($1,500) if you have a Police Station.","Tax Hike laws and budget cuts can also cause protests. New protests and riots appear in the Daily news."],"Nov 8, 2026"],
+["1.17.0","Rival cities replace disasters",["Disasters and emergency votes are gone.","New 🏁 Regional rankings in the City hub: three rival cities grow every day and you are ranked against them by population. Weekly prizes: #1 $15,000, #2 $5,000, #3 $1,500.","Being #1 makes you the Regional Capital: +4% income and +2% happiness while you stay on top.","Sign trade deals with rivals ($8,000, or $4,000 with the Diplomacy tech, 10 days, max 2) for +4% income each. Rivals speed up if you run far ahead, so the race stays tight.","Rank changes and weekly prizes show in the Daily news."],"Nov 8, 2026"],
+["1.16.0","City hub: research, leagues, citizens & budget",["New 🏙️ City hub button in the top bar with five new systems.","Research: 5 techs that take days to finish and boost income, happiness or trade deals.","Sports leagues: every 10 games your team goes to the playoffs. A title gives $20,000 and a parade.","Citizen stories: three named citizens whose lives follow your city. Happy ones donate, unhappy ones leave.","Budget sliders for police, health and education, plus loans with 2% daily interest."],"Nov 8, 2026"],
+["1.15.0","Senator elections & scandals",["Election Day every 7 days of Daily news: each senator's approval from Senate watch decides whether they are re-elected. Unpopular senators are voted out and their seat becomes vacant.","Random scandals: a senator can get caught up in one. Open the City Senate to defend them for $5,000 or fire them. Ignore it and they take a big hit on Election Day.","The City Senate shows a countdown to the next election, and Election Day results and scandals appear in the Daily news."],"Nov 8, 2026"],
+["1.14.1","Easier to find Laws",["New glowing 📜 Laws button in the top bar, so you can reach Senate Laws without opening the Senate first.","The Laws button inside the City Senate is now bigger, brighter and sits at the top."],"Nov 8, 2026"],
+["1.14.0","Senate Laws",["New 📜 Senate Laws button inside the City Senate (click your Town Hall or Capitol with ✋ No tool selected). Propose laws and your elected senators vote on them.","Five laws: Tax Hike, Green Deal, Free Trade Act, City Festival Season and Building Boom. Each one changes your income and happiness, and only 2 can be in force at once, so you have to pick a strategy.","Every senator votes by their trait (Fiscal hawk, Master builder, Green champion, Free-trade fan, Silver-tongued orator, Budget wizard). Rarer senators carry more weight, and a Secret senator always votes yes.","A failed bill still costs you half the lobbying fee. Laws in force show up in the Senate watch of the Daily news."],"Nov 8, 2026"],
+["1.13.0","Derbies & double-header stadiums",["Fixed: building two or more stadiums of the same type (like two Football Stadiums) no longer gets ignored. Every connected stadium now hosts its own game.","Each stadium has its own team, with its own season record, and its own crowd.","Derby days: two stadiums of the same sport can have their teams play each other (sold-out crowds, 🔥 city split, DERBY tag in the Sports desk).","Otherwise both teams play at the same time against outside opponents. A stadium with no road is postponed on its own, without stopping the others."],"Nov 8, 2026"],
+["1.12.0","Senate watch uses your real senators",["Senate watch in the Daily news shows the thoughts of the senators you actually elected in the City Senate.","Citizens react to each senator's trait (Fiscal hawk, Master builder, Green champion and so on) and give an approval rating. Rarer senators get a little more love, and Secret senators are a mystery.","No senators yet? The news tells you to elect one at your Town Hall or Capitol."],"Nov 8, 2026"],
+["1.10.0","Daily news & stadium scores",["New 📰 News button in the top bar: a new Daily edition comes out every morning at sunrise, with a red dot when there's something unread. The last 7 editions are kept so you can look back.","Each edition has a headline, happy citizens, mayor approval, population and income with day-to-day changes, plus Street talk quotes from citizens and a What citizens think bar chart.","New Sports desk with live stadium scores: build a Football Stadium, Basketball Arena, Hockey Arena or Baseball Stadium and your home team plays every day, with the score, a win/loss/draw tag, the crowd size and the season record. The venue needs a road connection or the game is postponed.","Your racing circuit and Concert Stage also make the news: Grand Prix winners and who played the stage."],"Nov 8, 2026"],
+["1.9.0","Toll booths & concert music",["New Toll Booth (Roads tab): click a straight stretch of highway to build a toll gantry. Every car that drives through pays $5 and slows down a little.","Concert Stage is now smaller (2×2) and cheaper ($9,000).","With ✋ No tool selected, click a Concert Stage to open a music player. The Built-in beats tab has four original instrumentals (two rage-trap style, two moody late-night style) made live in your browser: no files needed.","The two rage-trap beats are now much heavier: stacked synth leads, hard chord stabs, distorted 808s, crashes and risers. New Calm & relaxing tab with four soft original pieces: Slow Tide, Paper Lanterns, Quiet Rain and Morning Garden.","You can also add your own mp3 files under the Ken Carson and Drake tabs. Those are saved in your browser only. Music keeps playing after you close the player."],"Nov 8, 2026"],
+["1.8.0","Concert stage & bridge fixes",["New Concert Stage (3×3) in Recreation: big screen, speakers, glowing stage lights and a crowd. Lights up at night.","Fixed: expanding your city no longer resets bridges and elevated roads back to normal roads.","Fixed: bulldozing a bridge or elevated road now restores the original terrain instead of leaving random raised land or raised water behind."],"Nov 7, 2026"],
+["1.7.0","Race circuits",["New Motorsport section: Race Track, Grandstand and Pit Garage.","Drag to lay a circuit; tiles join up and curve on their own. Build a loop and race cars start racing around it.","Race cars use both sides of the track and speed through the corners."],"Nov 7, 2026"],
+["1.6.0","Main menu & update log",["New main menu: continue, new city, save slots and this update log.","Version badge in the top bar so you can tell which update you're on."],"Nov 7, 2026"],
+["1.5.0","More industry",["Greenhouse Farm, Brewery, Textile Mill, Data Center, Chemical Plant, Steel Mill, Oil Refinery and Auto Factory."],"Nov 7, 2026"],
+["1.4.0","More energy",["Wind Farm, Solar Array, Gas Power Plant, Geothermal Plant and Nuclear Plant."],"Nov 7, 2026"],
+["1.3.0","Mediterranean / N. Africa + ground picker",["New Mediterranean / N. Africa housing tab: Riad House, Blue-Wash House, Kasbah, Medina Row, Domed Villa, Souk Flats, Marrakech Tower.","Ground button in the top bar: grass, sand, desert, autumn, snow or rock."],"Nov 7, 2026"],
+["1.2.0","Soviet / brutalist housing",["New Soviet housing tab: Dacha, Khrushchyovka, Panel Tower, Brutalist Slab, Stalinist Tower, Microdistrict, Brutalist Tower."],"Nov 7, 2026"],
+["1.1.0","Schools & more housing",["Education split into Library, Elementary School, Secondary School, High School and University.","Three new homes for each of the Classic, European, American and Asian styles."],"Nov 7, 2026"],
+["1.0.0","Base game",["Roads, housing, power and water, rivers, map expansions and landmarks."],"Nov 7, 2026"]],
 q=id=>document.getElementById(id),
 ek=n=>n==1?"tinymetro1":"tinymetro1_s"+n,
 sv=()=>{try{return localStorage.getItem("tm_seen")}catch(e){return null}},
@@ -1445,7 +1839,7 @@ function openLog(){
  const b=q("ul-box");b.replaceChildren();
  b.append(mk("h3","📜 Update log"));
  const c=mk("div",null,"ul-cur");c.append("You're on version ");c.append(Object.assign(mk("b","v"+VER)));c.append(" (the newest in this file).");b.append(c);
- LOG.forEach(([v,t,ls],i)=>{const d=mk("div",null,"ul-v"),h=mk("b","v"+v+" — "+t);if(i==0)h.append(mk("i","NEW"));d.append(h);const u=mk("ul");ls.forEach(l=>u.append(mk("li",l)));d.append(u);b.append(d)});
+ LOG.forEach(([v,t,ls,dt],i)=>{const d=mk("div",null,"ul-v"),h=mk("b","v"+v+" — "+t);if(i==0)h.append(mk("i","NEW"));d.append(h);if(dt){const e=mk("small",dt);e.style.cssText="display:block;color:var(--mut);font-weight:400;margin:1px 0 3px";d.append(e)}const u=mk("ul");ls.forEach(l=>u.append(mk("li",l)));d.append(u);b.append(d)});
  const x=mk("button","Close");x.onclick=closeLog;b.append(x);
  q("ul").classList.add("on");try{localStorage.setItem("tm_seen",VER)}catch(e){}upd();if(window.MENU)menu()}
 function closeLog(){q("ul").classList.remove("on")}
@@ -1598,6 +1992,346 @@ $q("mp-f").onchange=async e=>{for(const f of e.target.files)await add({artist:se
 $q("mp-x").onclick=()=>$q("mp-m").classList.remove("on");$q("mp-m").onclick=e=>{if(e.target.id=="mp-m")e.target.classList.remove("on")};
 window.openMusic=()=>{render();$q("mp-m").classList.add("on")};
 idb().then(d=>{db=d;return all()}).then(a=>{lib=a;render()});
+})();
+</script>
+<script>
+(()=>{
+const NK=K+"_news",esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let N={day:0,eds:[],rec:{},un:0},vi=0;
+try{const d=JSON.parse(localStorage.getItem(NK));if(d&&Array.isArray(d.eds))N=Object.assign(N,d)}catch(e){}
+const store=()=>{try{localStorage.setItem(NK,JSON.stringify(N))}catch(e){}},badge=()=>$("nwd").textContent=N.un?"●":"";
+const hash=s=>{let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0};
+const rng=a=>()=>{a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const NEED=[
+["j","Jobs","💼",.8,["I’ve sent out fifty applications and nobody is hiring.","There just aren’t enough jobs in this town."],["Plenty of work around. I got hired within a week."]],
+["s","Shops","🛍️",.8,["I walk ages to find a decent shop.","Where do people even buy groceries here?"],["The shops are great. I can get everything nearby."]],
+["a","Clean air","🌫️",.8,["The factory smog is making me cough.","My washing comes off the line grey. Move those factories!"],["The air is so fresh, I opened every window."]],
+["q","Homes","🏠",.7,["My flat is cramped and the landlord fixes nothing.","Rents keep rising and the homes aren’t getting any nicer."],["Lovely neighbourhood. We’re so glad we moved here."]],
+["r","Fun","🎡",.7,["There’s nothing to do here at the weekend.","We need a park, a pool, anything fun."],["So much to do. We’re never bored."]],
+["pw","Power","⚡",.98,["The lights flickered again during dinner.","Another blackout. Who is running the power here?"],["Not one flicker all month. Good work."]],
+["wt","Water","💧",.98,["The water pressure is awful and the taps keep sputtering.","We can’t drink what comes out of the tap."],["Clean water on tap. It’s the little things."]],
+["pl","Safety","🚓",.8,["Someone stole my bike. Where are the police?","I don’t walk home after dark any more."],["I feel safe walking anywhere, even at night."]],
+["fr","Fire safety","🚒",.8,["If a fire starts here, we’re doomed.","A kitchen fire nearly spread down the whole street."],["The fire crew was round in minutes at the drill. Impressive."]],
+["hl","Health","🏥",.8,["My neighbour is ill and the nearest doctor is miles away.","This town needs a proper hospital."],["The clinic looked after my mum so well."]],
+["ed","Schools","🎓",.6,["My kids have nowhere to go to school.","Class sizes are huge. We need more schools."],["The teachers here are wonderful. My kids love school."]]];
+const HL={j:"Job queues grow as work dries up",s:"Shoppers find empty shelves",a:"Smog settles over the city",q:"Residents unhappy with their homes",r:"Bored residents demand more to do",pw:"Lights out! Power shortage hits the city",wt:"Taps run dry as water falls short",pl:"Crime worries residents",fr:"Fire fears grow without enough stations",hl:"Residents call for a hospital",ed:"Parents demand schools for their kids"};
+const NM=["Maria","Ken","Aisha","Tom","Lena","Omar","Priya","Jack","Sofia","Wei","Dana","Rui"],JB=["baker","bus driver","nurse","teacher","barista","mechanic","student","retiree","shopkeeper","courier","engineer","barber"];
+const RN=["Regular","Epic","Mythical","Legendary","Secret"],SEC=[["Nobody has ever seen {S}, yet somehow the city runs.","No one can say what {S} does, but my taxes feel lower."],["Who is {S}? Nobody knows, and nothing is getting done.","{S} is a ghost, and the city is paying for it."]];
+const STM={"Fiscal hawk":[["j","s"],["{S} counts every penny, yet I still can't find work.","Great at saving money, {S}, but where are the shops?"],["{S} keeps the books balanced and the jobs coming.","Jobs and shops everywhere. {S} gets the economy."]],
+"Master builder":[["q","pw","wt"],["{S} loves a ribbon cutting, but my flat is cramped and the lights flicker.","Build, build, build, yet my taps still sputter, {S}."],["Solid homes and steady power. {S} builds things that work.","Good homes, clean water. {S} earns the title."]],
+"Green champion":[["a","r"],["{S} talks green, but I can taste the smog.","No parks, no fresh air. Where is the green, {S}?"],["Clean air and lovely parks. {S} delivers.","I can finally breathe in this city. Thank you, {S}."]],
+"Free-trade fan":[["s","j"],["Free trade, says {S}. Empty shelves, say I.","The shops are bare and so are the job boards, {S}."],["Busy shops, busy docks. {S} was right about trade.","Everything is on the shelves. {S} knows markets."]],
+"Silver-tongued orator":[null,["{S} gives lovely speeches, but they don't fix my day.","All talk, {S}. Where are the results?"],["{S} made a speech and, for once, things really are good.","A great speaker and a happy city. Well done, {S}."]],
+"Budget wizard":[["pl","fr","hl","ed"],["The budget is magic, {S}, but where are the police, doctors and schools?","{S} found money for everything except my clinic."],["Police, fire crews, clinics and schools, all funded. {S} is a real wizard.","Public services that work. {S} deserves a raise."]]};
+const OPP=["Riverton","Ashford","Port Calder","Northgate","Maple Bay","Stonebridge","Redhill","Lakemont","Ironvale","Sunhaven"];
+const SPT=[["std","⚽","Football",9000,["United","Rovers","Athletic","Wanderers"],["Albion","Town","Rangers","Orient"]],
+["bball","🏀","Basketball",6500,["Skyliners","Aces","Dunkers","Hoopers"],["Giants","Pilots","Lynx","Chargers"]],
+["hockey","🏒","Hockey",6000,["Blades","Icebreakers","Frost","Wolves"],["Bruisers","Pucks","Storm","Falcons"]],
+["base","⚾","Baseball",9500,["Sluggers","Kites","Foxes","Harbors"],["Miners","Rovers","Owls","Lancers"]]];
+function score(id,win,R){const ri=(a,b)=>a+Math.floor(R()*(b-a+1));let w,l;
+ if(id=="std"){if(win===null)w=l=ri(0,3);else{w=ri(1,5);l=ri(0,w-1)}}
+ else if(id=="bball"){w=ri(88,124);l=w-ri(2,22)}
+ else if(id=="hockey"){w=ri(2,6);l=ri(0,w-1)}
+ else{w=ri(3,11);l=ri(0,w-1)}
+ return win===null||win?[w,l]:[l,w]}
+function make(){
+ const day=++N.day,city=$("name").value||"Your city",R=rng(hash(city)+day*7919),pk=a=>a[Math.floor(R()*a.length)],s=S,pv=N.eds[N.eds.length-1],hap=s.hap||0,
+  take=(a,k)=>{a=a.slice();const o=[];while(a.length&&o.length<k)o.push(a.splice(Math.floor(R()*a.length),1)[0]);return o},
+  quotes=[];let head="";
+ const need=NEED.map(n=>[n,s[n[0]]]).filter(x=>isFinite(x[1])),bad=need.filter(x=>x[1]<x[0][3]).sort((a,b)=>a[1]-b[1]),good=need.filter(x=>x[1]>=.9&&x[1]>=x[0][3]);
+ if(pop>=1){
+  const negs=bad.slice(0,3),gn=negs.length?Math.max(1,Math.min(2,4-negs.length)):3;
+  negs.forEach(([n])=>quotes.push({w:pk(NM)+", "+pk(JB),e:n[2],l:n[1],t:pk(n[4]),n:1}));
+  take(good,gn).forEach(([n])=>quotes.push({w:pk(NM)+", "+pk(JB),e:n[2],l:n[1],t:pk(n[5]),n:0}));
+  const ms=[100,250,500,1000,2500,5000].filter(m=>pop>=m&&(!pv||pv.m.pop<m)).pop();
+  head=bad.length&&bad[0][1]<.7?HL[bad[0][0][0]]:ms?city+" passes "+ms.toLocaleString()+" citizens":hap>=.9?city+" is thriving, says the daily poll":""}
+ else head="The city waits for its first residents";
+ const act=id=>Object.keys(B).filter(u=>B[u].id==id),sp=[];
+ SPT.forEach(([id,e,nm,cap,home,away])=>{const bs=act(id);if(!bs.length)return;
+  const cs=bs.filter(u=>okB[u]);
+  if(!cs.length){sp.push({e,t:nm,l:"Game postponed: the venue isn’t connected to a road.",x:""});return}
+  if(bs.length>cs.length){const k=bs.length-cs.length;sp.push({e,t:nm,l:"Game postponed: "+k+" venue"+(k>1?"s aren’t":" isn’t")+" connected to a road.",x:""})}
+  const n0=sp.length,h0=hash(city+id),tn=i=>city+" "+home[(h0+i)%home.length]+(i>=home.length?" "+(Math.floor(i/home.length)+1):""),
+   rk=i=>{const k=i?id+"#"+i:id;return N.rec[k]=N.rec[k]||[0,0]},[cr0,ed0]={std:[3,1],hockey:[3,1],base:[6,1],bball:[15,3]}[id],
+   verb=(win,m)=>win===null?"drew with":win?(m>=cr0?"crushed":m<=ed0?"edged":"beat"):(m>=cr0?"were crushed by":m<=ed0?"narrowly lost to":"fell to"),
+   crowd=k=>Math.min(cap,Math.round((pop*4+400)*(.6+.4*hap)*(.8+.4*R())*k)),
+   rs=r=>"Season "+r[0]+"–"+r[1]+(id=="std"?"–"+(r[2]|0):""),
+   reg=i=>{const dr=id=="std"&&R()<.2,win=dr?null:R()<.35+.3*hap,[h,a]=score(id,win,R),r=rk(i);if(win===null)r[2]=(r[2]|0)+1;else win?r[0]++:r[1]++;
+    const c=crowd(1);sp.push({e,t:nm,l:tn(i)+" "+verb(win,Math.abs(h-a))+" "+pk(OPP)+" "+pk(away),sc:h+"–"+a,w:win===null?2:win?1:0,x:"Crowd "+c.toLocaleString()+(c>=cap?" · sold out 🎟️":"")+" · "+rs(r)})},
+   derby=i=>{const d=id=="std"&&R()<.2,win=d?null:R()<.5,[h,a]=score(id,win,R),A=rk(i),Z=rk(i+1);
+    if(win===null){A[2]=(A[2]|0)+1;Z[2]=(Z[2]|0)+1}else if(win){A[0]++;Z[1]++}else{A[1]++;Z[0]++}
+    const c=crowd(1.25);sp.push({e,t:nm,dy:1,l:"DERBY: "+tn(i)+" "+verb(win,Math.abs(h-a))+" "+tn(i+1),sc:h+"–"+a,w:2,x:"Crowd "+c.toLocaleString()+(c>=cap?" · sold out 🎟️":"")+" · the city is split 🔥 · "+tn(i)+" "+rs(A)+" · "+tn(i+1)+" "+rs(Z)})};
+  for(let i=0;i<cs.length;i+=2){if(i+1<cs.length&&R()<.4)derby(i);else{reg(i);if(i+1<cs.length)reg(i+1)}}
+  if(sp.length-n0>1)for(let k=n0;k<sp.length;k++)if(sp[k].sc)sp[k].x+=" · ⏱️ kicked off at the same time"});
+ if(act("grand1").some(u=>okB[u])&&g.includes("trk")){const D=["R. Alonzo","K. Tanaka","M. Ferreira","L. Okafor","S. Brandt","J. Moreau"],[a,b]=take(D,2);
+  sp.push({e:"🏁",t:"Racing",l:a+" wins the "+city+" Grand Prix",x:"Runner-up "+b+" · fastest lap 1:"+(10+Math.floor(R()*40))+"."+String(Math.floor(R()*1000)).padStart(3,"0")})}
+ if(act("concert").some(u=>okB[u]))sp.push({e:"🎤",t:"Concert",l:pk(["The Neon Owls","DJ Marmalade","Velvet Static","Aurora Lane","The Paper Kites"])+" played the Concert Stage",x:"Crowd "+Math.min(3500,Math.round((pop*3+200)*(.6+.4*hap)*(.8+.4*R()))).toLocaleString()+" · "+pk(["encore!","a night to remember","the crowd sang every word"])});
+ const sn=[];if(pop>=1)SEN.forEach((q,qi)=>{if(!q)return;const f=STM[q.t]||STM["Silver-tongued orator"],v=f[0]?f[0].reduce((t,k)=>t+(isFinite(s[k])?s[k]:0),0)/f[0].length:hap,ok=v>=.8,pool=q.r==4?SEC[ok?0:1]:ok?f[2]:f[1];sn.push({qi,n:q.n,rn:RN[q.r]||"Regular",f:q.t,ap:Math.max(0,Math.min(100,Math.round(v*100+q.r*3+(R()-.5)*12))),pos:ok,t:pk(pool).replace(/\{S\}/g,q.n)})});
+ const ev=[];if(window.senEvents)window.senEvents(day,sn,ev,R);(window.DH||[]).forEach(f=>f(day,R,ev,sp,s));if(!head&&ev.length)head=ev[0];
+ if(!head){const gm=sp.find(x=>x.dy)||sp.find(x=>x.sc);head=gm?gm.l+" "+gm.sc:"A quiet day in "+city}
+ N.eds.push({d:day,city,head,q:quotes,sp,sn,lw:window.lawsOn?window.lawsOn():[],ev,m:{hap:Math.round(hap*100),appr:Math.max(0,Math.min(100,Math.round(hap*100+(R()-.5)*10))),pop:Math.floor(pop),inc:Math.round((s.inc||0)*120),needs:pop>=1?NEED.map(n=>Math.round((s[n[0]]||0)*100)):null}});
+ if(N.eds.length>7)N.eds.shift();store()}
+const st=document.createElement("style");st.textContent=`#nwb{font:inherit;font-weight:600;color:var(--ink);background:none;border:1px solid var(--line);border-radius:8px;padding:3px 10px;cursor:pointer}#nwd{color:var(--bad);font-style:normal;margin-left:4px}
+#nw{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:30;padding:12px;box-sizing:border-box}#nw.on{display:flex}
+#nwp{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;width:min(100%,780px);max-height:min(90vh,840px);overflow:auto;padding:14px 18px 18px;box-sizing:border-box}
+.nw-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:3px double var(--line);padding-bottom:8px}.nw-top b{font:700 26px Fredoka,system-ui,sans-serif}
+.nw-nav{display:flex;align-items:center;gap:8px;color:var(--mut)}.nw-nav button{font:inherit;color:var(--ink);background:none;border:1px solid var(--line);border-radius:8px;padding:2px 8px;cursor:pointer}.nw-nav button:disabled{opacity:.4;cursor:default}
+.nw-h{font:700 24px/1.2 Fredoka,system-ui,sans-serif;margin:12px 0 8px}
+.nw-st{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.nw-st div{border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg)}.nw-st small{display:block;color:var(--mut);font-size:11px}.nw-st b{font:700 20px Fredoka,system-ui,sans-serif;margin-right:6px}
+.nw-st i,.nw-sp em{font-style:normal;font-size:11px;color:var(--mut)}.up{color:var(--good)!important}.dn{color:var(--bad)!important}
+.nw-g{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}.nw-g h3,.nw-w h3{font:700 16px Fredoka,system-ui,sans-serif;margin:0 0 8px}
+.nw-q{margin:0 0 10px;padding-left:10px;border-left:3px solid var(--line)}.nw-q.neg{border-color:var(--bad)}.nw-q.pos{border-color:var(--good)}.nw-q small{display:block;color:var(--mut);margin-top:2px}
+.nw-sp{margin:0 0 10px;padding:6px 10px;border:1px solid var(--line);border-radius:10px}.nw-sp small{display:block;color:var(--mut)}.nw-sp em{font-weight:700;margin-right:6px}.nw-sc{float:right;font:700 16px Fredoka,system-ui,sans-serif;margin-left:8px}
+.nw-e{color:var(--mut);margin:0}.nw-w{margin-top:6px}.nw-b{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}.nw-b div{display:grid;grid-template-columns:96px 1fr 36px;align-items:center;gap:8px;font-size:12px}.nw-b i{display:block;height:8px;background:var(--line);border-radius:4px;overflow:hidden}.nw-b u{display:block;height:100%}.nw-b em{font-style:normal;color:var(--mut);text-align:right}
+.nw-sn{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.nw-sn b{font-weight:700}
+@media(max-width:640px){.nw-sn,.nw-g,.nw-b{grid-template-columns:1fr}.nw-st{grid-template-columns:1fr 1fr}}`;document.head.append(st);
+const ov=document.createElement("div");ov.id="nw";ov.innerHTML='<div id="nwp" role="dialog" aria-label="Daily news"></div>';document.body.append(ov);
+const tr=(c,p)=>p==null?"":c>p?`<i class="up">▲ ${c-p}</i>`:c<p?`<i class="dn">▼ ${p-c}</i>`:"<i>no change</i>";
+function render(){const e=N.eds[vi],p=N.eds[vi-1],m=e.m,pm=p&&p.m;
+ $("nwp").innerHTML=`<div class="nw-top"><b>📰 ${esc(e.city)} Daily</b><span class="nw-nav"><button data-n="-1" ${vi?"":"disabled"}>◀ Older</button>Day ${e.d}<button data-n="1" ${vi<N.eds.length-1?"":"disabled"}>Newer ▶</button><button data-n="x" aria-label="Close">✕</button></span></div>
+<h2 class="nw-h">${esc(e.head)}</h2>
+<div class="nw-st"><div><small>Happy citizens</small><b>${m.hap}%</b>${tr(m.hap,pm&&pm.hap)}</div><div><small>Mayor approval</small><b>${m.appr}%</b>${tr(m.appr,pm&&pm.appr)}</div><div><small>Citizens</small><b>${m.pop}</b>${tr(m.pop,pm&&pm.pop)}</div><div><small>Income per day</small><b>$${m.inc.toLocaleString()}</b>${tr(m.inc,pm&&pm.inc)}</div></div>
+<div class="nw-g"><section><h3>🗣️ Street talk</h3>${e.q.length?e.q.map(q=>`<blockquote class="nw-q ${q.n?"neg":"pos"}">“${esc(q.t)}”<small>${esc(q.w)} · ${q.e} ${q.l}</small></blockquote>`).join(""):'<p class="nw-e">No citizens yet, so nobody to interview.</p>'}</section>
+<section><h3>🏟️ Sports desk</h3>${e.sp.length?e.sp.map(x=>`<div class="nw-sp"><b>${x.dy?`<em>⚔️</em>`:x.sc?`<em class="${x.w==1?"up":x.w==2?"":"dn"}">${"LWD"[x.w]}</em>`:""}${x.e} ${esc(x.l)}</b>${x.sc?`<span class="nw-sc">${x.sc}</span>`:""}<small>${esc(x.x)}</small></div>`).join(""):'<p class="nw-e">No teams yet. Build a Football Stadium, Basketball Arena, Hockey Arena or Baseball Stadium (Recreation) and their results will appear here every day.</p>'}</section></div>
+<section class="nw-w"><h3>🏛️ Senate watch & city events</h3>${(e.sn||[]).length?`<div class="nw-sn">${e.sn.map(x=>`<blockquote class="nw-q ${x.pos?"pos":"neg"}">“${esc(x.t)}”<small><b>${esc(x.n)}</b> · ${esc(x.rn||"")} · ${esc(x.f)} · ${x.ap}% approve</small></blockquote>`).join("")}</div>`:`<p class="nw-e">${e.m.pop<1?"No citizens yet, so nobody to ask about the senators.":"No senators yet. Click your Town Hall or Capitol (with ✋ No tool selected) and hold an election."}</p>`}${(e.lw||[]).length?`<p class="nw-e">📜 Laws in force: ${e.lw.map(esc).join(" · ")}</p>`:""}${(e.ev||[]).map(x=>`<p class="nw-e">${esc(x)}</p>`).join("")}</section>
+${m.needs?`<section class="nw-w"><h3>What citizens think</h3><div class="nw-b">${NEED.map((n,i)=>{const v=m.needs[i];return`<div><span>${n[2]} ${n[1]}</span><i><u style="width:${v}%;background:var(--${v<n[3]*100?"bad":v>=90?"good":"warn"})"></u></i><em>${v}%</em></div>`}).join("")}</div></section>`:""}`}
+const open=()=>{if(!N.eds.length)make();vi=N.eds.length-1;N.un=0;store();badge();render();ov.classList.add("on")},close=()=>ov.classList.remove("on");
+$("nwb").onclick=open;
+ov.onclick=e=>{if(e.target==ov)return close();const b=e.target.closest("[data-n]");if(!b)return;if(b.dataset.n=="x")return close();vi+=+b.dataset.n;render()};
+addEventListener("keydown",e=>{if(e.key=="Escape"&&ov.classList.contains("on")){close();e.stopImmediatePropagation()}},true);
+const nw0=$("new").onclick;$("new").onclick=e=>{const r=!!e.target.dataset.s;nw0(e);if(r){N={day:0,eds:[],rec:{},un:0};store();badge()}};
+let pt=TOD;setInterval(()=>{if(AUTO&&!sdrag&&!window.MENU&&pt<6&&TOD>=6&&TOD-pt<1){make();N.un=1;store();badge();toast("📰 Day "+N.day+" edition is out. Tap News to read it.",4500)}pt=TOD},500);
+badge();
+window.tmDay=()=>N.day;
+})();
+</script>
+<style>
+#lwb{font:inherit;font-weight:700;color:#fff;background:var(--acc);border:1px solid var(--acc);border-radius:8px;padding:3px 10px;cursor:pointer}#lwb.pulse,.lw-go{animation:lwp 1.6s infinite}
+.sn-box button.lw-go{background:var(--acc);color:#fff;font-size:17px;padding:12px 14px;box-shadow:0 0 0 0 var(--acc)}
+@keyframes lwp{0%{box-shadow:0 0 0 0 rgba(255,200,60,.8)}70%{box-shadow:0 0 0 10px rgba(255,200,60,0)}100%{box-shadow:0 0 0 0 rgba(255,200,60,0)}}
+#lw-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:23}#lw-m.on{display:flex}
+.lw-box{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:16px;width:min(94vw,560px);max-height:86vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.lw-box button{font:inherit;font-weight:600;color:var(--ink);background:var(--bg);border:2px solid var(--acc);border-radius:10px;padding:6px 10px;cursor:pointer}.lw-box button:disabled{opacity:.5;cursor:default}
+.lw-r{border:2px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;background:var(--bg)}.lw-r.on{border-color:var(--good)}.lw-r small{color:var(--mut)}.lw-v{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px}
+</style>
+<div id="lw-m"><div class="lw-box" id="lw-b"></div></div>
+<script>
+(()=>{
+const LK=K+"_laws",q=id=>document.getElementById(id),MAXL=2,WT=[1,1.5,2,3,4],
+mk=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e},
+LAWS=[{id:"tax",n:"Tax Hike",e:"💸",d:"+25% income, −8% happiness",i:1.25,h:.92,pro:["Fiscal hawk","Budget wizard"],con:["Silver-tongued orator","Free-trade fan"]},
+{id:"green",n:"Green Deal",e:"🌿",d:"+8% happiness, −10% income",i:.9,h:1.08,pro:["Green champion"],con:["Fiscal hawk","Free-trade fan"]},
+{id:"trade",n:"Free Trade Act",e:"🚢",d:"+20% income, −3% happiness",i:1.2,h:.97,pro:["Free-trade fan","Master builder"],con:["Green champion"]},
+{id:"fest",n:"City Festival Season",e:"🎉",d:"+10% happiness, −8% income",i:.92,h:1.1,pro:["Silver-tongued orator","Green champion"],con:["Fiscal hawk","Budget wizard"]},
+{id:"build",n:"Building Boom",e:"🏗️",d:"+15% income, −5% happiness",i:1.15,h:.95,pro:["Master builder","Budget wizard"],con:["Green champion"]}];
+let on=[];try{on=JSON.parse(localStorage.getItem(LK))||[]}catch(e){}on=on.filter(id=>LAWS.some(l=>l.id==id)).slice(0,MAXL);
+const store=()=>{try{localStorage.setItem(LK,JSON.stringify(on))}catch(e){}},
+apply=()=>{const f={h:1,i:1};on.forEach(id=>{const l=LAWS.find(x=>x.id==id);f.h*=l.h;f.i*=l.i});if(window.XF){f.h*=XF.h;f.i*=XF.i}window.POLF=f;ui()},
+cost=()=>2000+Math.round(pop*20),
+vote=(l,s)=>{if(s.r==4||l.pro.includes(s.t))return 1;if(l.con.includes(s.t))return -1;let h=0;for(const c of l.id+s.n)h=(h*31+c.charCodeAt(0))|0;return h&1?1:-1},
+tally=l=>{let y=0,n=0;SEN.forEach(s=>{if(s)vote(l,s)>0?y+=WT[s.r]:n+=WT[s.r]});return[y,n]};
+function view(){const b=q("lw-b");b.replaceChildren();const has=SEN.some(Boolean);
+ b.append(mk("b","📜 Senate Laws"),mk("small","Propose a law and your senators vote on it. Up to "+MAXL+" laws can be in force. Rarer senators carry more weight, and a Secret senator always votes yes."));
+ if(!has)b.append(mk("small","You need at least one senator first. Hold an election in the City Senate."));
+ LAWS.forEach(l=>{const isOn=on.includes(l.id),r=mk("div",null,"lw-r"+(isOn?" on":"")),[y,n]=tally(l);
+  r.append(mk("b",l.e+" "+l.n+(isOn?" · IN FORCE":"")),mk("small",l.d));
+  if(has){const v=mk("div",null,"lw-v");SEN.forEach(s=>{if(s)v.append(mk("span",(vote(l,s)>0?"✅ ":"❌ ")+s.n.replace("Sen. ","")+" ("+s.t+")"))});r.append(v,mk("small","Vote weight: "+y+" for, "+n+" against"+(y>n?" → would pass":" → would fail")))}
+  const bt=mk("button",isOn?"Repeal (free)":"Propose · $"+cost().toLocaleString());
+  bt.disabled=isOn?false:(!has||on.length>=MAXL||money<cost());
+  bt.onclick=()=>isOn?repeal(l):propose(l);r.append(bt);b.append(r)});
+ const x=mk("button","Close");x.onclick=()=>q("lw-m").classList.remove("on");b.append(x)}
+function propose(l){const c=cost();if(money<c||on.length>=MAXL)return;const[y,n]=tally(l);
+ if(y>n){money-=c;on.push(l.id);store();apply();toast("📜 "+l.n+" passed the Senate ("+y+"–"+n+")!",4000)}
+ else{money-=Math.round(c/2);toast("❌ "+l.n+" failed ("+y+"–"+n+"). Lobbying cost $"+Math.round(c/2).toLocaleString()+".",4500)}
+ ui();save();view()}
+function repeal(l){on=on.filter(id=>id!=l.id);store();apply();save();view();toast("📜 "+l.n+" repealed.")}
+window.lawBtn=()=>{const b=mk("button","📜 Senate Laws"+(on.length?" ("+on.length+" in force)":" · pass laws to boost your city"),"lw-go");b.onclick=()=>{view();q("lw-m").classList.add("on")};return b};
+window.lawsOn=()=>on.map(id=>{const l=LAWS.find(x=>x.id==id);return l.e+" "+l.n});
+{const hb=mk("button","📜 Laws");hb.id="lwb";hb.title="Senate Laws: propose laws and your senators vote";let sn=0;try{sn=localStorage.getItem(LK+"_seen")}catch(e){}if(!sn)hb.className="pulse";
+ hb.onclick=()=>{hb.classList.remove("pulse");try{localStorage.setItem(LK+"_seen","1")}catch(e){}view();q("lw-m").classList.add("on")};
+ const nb=q("nwb");nb?nb.after(hb):document.querySelector("header").append(hb)}
+q("lw-m").onclick=e=>{if(e.target.id=="lw-m")e.target.classList.remove("on")};
+const nw1=document.getElementById("new").onclick;document.getElementById("new").onclick=e=>{const r=!!e.target.dataset.s;nw1(e);if(r){on=[];store();apply()}};
+let SC=null;try{SC=JSON.parse(localStorage.getItem(K+"_sc"))}catch(e){}
+const scs=()=>{try{localStorage.setItem(K+"_sc",JSON.stringify(SC))}catch(e){}},
+WHY=["took a free luxury holiday","was caught napping during a budget vote","was photographed at a casino","forgot to declare a second yacht","accidentally replied-all to a rude email"],
+okSC=()=>SC&&SEN[SC.i]&&SEN[SC.i].n==SC.n;
+window.senEvents=(day,sn,ev,R)=>{
+ if(!okSC())SC=null;
+ const has=SEN.map((x,i)=>x?i:-1).filter(i=>i>=0);
+ if(!SC&&has.length&&R()<.1){const i=has[Math.floor(R()*has.length)];SC={i,n:SEN[i].n,w:WHY[Math.floor(R()*WHY.length)],def:0};ev.push("🗞️ SCANDAL: "+SC.n+" "+SC.w+". Open the City Senate to defend or fire them.")}
+ if(day%7==0&&sn.length){sn.forEach(x=>{const pen=SC&&SC.i==x.qi&&!SC.def?25:0,ap=Math.max(0,x.ap-pen);
+  if(R()*100<ap+15)ev.push("🗳️ Election Day: "+x.n+" was re-elected ("+ap+"% approval)");
+  else{SEN[x.qi]=null;ev.push("🗳️ Election Day: "+x.n+" was voted out ("+ap+"% approval). The seat is vacant.")}});SC=null;ui();save()}
+ scs()};
+window.scBox=()=>{if(!SEN.some(Boolean))return"";const d=window.tmDay?tmDay():0,nx=(Math.floor(d/7)+1)*7,b=mk("div",null,"lw-r");
+ b.append(mk("small","🗳️ Next election: Day "+nx+" (in "+(nx-d)+" day"+(nx-d==1?"":"s")+"). Senators with low approval risk losing their seat."));
+ if(okSC()){b.append(mk("b","🗞️ SCANDAL: "+SC.n+" "+SC.w+"."));
+  if(SC.def)b.append(mk("small","You defended them, so no penalty at the election."));
+  else{const df=mk("button","🛡️ Defend · $5,000");df.disabled=money<5000;df.onclick=()=>{money-=5000;SC.def=1;scs();ui();save();window.openSenate()};
+   const fr=mk("button","🔥 Fire them");fr.onclick=()=>{if(!confirm("Fire "+SC.n+"?"))return;SEN[SC.i]=null;SC=null;scs();ui();save();window.openSenate()};b.append(df,fr)}}
+ return b};
+apply();window.lawApply=apply;
+})();
+</script>
+<style>
+#hb-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:23}#hb-m.on{display:flex}
+#hbb{font:inherit;font-weight:700;color:var(--ink);background:none;border:1px solid var(--acc);border-radius:8px;padding:3px 10px;cursor:pointer}
+.hb-s{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px}.hb-s h4{margin:0;font:700 15px Fredoka,system-ui,sans-serif}.hb-s label{display:flex;gap:8px;align-items:center;font-size:13px}.hb-s input[type=range]{flex:1}
+</style>
+<div id="hb-m"><div class="lw-box" id="hb-b"></div></div>
+<script>
+(()=>{
+const SK=K+"_x2",q=id=>document.getElementById(id),mk=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e},fm=n=>Math.round(n).toLocaleString(),
+TECH=[{id:"tax",n:"Efficient Taxation",c:10000,d:3,e:"+6% income",i:1.06},{id:"health",n:"Public Health Program",c:15000,d:3,e:"+4% happiness",h:1.04},{id:"dip",n:"Diplomacy",c:20000,d:4,e:"Trade deals cost half"},{id:"edu",n:"Civic Education",c:25000,d:4,e:"+5% income",i:1.05},{id:"smart",n:"Smart City",c:60000,d:6,req:2,e:"+10% income, +3% happiness (needs 2 other techs)",i:1.1,h:1.03}],
+WANT={j:"jobs",s:"shopping",a:"air",hl:"healthcare",ed:"schools",r:"things to do"},BN=["Police","Health","Education"],
+FN=["Maria","Ken","Aisha","Tom","Lena","Omar","Priya","Jack","Sofia","Wei"],JB=["baker","nurse","teacher","courier","mechanic","student","barista","engineer"],
+def=()=>({rs:{done:[],cur:null,left:0},bd:[1,1,1],debt:0,rv:[],dl:{},rk:0,lg:{},pr:0,ct:[]});
+let UN=[];try{UN=JSON.parse(localStorage.getItem(K+"_un"))||[]}catch(e){}
+let ST=def();try{const d=JSON.parse(localStorage.getItem(SK));if(d&&d.rs)ST=Object.assign(def(),d)}catch(e){}
+const store=()=>{try{localStorage.setItem(SK,JSON.stringify(ST));localStorage.setItem(K+"_un",JSON.stringify(UN))}catch(e){}},
+recompute=()=>{let h=1,i=1;ST.rs.done.forEach(id=>{const t=TECH.find(x=>x.id==id);if(t){h*=t.h||1;i*=t.i||1}});ST.bd.forEach(b=>{h*=1+(b-1)*.06;i-=(b-1)*.03});if(ST.pr>0)h*=1.05;if(ST.debt>100000)i*=.9;if(ST.rk==1){i*=1.04;h*=1.02}Object.keys(ST.dl).forEach(()=>i*=1.04);{const rt=UN.filter(p=>p.riot).length;h*=Math.pow(.97,rt);i*=Math.pow(.97,rt)}window.XF={h,i:Math.max(.5,i)};if(window.lawApply)lawApply()},
+newCit=R=>({n:FN[Math.floor(R()*FN.length)]+" "+["Lee","Cruz","Park","Novak","Reyes","Ali"][Math.floor(R()*6)],job:JB[Math.floor(R()*JB.length)],k:Object.keys(WANT)[Math.floor(R()*6)],lv:3});
+window.DH=window.DH||[];
+window.DH.push((day,R,ev,sp,s)=>{const pk=a=>a[Math.floor(R()*a.length)];
+ if(ST.debt>0){const i=Math.round(ST.debt*.02);money=Math.max(0,money-i);ev.push("🏦 Loan interest: −$"+fm(i)+" (debt $"+fm(ST.debt)+")")}
+ const r=ST.rs;if(r.cur){r.left-=SEN.some(x=>x&&x.t=="Budget wizard")?2:1;if(r.left<=0){ev.push("🔬 Research complete: "+TECH.find(t=>t.id==r.cur).n);r.done.push(r.cur);r.cur=null}}
+ if(ST.pr>0)ST.pr--;
+ sp.forEach(x=>{if(!x.sc||x.dy)return;const L=ST.lg[x.t]=ST.lg[x.t]||{g:0,p:0};L.g++;L.p+=x.w==1?3:x.w==2?1:0;
+  if(L.g>=10){const win=R()<.12+L.p/30*.7;if(win){money+=20000;ST.pr=5;ev.push("🏆 "+x.e+" "+x.t+": the city won the championship! $20,000 prize and a 5-day parade (+5% happiness).")}else ev.push("😔 "+x.e+" "+x.t+": knocked out in the playoffs ("+L.p+" pts).");delete ST.lg[x.t]}
+  else ev.push("📊 "+x.e+" "+x.t+" league: "+L.g+"/10 games · "+L.p+" pts")});
+ const RV=["Brookmere","Northcliff","Port Halden","Silverfen","Oakhaven","Redmarsh"];if(!ST.rv.length)ST.rv=[0,1,2].map(i=>({n:RV[(day+i*2)%6],p:Math.max(8,Math.round(pop*(.5+R()*.8)))}));
+ ST.rv.forEach(c=>{c.p+=Math.max(2,Math.round(c.p*(.02+R()*.05)));if(pop>c.p*1.5)c.p+=Math.round(c.p*.03)});
+ for(const k in ST.dl)if(--ST.dl[k]<=0){delete ST.dl[k];ev.push("🤝 Your trade deal with "+k+" ended.")}
+ {const rk=1+ST.rv.filter(c=>c.p>pop).length;if(ST.rk&&rk!=ST.rk)ev.push((rk<ST.rk?"📈 You climbed to #":"📉 You fell to #")+rk+" in the regional rankings"+(rk<ST.rk?"!":". "+ST.rv.slice().sort((a,b)=>b.p-a.p)[0].n+" is leading."));ST.rk=rk;
+  if(day%7==0){const pz=[15000,5000,1500][rk-1]||0;if(pz){money+=pz;ev.push("🏁 Weekly regional ranking: #"+rk+". Prize $"+fm(pz)+(rk==1?" and Regional Capital status (+4% income, +2% happiness).":"."))}}}
+ while(ST.ct.length<3)ST.ct.push(newCit(R));
+ ST.ct.forEach((c,i)=>{const ok=(s[c.k]||0)>=.8;c.lv=Math.max(0,Math.min(5,c.lv+(ok?1:-1)));
+  if(c.lv>=5){money+=2000;c.lv=3;ev.push("🎉 "+c.n+" ("+c.job+") built a thriving life here and donated $2,000 to the city.")}
+  else if(c.lv<=0){pop=Math.max(0,pop-3);ev.push("😠 "+c.n+" ("+c.job+") left the city, fed up with the "+WANT[c.k]+". 3 citizens went with them.");ST.ct[i]=newCit(R)}
+  else if(i==day%3)ev.push("👤 "+c.n+" ("+c.job+") "+(ok?"is happy with the "+WANT[c.k]+" here":"is struggling with the "+WANT[c.k])+" "+"🙂".repeat(c.lv)+"·".repeat(5-c.lv))});
+ store();recompute();ui();save()});
+function hub(){const b=q("hb-b");b.replaceChildren(mk("b","🏙️ City hub"));let s=mk("div",null,"hb-s");s.append(mk("h4","😡 Unrest"));
+ if(!UN.length)s.append(mk("small","All quiet. Citizens are not protesting."));
+ UN.forEach((p,i)=>{const r=mk("div",null,"lw-r"+(p.riot?"":" on"));r.append(mk("b",p.e+" "+(p.riot?"RIOT":"Protest")+" at "+p.at+" ("+Math.round(p.x)+", "+Math.round(p.y)+")"),mk("small","Why: "+p.why+" · day "+p.d+(p.riot?" · damaging the city":" · becomes a riot after day 3")),mk("small","Fix: "+p.fix));
+  const bt=mk("button","👮 Send police · $1,500");bt.disabled=money<1500||!(S.cop>0);bt.title=S.cop>0?"":"Build a Police Station first";bt.onclick=()=>{money-=1500;UN.splice(i,1);store();drawUn();ui();save();hub()};r.append(bt);s.append(r)});b.append(s);
+ s=mk("div",null,"hb-s");s.append(mk("h4","🏁 Regional rankings"));
+ {const al=[{n:"Your city",p:Math.floor(pop),me:1},...ST.rv].sort((a,b)=>b.p-a.p);al.forEach((c,i)=>s.append(mk("small",(i+1)+". "+(c.me?"⭐ ":"")+c.n+" · 👥 "+fm(c.p)+(ST.dl[c.n]?" · 🤝 trade deal ("+ST.dl[c.n]+" days left)":""))));
+  ST.rv.forEach(c=>{if(ST.dl[c.n])return;const dc=ST.rs.done.includes("dip")?4000:8000,bt=mk("button","🤝 Trade deal with "+c.n+" · $"+fm(dc));bt.disabled=money<dc||Object.keys(ST.dl).length>=2;bt.onclick=()=>{money-=dc;ST.dl[c.n]=10;store();recompute();ui();save();hub()};s.append(bt)});
+  s.append(mk("small","Weekly prizes: #1 $15,000, #2 $5,000, #3 $1,500. Trade deals give +4% income for 10 days (max 2)."))}b.append(s);
+ s=mk("div",null,"hb-s");s.append(mk("h4","🔬 Research"));const r=ST.rs;
+ if(r.cur)s.append(mk("small","Researching "+TECH.find(t=>t.id==r.cur).n+": "+r.left+" more day"+(r.left==1?"":"s")+" (a Budget wizard senator halves the time)."));
+ TECH.forEach(t=>{const dn=r.done.includes(t.id),row=mk("div",null,"lw-r"+(dn?" on":""));row.append(mk("b",t.n+(dn?" ✓":"")),mk("small",t.e+" · $"+fm(t.c)+" · "+t.d+" days"));
+  if(!dn){const bt=mk("button","Research");bt.disabled=!!r.cur||money<t.c||(t.req&&r.done.length<t.req);bt.onclick=()=>{money-=t.c;r.cur=t.id;r.left=t.d;store();ui();save();hub()};row.append(bt)}s.append(row)});b.append(s);
+ s=mk("div",null,"hb-s");s.append(mk("h4","💰 Budget & loans"),mk("small","Fund services more for happiness, or less to save money."));
+ BN.forEach((n,i)=>{const l=mk("label"),rg=mk("input");rg.type="range";rg.min=.5;rg.max=1.5;rg.step=.25;rg.value=ST.bd[i];const v=mk("span",Math.round(ST.bd[i]*100)+"%");rg.oninput=()=>{ST.bd[i]=+rg.value;v.textContent=Math.round(ST.bd[i]*100)+"%";store();recompute();ui()};l.append(n,rg,v);s.append(l)});
+ s.append(mk("small","Debt: $"+fm(ST.debt)+" (2% interest per day"+(ST.debt>100000?", over $100,000 cuts income 10%":"")+")"));
+ const lr=mk("div",null,"lw-v");[10000,25000,50000].forEach(a=>{const bt=mk("button","Borrow $"+fm(a));bt.onclick=()=>{ST.debt+=a;money+=a;store();recompute();ui();save();hub()};lr.append(bt)});
+ const rp=mk("button","Repay $10,000");rp.disabled=!ST.debt||money<1;rp.onclick=()=>{const a=Math.min(10000,ST.debt,Math.floor(money));money-=a;ST.debt-=a;store();recompute();ui();save();hub()};lr.append(rp);s.append(lr);b.append(s);
+ s=mk("div",null,"hb-s");s.append(mk("h4","👤 Citizen stories"));ST.ct.length?ST.ct.forEach(c=>s.append(mk("small",c.n+" ("+c.job+") wants "+WANT[c.k]+" "+"🙂".repeat(c.lv)+"·".repeat(5-c.lv)))):s.append(mk("small","Citizens appear after the first Daily news."));b.append(s);
+ s=mk("div",null,"hb-s");s.append(mk("h4","🏆 Leagues"));const ks=Object.keys(ST.lg);ks.length?ks.forEach(k=>s.append(mk("small",k+": "+ST.lg[k].g+"/10 games, "+ST.lg[k].p+" pts"+(ST.pr>0?" · parade active":"")))):s.append(mk("small","Build stadiums and play 10 games for a shot at the championship."));b.append(s);
+ const x=mk("button","Close");x.onclick=()=>q("hb-m").classList.remove("on");b.append(x)}
+
+const NEEDS=[["j","jobs","💼","Not enough jobs","Build factories or shops","g"],["pw","power","⚡","No power","Build more power","pw"],["wt","water","💧","Water shortage","Add water treatment and towers","wt"],["a","smog","🌫️","Smog from factories","Keep factories away from homes","po"],["pl","crime","🚓","Crime wave","Build Police Stations","g"],["hl","health","🏥","No healthcare","Build a Clinic or Hospital","h"],["ed","schools","🎓","No schools","Build schools","g"],["s","shopping","🛍️","Empty shelves","Add commercial buildings","h"],["q","housing","🏠","Poor housing","Add better homes","h"],["r","fun","🎡","Nothing to do","Build parks or a stadium","h"],["fr","fire safety","🚒","Fire fears","Build Fire Stations","h"]];
+const blist=f=>Object.keys(B).filter(u=>okB[u]&&T[B[u].id]&&f(T[B[u].id]));
+function pickB(t,R){const L={g:t=>t.gov,pw:t=>t.pwr>0,wt:t=>t.tre||t.twr,po:t=>t.pol>0&&t.k!="h",h:t=>t.k=="h"};let a=blist(L[t]);if(!a.length)a=blist(L.h);if(!a.length)a=blist(()=>1);return a.length?a[Math.floor(R()*a.length)]:null}
+function spawnU(c,R){const u=pickB(c.t,R);if(!u)return 0;const b=B[u],r=rc(b);UN.push({c:c.c,k:c.k,e:c.e,why:c.why,fix:c.fix,at:T[b.id].n,x:r.x+(r.w-1)/2,y:r.y+(r.h-1)/2,oz:r.h/2+.4,d:0,riot:0});return 1}
+window.DH.push((day,R,ev,sp,s)=>{if(pop<20&&!UN.length)return;
+ const tax=(window.lawsOn?lawsOn():[]).some(x=>x.includes("Tax Hike")),cut=ST.bd.some(b=>b<1);
+ UN=UN.filter(p=>{const ok=p.c=="tax"?!tax:p.c=="cuts"?!cut:(s[p.k]||0)>=.85;if(ok)ev.push("✅ The protest at "+p.at+" is over: "+p.why.toLowerCase()+" has been fixed.");return!ok});
+ UN.forEach(p=>{p.d++;if(!p.riot&&p.d>=3){p.riot=1;const d=Math.round(Math.min(money*.05,3000));money=Math.max(0,money-d);ev.push("🔥 RIOT at "+p.at+"! "+p.why+" was ignored. Damage $"+fm(d)+". Fix it or send police.")}else if(p.riot){const d=Math.round(Math.min(money*.01,400));money=Math.max(0,money-d)}});
+ const cs=NEEDS.filter(n=>(s[n[0]]||0)<.7).sort((a,b)=>s[a[0]]-s[b[0]]).map(n=>({c:n[0],k:n[0],e:n[2],why:n[3],fix:n[4],t:n[5],v:s[n[0]]||0}));
+ if(tax)cs.push({c:"tax",e:"💸",why:"The Tax Hike law",fix:"Repeal the Tax Hike in Senate Laws",t:"g",v:.55});
+ if(cut)cs.push({c:"cuts",e:"✂️",why:"Budget cuts",fix:"Set all services to 100% or more in the City hub",t:"g",v:.55});
+ cs.forEach(c=>{if(UN.length>=3||UN.some(p=>p.c==c.c))return;if(R()<.4+(.7-c.v)&&spawnU(c,R)){const p=UN[UN.length-1];ev.push("😡 Protest at "+p.at+": "+p.why+". Fix: "+p.fix.toLowerCase()+".")}});
+ store();recompute();drawUn();ui();save()});
+let uG=null,uF=[],uL=[];const uM={};
+const lab=(txt,riot)=>{const c=document.createElement("canvas");c.width=512;c.height=96;const x=c.getContext("2d");x.fillStyle=riot?"rgba(180,20,20,.92)":"rgba(40,40,40,.88)";x.beginPath();x.roundRect?x.roundRect(4,4,504,88,20):x.rect(4,4,504,88);x.fill();x.fillStyle="#fff";x.font="bold 36px system-ui,sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(txt,256,50,490);const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));sp.scale.set(1.5,.28,1);sp.renderOrder=999;return sp};
+function drawUn(){if(typeof scene=="undefined"||!scene||typeof THREE=="undefined")return;
+ if(!uG||uG.parent!==scene){uG=new THREE.Group();scene.add(uG)}
+ while(uG.children.length)uG.remove(uG.children[0]);uF=[];uL=[];
+ uM.b=uM.b||new THREE.CylinderGeometry(.016,.022,.075,6);uM.h=uM.h||new THREE.SphereGeometry(.022,6,5);uM.s=uM.s||new THREE.BoxGeometry(.1,.07,.008);uM.k=uM.k||new THREE.BoxGeometry(.006,.09,.006);uM.f=uM.f||new THREE.ConeGeometry(.05,.16,6);uM.d=uM.d||new THREE.CircleGeometry(.6,24);
+ UN.forEach(p=>{const g=new THREE.Group(),i=Math.round(p.y)*W+Math.round(p.x);g.position.set(wx(p.x),(typeof E=="function"?E(i):0)+.03,wz(p.y)+p.oz);
+  const d=new THREE.Mesh(uM.d,new THREE.MeshBasicMaterial({color:p.riot?0xff3010:0xffc040,transparent:true,opacity:.3,depthWrite:false}));d.rotation.x=-Math.PI/2;d.position.y=.004;g.add(d);
+  const n=p.riot?12:6;for(let k=0;k<n;k++){const a=k/n*Math.PI*2,r=.18+(k%2)*.14,f=new THREE.Group(),m=new THREE.MeshLambertMaterial({color:p.riot?0x8a1a1a:[0x3a6ea5,0xc0583b,0x4f8f5a,0x8a6bb0][k%4]});
+   const bo=new THREE.Mesh(uM.b,m);bo.position.y=.06;const he=new THREE.Mesh(uM.h,new THREE.MeshLambertMaterial({color:0xe0b894}));he.position.y=.125;f.add(bo,he);
+   if(k%2==0){const st=new THREE.Mesh(uM.k,new THREE.MeshLambertMaterial({color:0x6b4a2a}));st.position.set(.03,.16,0);const sg=new THREE.Mesh(uM.s,new THREE.MeshLambertMaterial({color:p.riot?0xff6040:0xfff3a0}));sg.position.set(.03,.21,0);f.add(st,sg)}
+   f.position.set(Math.cos(a)*r,0,Math.sin(a)*r);f.rotation.y=-a+Math.PI/2;f.userData.ph=k;g.add(f);uF.push(f)}
+  if(p.riot)for(let k=0;k<4;k++){const fl=new THREE.Mesh(uM.f,new THREE.MeshBasicMaterial({color:k%2?0xff8a00:0xff3a00}));fl.position.set(Math.cos(k*1.6)*.32,.08,Math.sin(k*1.6)*.32);fl.userData.ph=k;g.add(fl);uL.push(fl)}
+  const l=lab(p.e+" "+(p.riot?"RIOT: ":"")+p.why,p.riot);l.position.y=.5;g.add(l);uG.add(g)})}
+(function an(){requestAnimationFrame(an);const t=performance.now()/1000;uF.forEach(f=>{f.position.y=Math.abs(Math.sin(t*6+f.userData.ph))*.012});uL.forEach(f=>{f.scale.y=1+.35*Math.sin(t*9+f.userData.ph*2);f.position.y=.08*f.scale.y})})();
+setInterval(()=>{if(typeof scene!="undefined"&&scene&&(!uG||uG.parent!==scene))drawUn()},1500);
+{const hb=mk("button","🏙️ City hub");hb.id="hbb";hb.onclick=()=>{hub();q("hb-m").classList.add("on")};const a=q("lwb")||q("nwb");a?a.after(hb):document.querySelector("header").append(hb)}
+q("hb-m").onclick=e=>{if(e.target.id=="hb-m")e.target.classList.remove("on")};
+const nw2=q("new").onclick;q("new").onclick=e=>{const r=!!e.target.dataset.s;nw2(e);if(r){ST=def();UN=[];store();recompute();drawUn()}};
+recompute();
+})();
+</script>
+<style>
+#sdgb{font:inherit;font-weight:700;color:var(--ink);background:none;border:1px solid var(--good);border-radius:8px;padding:3px 10px;cursor:pointer}
+#sd-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:23}#sd-m.on{display:flex}
+.sd-box{width:min(96vw,720px)}
+.sd-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sd-c{border:2px solid var(--line);border-left-width:8px;border-radius:10px;padding:6px 8px;background:var(--bg);display:flex;flex-direction:column;gap:3px}
+.sd-c.ok{box-shadow:0 0 0 2px var(--good)}
+.sd-c b{font:700 14px Fredoka,system-ui,sans-serif}
+.sd-c small,.sd-top small{color:var(--mut);font-size:11px}
+.sd-bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.sd-bar u{display:block;height:100%;transition:width .4s}
+.sd-top{display:flex;gap:8px;flex-wrap:wrap}.sd-top div{flex:1;min-width:120px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg)}.sd-top b{font:700 20px Fredoka,system-ui,sans-serif;display:block}
+@media(max-width:560px){.sd-g{grid-template-columns:1fr}}
+</style>
+<div id="sd-m"><div class="lw-box sd-box" id="sd-box"></div></div>
+<script>
+(()=>{
+const q=id=>document.getElementById(id),el=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e};
+const GO=[["No Poverty","#E5243B"],["Zero Hunger","#DDA63A"],["Good Health & Well-being","#4C9F38"],["Quality Education","#C5192D"],["Gender Equality","#FF3A21"],["Clean Water & Sanitation","#26BDE2"],["Affordable & Clean Energy","#FCC30B"],["Decent Work & Economic Growth","#A21942"],["Industry, Innovation & Infrastructure","#FD6925"],["Reduced Inequalities","#DD1367"],["Sustainable Cities & Communities","#FD9D24"],["Responsible Consumption & Production","#BF8B2E"],["Climate Action","#3F7E44"],["Life Below Water","#0A97D9"],["Life on Land","#56C02B"],["Peace, Justice & Strong Institutions","#00689D"],["Partnerships for the Goals","#19486A"]];
+const KS=K+"_sdg";let SG={got:[],all:0},DL=0,SD={sc:[],n:0};
+try{const d=JSON.parse(localStorage.getItem(KS));if(d&&Array.isArray(d.got))SG=d}catch(e){}
+const svg=()=>{try{localStorage.setItem(KS,JSON.stringify(SG))}catch(e){}},
+readDL=()=>{try{DL=Object.keys(JSON.parse(localStorage.getItem(K+"_x2")).dl||{}).length}catch(e){DL=0}};readDL();
+const AC=()=>Object.keys(B).filter(u=>okB[u]&&T[B[u].id]).map(u=>T[B[u].id]),
+c1=v=>Math.max(0,Math.min(1,isFinite(v)?v:0)),
+fac=n=>({i:1+.012*n+(n>=17?.05:0),h:1+.006*n+(n>=17?.03:0)});
+function score(s){
+ const out=Array(18).fill(0);if(pop<1)return out;
+ const a=AC(),n=Array(18).fill(0);a.forEach(t=>(t.sdg||[]).forEach(k=>n[k]++));
+ let cp=0,cc=0;a.forEach(t=>{if(t.pwr>0){cp+=t.pwr;if(!(t.pol>.3))cc+=t.pwr}});const cl=cp?cc/cp:0;
+ let inf=0;for(let i=0;i<g.length;i++){const v=g[i];if(v=="rail"||v=="rway"||v=="trk")inf++;if(hw[i])inf++}
+ const tr=TR.length,rvs=rv.includes(1)?1-RVP:.6,
+ b=[0,s.j*.6+s.hap*.4,s.s,s.hl*.5+s.a*.3+s.wt*.2,s.ed,(s.j+s.ed+s.hl)/3,s.wt*(1-.6*RVP),s.pw*(.4+.6*cl),s.j*.5+s.hap*.5,Math.min(1,inf/30)*.6+s.pw*.4,(s.q+s.r+s.s)/3,(s.a+s.r+s.pl+s.q)/4,s.a*.6+(1-RVP)*.4,Math.min(1,tr/25)*.5+cl*.5,rvs,Math.min(1,tr/30),s.pl*.5+s.hap*.5,Math.min(1,DL/2)*.5+s.hap*.5];
+ for(let k=1;k<=17;k++)out[k]=Math.round(Math.min(100,c1(b[k])*50+Math.min(50,n[k]*17)));
+ return out}
+const calc0=calc;
+calc=function(){const s=calc0();try{SD.sc=score(s);SD.n=SD.sc.filter((v,k)=>k&&v>=80).length;const f=fac(SD.n);s.hap=Math.min(1,s.hap*f.h);s.inc*=f.i}catch(e){console.error(e)}return s};
+const bt=el("button","🌍 SDGs");bt.id="sdgb";bt.title="UN Sustainable Development Goals";
+const lbl=()=>bt.textContent="🌍 SDGs "+SD.n+"/17";
+function chk(){if(window.MENU||pop<1)return;let ch=0;
+ SD.sc.forEach((v,k)=>{if(k&&v>=80&&!SG.got.includes(k)){SG.got.push(k);money+=5000;ch=1;toast("🌍 SDG "+k+" achieved: "+GO[k-1][0]+"! +$5,000",5000)}});
+ if(SD.n>=17&&!SG.all){SG.all=1;money+=250000;ch=1;toast("🏆 Agenda 2030 complete! All 17 Global Goals achieved. +$250,000",8000)}
+ if(ch){svg();ui();save()}}
+setInterval(()=>{readDL();chk();lbl()},4000);
+const help=k=>Object.keys(T).filter(id=>T[id].sdg&&T[id].sdg.includes(k)).sort((x,y)=>(T[y].nw?1:0)-(T[x].nw?1:0)).slice(0,5).map(id=>T[id].n).join(", ");
+function view(){const b=q("sd-box");b.replaceChildren();const sc=SD.sc.length?SD.sc:Array(18).fill(0),n=SD.n,f=fac(n),cnt=Array(18).fill(0);AC().forEach(t=>(t.sdg||[]).forEach(x=>cnt[x]++));
+ b.append(el("b","🌍 Global Goals · UN Sustainable Development Goals"),el("small","Each goal is scored 0–100 from how well your city meets that need plus the buildings that support it (see the 🌍 Global Goals build tab). Reach 80 to achieve a goal: $5,000 once, and every goal you hold gives +1.2% income and +0.6% happiness. All 17 = Agenda 2030: $250,000 plus extra bonuses."));
+ if(pop<1)b.append(el("small","Your city needs citizens before goals can be scored."));
+ const top=el("div",null,"sd-top");
+ [["Goals achieved",n+" / 17"],["Income bonus","+"+((f.i-1)*100).toFixed(1)+"%"],["Happiness bonus","+"+((f.h-1)*100).toFixed(1)+"%"],["Overall score",Math.round(sc.slice(1).reduce((a,v)=>a+v,0)/17)+" / 100"]].forEach(([l,v])=>{const d=el("div");d.append(el("small",l),el("b",v));top.append(d)});b.append(top);
+ const gd=el("div",null,"sd-g");
+ for(let k=1;k<=17;k++){const[nm,col]=GO[k-1],v=sc[k]||0,ok=v>=80,c=el("div",null,"sd-c"+(ok?" ok":""));c.style.borderLeftColor=col;
+  const bar=el("div",null,"sd-bar"),u=el("u");u.style.width=v+"%";u.style.background=col;bar.append(u);
+  c.append(el("b","SDG "+k+" · "+nm),bar,el("small",v+"/100 · "+(ok?"✅ Achieved":v>=60?"On track":v>=30?"Needs work":"Far behind")+" · supporting buildings: "+cnt[k]),el("small","Helps: "+help(k)));gd.append(c)}
+ b.append(gd);const x=el("button","Close");x.onclick=()=>q("sd-m").classList.remove("on");b.append(x)}
+bt.onclick=()=>{view();q("sd-m").classList.add("on")};
+const anc=q("hbb")||q("lwb")||q("nwb");anc?anc.after(bt):document.querySelector("header").append(bt);lbl();
+q("sd-m").onclick=e=>{if(e.target.id=="sd-m")e.target.classList.remove("on")};
+addEventListener("keydown",e=>{if(e.key=="Escape")q("sd-m").classList.remove("on")});
+/* tool info: show which goals a building supports */
+const sel0=sel;sel=t=>{sel0(t);const o=T[t];if(o&&o.sdg&&o.sdg.length){let i=$("info").textContent;if(o.d&&!i.includes(o.d))i+=" "+o.d;$("info").textContent=i+" 🌍 Supports SDG "+o.sdg.join(", ")+" ("+o.sdg.map(k=>GO[k-1][0]).join(" · ")+")."}};
+/* daily news line */
+(window.DH=window.DH||[]).push((day,R,ev)=>{if(pop<1||!SD.sc.length)return;let w=1;for(let k=2;k<=17;k++)if(SD.sc[k]<SD.sc[w])w=k;
+ ev.push("🌍 SDG report: "+SD.n+"/17 goals achieved. Biggest gap: SDG "+w+" "+GO[w-1][0]+" ("+SD.sc[w]+"/100).")});
+/* new city resets progress */
+const nw3=q("new").onclick;q("new").onclick=e=>{const r=!!e.target.dataset.s;nw3(e);if(r){SG={got:[],all:0};svg();SD={sc:[],n:0};lbl()}};
 })();
 </script>
 </body></html>
