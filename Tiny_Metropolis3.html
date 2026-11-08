@@ -75,6 +75,13 @@ footer{display:flex;flex-wrap:wrap;gap:10px 22px;padding:10px 14px;background:va
 .dk-c.on{background:var(--acc);color:var(--bg)}
 .dk-c:focus-visible,.dk-subs .chip:focus-visible,.dk-items .t:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.dk-panel{animation:none}}
+/* layout fixes: HUD wraps instead of overlapping, tool info stays compact */
+#hud{width:auto;min-width:250px;max-width:100%}
+.row{flex-wrap:wrap;gap:6px 22px}
+.row b{white-space:nowrap}
+#hap{font-size:36px!important}
+#info{flex:1 1 220px;max-width:min(100%,440px);font-size:12px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:help}
+@media (max-width:640px){#hud{width:100%}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -305,7 +312,7 @@ pit1:{n:"Pit Garage",e:"🔧",c:1800,k:"c",jobs:14,inc:14,svc:0,t:2,w:2,h:1,d:"A
 const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
-let GND=Array(W*H).fill(0),SLUM={},OUT=0,SLT=0,SLCD=0,SLG=null,SLM={},GGEO=null;
+let GND=Array(W*H).fill(0),GGEO=null;
 const cv=$("cv");
 const at=(x,y)=>x>=0&&y>=0&&x<W&&y<H?g[y*W+x]:0;
 const D4=[[1,0],[-1,0],[0,1],[0,-1]];
@@ -322,7 +329,6 @@ function calc(){
   if(t.k=="h"){s.cap+=t.cap;s.pq+=t.cap*t.q;s.tx+=t.cap*t.tax;hs.push([x,y,t])}
   else if(t.k=="u"){s.jobs+=t.jobs;s.pr+=t.inc||0;s.ps+=t.pwr||0;s.tre+=t.tre||0;s.twr+=t.twr||0;if(t.pol)fs.push([x,y,t.pol])}
   else{s.jobs+=t.jobs;s.pr+=t.inc;s.dp+=(t.k=="f"?1:.5)*t.jobs;s.dw+=.3*t.jobs;if(t.k=="c"){s.svc+=t.svc;s.cop+=t.cop||0;s.fir+=t.fir||0;s.hlt+=t.hlt||0;s.edu+=t.edu||0;s.joy+=t.joy||0}else if(t.k=="p"){s.fun+=t.fun;s.joy+=t.joy||0;if(t.grn)ps.push([x,y,t.grn])}else fs.push([x,y,t.pol])}}
- {let ni=0,ns=0,ri=0;for(const k in SLUM){const z=SLUM[k];if(z.st){const c=4*z.lv;s.cap+=c;s.pq+=c*.35;s.tx+=c*.3;s.cl+=c*.55;ns++}else{ni++;ri+=5*z.lv}}s.sli=ni;s.sls=ns;s.slr=ri}
  TR.forEach(q=>ps.push([q.x,q.y,T[q.id].grn]));
  hs.forEach(([x,y,t])=>{let p=0;fs.forEach(([a,b,q])=>{const d=Math.hypot(a-x,b-y);if(d<5)p+=q*(1-d/5)});ps.forEach(([a,b,q])=>{const d=Math.hypot(a-x,b-y);if(d<4)p-=q*(1-d/4)});s.cl+=t.cap*(1-Math.min(1,Math.max(0,p)/2.5))});
  pop=Math.min(pop,s.cap);
@@ -330,7 +336,7 @@ function calc(){
  s.a=s.cap?s.cl/s.cap:1;s.q=s.cap?s.pq/s.cap:1;
  s.r=pop?Math.min(1,s.fun/pop):1;s.pl=pop<30?1:Math.min(1,s.cop/(pop*.35));s.fr=pop<30?1:Math.min(1,s.fir/(pop*.3));s.hl=pop<30?1:Math.min(1,s.hlt/(pop*.25));s.ed=pop<30?1:Math.min(1,s.edu/(pop*.3));
  const sat=(a,d)=>!s.cap?1:d>0?Math.min(1,a/d):a>0?1:0;s.sw=Math.min(s.tre,s.twr);s.pw=sat(s.ps,pop+s.dp);s.wt=sat(s.sw,(pop+s.dw)*(1+.6*RVP));
- s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.12,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,s.hap*(self.POLF?POLF.h:1));if(!HL){const sp=Math.min(.35,.02*s.sli+.006*s.sls)+Math.min(.15,OUT);s.hap=Math.max(0,s.hap*(1-sp))}
+ s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.12,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,s.hap*(self.POLF?POLF.h:1));
  const staff=s.jobs?Math.min(1,pop/s.jobs):0;
  s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul()*(self.POLF?POLF.i:1);
  return s}
@@ -341,7 +347,7 @@ function ui(){
  $("inc").textContent="+$"+S.inc.toFixed(1)+"/s";
  const h=Math.round(S.hap*100),he=$("hap");
  he.textContent=h+"%";he.style.color=h>=75?"var(--good)":h>=45?"var(--warn)":"var(--bad)";
- $("pop").textContent="👥 "+Math.floor(pop)+" citizens (room for "+S.cap+") · "+Math.round(pop*S.hap)+" happy"+(S.sli?" · 🏚️ "+S.sli+" slum"+(S.sli>1?"s":""):"");
+ $("pop").textContent="👥 "+Math.floor(pop)+" citizens (room for "+S.cap+") · "+Math.round(pop*S.hap)+" happy";
  {const wb=document.querySelector('.t[data-t="wind"] i');if(wb)wb.textContent=FW?"FREE · 1×1":"$"+T.wind.c+" · 1×1";
   const c=(v,t)=>'<span style="color:var(--'+(v<.98?"bad":"good")+')">'+t+"</span>";
   $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+S.ps)+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP))+"/"+S.sw)+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
@@ -350,7 +356,7 @@ function ui(){
  document.querySelectorAll(".t").forEach(b=>{const o=T[b.dataset.t];b.classList.toggle("no",cc(o)>money||(o.lm&&o.lm>nex))});
  document.querySelectorAll(".t[data-lm]").forEach(b=>{const o=T[b.dataset.t],i=b.querySelector("i"),built=Object.values(B).some(q=>q.id==b.dataset.t);i.textContent=built?"✓ built":o.lm>nex?"🔒 Expand city":"$"+o.c.toLocaleString()+" · "+o.w+"×"+o.h});
  const m=[[RVP>.15?1-RVP:1,"The river is polluted by untreated sewage — build more Water Treatment."],[S.pw,S.ps>0?"Not enough energy — citizens are complaining. Build more power (wind, solar or a power plant).":"No electricity! Citizens are complaining — build a wind turbine, solar farm or power plant."],[S.wt,!S.tre&&!S.twr?"Citizens have no water! Build a Water Well, or a Water Treatment plant plus a Water Tower.":!S.tre?"The water isn’t treated — build a Water Treatment plant.":!S.twr?"Water can’t reach homes — build a Water Tower.":"Not enough water — citizens are complaining. Add more treatment and towers."],[S.j,"Citizens need jobs — build factories or shops."],[S.s,"Not enough shopping — add commercial buildings."],[S.a,"Smog is bothering residents — keep factories 5+ tiles from homes."],[S.r,"Citizens want things to do — build parks, a pool or a stadium."],[S.pl,"Crime is rising — build a Police Station."],[S.fr,"Fires could spread — build a Fire Station."],[S.hl,"Citizens are getting sick — build a Clinic or Hospital."],[S.ed,"Kids need schooling — build an Elementary, Secondary or High School, a University or a Library (educated citizens pay more tax)."]].sort((a,b)=>a[0]-b[0])[0];
- $("tip").textContent=S.bad?"🚫 Some buildings aren’t touching a road, so they’re inactive.":!S.cap?"Start by drawing a road, then place a home next to it.":m[0]<.98?m[1]:S.sli?"🏚️ Illegal slums! There are more jobs than homes. Evict them or support them (Slums tab), or build more housing.":pop<S.cap?"Citizens are moving in…":"Everyone is thriving — keep growing!";
+ $("tip").textContent=S.bad?"🚫 Some buildings aren’t touching a road, so they’re inactive.":!S.cap?"Start by drawing a road, then place a home next to it.":m[0]<.98?m[1]:pop<S.cap?"Citizens are moving in…":"Everyone is thriving — keep growing!";
  const nm=$("name").value||"Your city",met=pop>=150&&S.hap>=.9;
  $("goal").textContent=met?"✅ "+nm+" is thriving!":"Goal: 150 citizens at 90%+ happiness";
  if(met&&!won){won=1;toast("🎉 "+nm+" is thriving! 150+ citizens at 90%+ happiness.",6000)}}
@@ -368,7 +374,7 @@ function tick(){
  else if(S.hap<.3&&pop>pi)pop=Math.max(pi,pop-Math.max(1,pop*.06));
  if(pop>=1&&tick.n%16==8){const c=complaint();if(c)toast(c,4500)}
  {const ws=pop+S.dw,tf=ws>0?Math.min(1,S.tre/ws):1;RVP=rv.includes(1)?Math.max(0,Math.min(1,RVP+(tf<1?(1-tf)*.02-.004:-.015))):0}
- ui();money+=S.inc;ui();try{slumTick()}catch(e){console.error(e)}
+ ui();money+=S.inc;ui();
  if(pop>=30&&S.pl<.7&&Math.random()<.05){const l=Math.floor(Math.min(money*.03,500));money-=l;toast("🚨 Crime wave! Thieves stole $"+l+". Build more police.",4000)}
  else if(S.cop>0&&Math.random()<.02)toast("👮 Police caught a burglar red-handed!",3000);
  {let m=0;try{m=+localStorage.getItem(K+"_ms")||0}catch(e){}const MS=[[100,500],[250,1500],[500,5000],[1000,15000],[2500,50000],[5000,150000]];
@@ -1123,13 +1129,13 @@ function world(){
  if(ctl)ctl.maxDistance=Math.max(130,Math.max(W,H)*1.6);const s=Math.max(W,H)*.8;Object.assign(L.shadow.camera,{left:-s,right:s,top:s,bottom:-s});L.shadow.camera.updateProjectionMatrix()}
 
 function rebuild(){
- bgFix();slumFix();if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
+ bgFix();groundFix();if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
  g.forEach((id,i)=>{if(!wk(id))return;const x=i%W,y=i/W|0,m=rk(x,y);
   const o=new THREE.Mesh(rg,rmat(m,id));o.position.set(wx(x),.05+E(i),wz(y));o.renderOrder=1;
   const hh=[[0,-1],[1,0],[0,1],[-1,0]].map(([a,b],k)=>m&(1<<k)?Math.max(el[i],el[(y+b)*W+x+a]):el[i]);
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
- arender();trender();groundRender();slumRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
+ arender();trender();groundRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
   if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=(T[b.id].bh||T[b.id].t*.6+.7)+(big?1:0);o.add(sp)}
   else if(UF&&T[b.id].k=="h")[1,2].forEach((m,k)=>{if(UF&m){const sp=new THREE.Sprite(BUB[k]);sp.scale.set(.42,.42,1);sp.position.set(UF==3?(k?.22:-.22):0,T[b.id].t*.6+.8,0);o.add(sp)}})
   o.position.set(wx(r.x)+(r.w-1)/2,E(r.y*W+r.x),wz(r.y)+(r.h-1)/2);cityG.add(o)}
@@ -1144,7 +1150,7 @@ function cell(e){const r=cv.getBoundingClientRect();
  const p=new THREE.Vector3();for(let L=MXE;L>0;L--){PL.constant=-L*EH;if(ray.ray.intersectPlane(PL,p)){const x=Math.floor(p.x+W/2),y=Math.floor(p.z+H/2);if(x>=0&&y>=0&&x<W&&y<H&&el[y*W+x]==L){PL.constant=0;FX=[p.x+W/2-x,p.z+H/2-y];return[x,y]}}}PL.constant=0;if(!ray.ray.intersectPlane(PL,p))return null;
  const x=Math.floor(p.x+W/2),y=Math.floor(p.z+H/2);FX=[p.x+W/2-x,p.z+H/2-y];return x>=0&&y>=0&&x<W&&y<H?[x,y]:null}
 
-function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v=="slum"&&SLUM[i]){slumInfo(i);return 1}if(v&&isB(v)&&B[v]){if(T[B[v].id].gov)openSenate();else if(B[v].id=="concert")openMusic()}return 1}
+function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v&&isB(v)&&B[v]){if(T[B[v].id].gov)openSenate();else if(B[v].id=="concert")openMusic()}return 1}
  if(tool=="toll"){const m=hw[i]&15;if(![1,2,4,5,8,10].includes(m)){if(!dragging)toast("Tolls go on a straight stretch of highway.");return 1}if(wk(g[i])){toast("Not on an overpass — pick plain highway.");return 1}if(TB[i])return 1;if(money<cc(t)){toast("Not enough money for a toll booth ($"+t.c+").");return 0}money-=cc(t);TB[i]=1;dirty=1;return 1}
  if(tool=="lamp"){const v=g[i];if(v&&isB(v)){toast("Lamps go beside buildings, not inside them.");return 1}if(hw[i]){toast("No lamps on highways.");return 1}if(rv[i]&&!v){toast("Can’t put a lamp on water.");return 1}
   const ox=Math.max(-.42,Math.min(.42,FX[0]-.5)),oz=Math.max(-.42,Math.min(.42,FX[1]-.5));
@@ -1155,15 +1161,15 @@ function put(x,y){const i=y*W+x,t=T[tool];if(t.k=="n"){const v=g[i];if(v=="slum"
   if(money<cc(t)){toast("Not enough money for a tree ($"+t.c+").");return 0}
   money-=cc(t);const q={x,y,id:tool,s:1+((x*7+y*13)%5)*.08,ry:((x*31+y*17)%8)*.8,ox:(((x*53+y*29)%7)-3)*.04,oz:(((x*19+y*43)%7)-3)*.04};
   if(ex>=0)TR[ex]=q;else TR.push(q);dirty=1;return 1}
- if(tool=="bull"){if(g[i]=="slum")return slumEvict(i);const ti=TR.findIndex(q=>q.x==x&&q.y==y);if(ti>=0){money+=Math.floor(T[TR[ti].id].c/2);TR.splice(ti,1);dirty=1;return 1}const lc=LP.filter(l=>l.x==x&&l.y==y).length;if(lc){LP=LP.filter(l=>l.x!=x||l.y!=y);money+=lc*Math.floor(T.lamp.c/2);dirty=1;return 1}if(TB[i]){delete TB[i];money+=Math.floor(T.toll.c/2);dirty=1;return 1}if(hw[i]){money+=Math.floor(T.hwy.c/2);hw[i]=0;D4.forEach(([a,b],k)=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<W&&ny<H)hw[ny*W+nx]&=~[8,2,1,4][k]});dirty=1;return 1}if(rv[i]&&!g[i]){rv[i]=0;dirty=1;return 1}const v=g[i];if(v){if(isB(v)){const b=B[v],r=rc(b);money+=b.free?0:Math.floor(T[b.id].c/2);
+ if(tool=="bull"){const ti=TR.findIndex(q=>q.x==x&&q.y==y);if(ti>=0){money+=Math.floor(T[TR[ti].id].c/2);TR.splice(ti,1);dirty=1;return 1}const lc=LP.filter(l=>l.x==x&&l.y==y).length;if(lc){LP=LP.filter(l=>l.x!=x||l.y!=y);money+=lc*Math.floor(T.lamp.c/2);dirty=1;return 1}if(TB[i]){delete TB[i];money+=Math.floor(T.toll.c/2);dirty=1;return 1}if(hw[i]){money+=Math.floor(T.hwy.c/2);hw[i]=0;D4.forEach(([a,b],k)=>{const nx=x+a,ny=y+b;if(nx>=0&&ny>=0&&nx<W&&ny<H)hw[ny*W+nx]&=~[8,2,1,4][k]});dirty=1;return 1}if(rv[i]&&!g[i]){rv[i]=0;dirty=1;return 1}const v=g[i];if(v){if(isB(v)){const b=B[v],r=rc(b);money+=b.free?0:Math.floor(T[b.id].c/2);
    for(let j=r.y;j<r.y+r.h;j++)for(let k=r.x;k<r.x+r.w;k++)g[j*W+k]=0;delete B[v]}
   else{money+=Math.floor((T[v]||T.road).c/2);g[i]=0;if(BS[i]){el[i]=BS[i].b||0;delete BS[i]}if(rv[i])el[i]=0}dirty=1}return 1}
  if(t.k=="a"){if(g[i]||hw[i])return 1;if(rv[i]){if(!dragging)toast(tool=="rail"?"Rails can’t go on water.":tool=="trk"?"Race tracks can’t go on water.":"No airport on water.");return 1}if(money<cc(t)){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=cc(t);g[i]=tool;dirty=1;return 1}
  if(t.bs)return putBg(x,y,t);
  if(t.k=="r"){const u=cc(t);if(x>=W||y>=H||g[y*W+x])return 1;if(money<u){toast("Not enough money for a "+t.n.toLowerCase()+" ($"+t.c+").");return 0}money-=u;g[y*W+x]=tool;dirty=1;return 1}
- if(tool=="water"){if(rv[i])return 1;if(g[i]=="slum"){toast("Clear the slum first.");return 1}if(g[i]&&isB(g[i])){toast("Can’t put water under a building.");return 1}if(money<cc(t)){toast("Not enough money for water ($"+t.c+").");return 0}money-=cc(t);rv[i]=1;el[i]=0;dirty=1;return 1}
- if(t.k=="s")return paintTile(i);if(t.k=="z")return slumTool(i);if(t.k=="t"){if(tl===i)return 1;tl=i;if(rv[i]){toast("Can’t reshape water.");return 1}if(g[i]&&isB(g[i])){toast("Clear the building first.");return 1}const up=tool=="raise";if(up?el[i]>=MXE:el[i]<=0)return 1;if(money<cc(t)){toast("Not enough money to raise land ($"+t.c+").");return 0}money-=cc(t);el[i]+=up?1:-1;dirty=1;return 1}
- if(tool=="hwy"||tool=="hwy2"){const t=T[tool],G2=tool=="hwy2"?64:0;if(hw[i]){if(!G2||hw[i]&64)return 1;if(money<cc(t)/2){toast("Not enough money to upgrade.");return 0}money-=cc(t)/2;hw[i]|=64;dirty=1;return 1}if(g[i]&&(isB(g[i])||g[i]=="slum"||T[g[i]].k=="a")){toast("Highways can’t go through buildings or airport strips.");return 1}if(money<cc(t)){toast("Not enough money for a highway ($"+t.c+").");return 0}money-=cc(t);hw[i]=32|G2;dirty=1;return 1}
+ if(tool=="water"){if(rv[i])return 1;if(g[i]&&isB(g[i])){toast("Can’t put water under a building.");return 1}if(money<cc(t)){toast("Not enough money for water ($"+t.c+").");return 0}money-=cc(t);rv[i]=1;el[i]=0;dirty=1;return 1}
+ if(t.k=="s")return paintTile(i);if(t.k=="t"){if(tl===i)return 1;tl=i;if(rv[i]){toast("Can’t reshape water.");return 1}if(g[i]&&isB(g[i])){toast("Clear the building first.");return 1}const up=tool=="raise";if(up?el[i]>=MXE:el[i]<=0)return 1;if(money<cc(t)){toast("Not enough money to raise land ($"+t.c+").");return 0}money-=cc(t);el[i]+=up?1:-1;dirty=1;return 1}
+ if(tool=="hwy"||tool=="hwy2"){const t=T[tool],G2=tool=="hwy2"?64:0;if(hw[i]){if(!G2||hw[i]&64)return 1;if(money<cc(t)/2){toast("Not enough money to upgrade.");return 0}money-=cc(t)/2;hw[i]|=64;dirty=1;return 1}if(g[i]&&(isB(g[i])||T[g[i]].k=="a")){toast("Highways can’t go through buildings or airport strips.");return 1}if(money<cc(t)){toast("Not enough money for a highway ($"+t.c+").");return 0}money-=cc(t);hw[i]=32|G2;dirty=1;return 1}
  {const v=g[i];if(t.tint&&same(v,tool)){B[v].col=pcol[tool];dirty=1;toast("Recolored!");return 1}}
  if(t.lm){if(t.lm>nex){toast("🔒 Expand your city to unlock the "+t.n+".");return 1}if(Object.values(B).some(q=>q.id==tool)){toast("You can only build one "+t.n+".");return 1}}
  const w=t.w||1,h=t.h||1,ew=rot&1?h:w,eh=rot&1?w:h;
@@ -1193,7 +1199,7 @@ $("exp").onclick=()=>{
  const cost=EXPC[nex];if(money<cost)return toast("Expanding costs $"+cost.toLocaleString()+". You have $"+Math.floor(money).toLocaleString()+".");
  const nw=W+XW,nh=H+XH,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0),n5=Array(nw*nh).fill(0);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){ng[y*nw+x]=g[y*W+x];n2[y*nw+x]=hw[y*W+x];n3[y*nw+x]=rv[y*W+x];n4[y*nw+x]=el[y*W+x];n5[y*nw+x]=GND[y*W+x]|0}
- {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}{const ns={};for(const k in SLUM){const i=+k;ns[(i/W|0)*nw+i%W]=SLUM[k]}SLUM=ns}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;GND=n5;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
+ {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;GND=n5;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
 
 const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)},cl=h=>new THREE.Color(h),TC=cl(0),
 RP=(q,u,o)=>{const k=u<q[1][0]?0:1,a=q[k],b=q[k+1],t=(u-a[0])/(b[0]-a[0]);return typeof a[1]=="number"?a[1]+(b[1]-a[1])*t:o.copy(a[1]).lerp(b[1],t)},
@@ -1216,7 +1222,7 @@ function draw(){
  camKeys();ctl.update();
  const dt=cd();sky(dt);SPN.forEach(q=>q.rotation.z-=dt*2);try{cars(dt)}catch(e){console.error(e)}try{peds(dt)}catch(e){console.error(e)}try{planes(dt)}catch(e){console.error(e)}try{boats(dt)}catch(e){console.error(e)}try{race(dt)}catch(e){console.error(e)}try{trains(dt)}catch(e){console.error(e)}hl.visible=!!hov&&tool!="none";
  if(hov){const[x,y]=hov,t=T[tool],bd=!!proto[tool],w=t.w||1,h=t.h||1,ew=bd&&rot&1?h:w,eh=bd&&rot&1?w:h,occ=g[y*W+x];
-  const red=T[tool].k=="z"?(occ!="slum"||money<cc(t)):T[tool].k=="s"?!!rv[y*W+x]:tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):tool=="toll"?(!hw[y*W+x]||TB[y*W+x]||money<cc(t)):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t));
+  const red=T[tool].k=="s"?!!rv[y*W+x]:tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):tool=="toll"?(!hw[y*W+x]||TB[y*W+x]||money<cc(t)):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t));
   hl.material.color.set(red?0xe03c3c:0xffffff);hl.scale.set(ew,1,eh);hl.position.set(wx(x)+(ew-1)/2,.09+E(y*W+x),wz(y)+(eh-1)/2);
   if(ghost){ghost.visible=tool=="toll"?(!!hw[y*W+x]&&!TB[y*W+x]):tool=="lamp"||T[tool].k=="g"||(!!fits(x,y,ew,eh)&&(!t.bt||bfw(x,y,ew,eh,rot)));ghost.position.set(wx(x)+(ew-1)/2,E(y*W+x),wz(y)+(eh-1)/2);ghost.rotation.y=tool=="toll"?((HF[hw[y*W+x]&15]||hw[y*W+x]&15)==10?D:0):rot*D;if(tool=="lamp"){ghost.position.x+=FX[0]-.5;ghost.position.z+=FX[1]-.5}}}
  else if(ghost)ghost.visible=false;
@@ -1227,8 +1233,8 @@ function fit(){const r=$("stage").getBoundingClientRect();
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(r.width,r.height);
  cam.aspect=r.width/r.height;cam.updateProjectionMatrix()}
 
-function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB,gm:GND,sl:SLUM,ot:OUT,st:SLT}))}catch(e){}}
-function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);GND=d.gm&&d.gm.length==W*H?d.gm:Array(W*H).fill(GI|0);SLUM=d.sl&&typeof d.sl=="object"&&!Array.isArray(d.sl)?d.sl:{};OUT=+d.ot||0;SLT=+d.st||0;nex=d.x||0;$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};TB=d.tb&&typeof d.tb=="object"?d.tb:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
+function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB,gm:GND}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);GND=d.gm&&d.gm.length==W*H?d.gm:Array(W*H).fill(GI|0);nex=d.x||0;$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};TB=d.tb&&typeof d.tb=="object"?d.tb:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
  if(d.v==2){g=d.g;B=d.B||{};nu=d.u||1}
  else{g=d.g.map(v=>v&&v!="road"?0:v);B={};nu=1;d.g.forEach((v,i)=>{if(v&&v!="road"&&T[v]){const u=nu++;B[u]={id:v,x:i%W,y:i/W|0,r:0,w:1,h:1};g[i]=u}})}}}catch(e){}}
 
@@ -1272,7 +1278,7 @@ $("pc").oninput=e=>{pcol[tool]=e.target.value;ghostFor=null};
 $("name").onfocus=e=>e.target.select();
 $("name").oninput=()=>{save();ui()};
 $("new").onclick=e=>{const b=e.target;
- if(b.dataset.s){B={};LP=[];TR=[];nu=1;g=Array(30*20).fill(0);hw=Array(30*20).fill(0);rv=Array(30*20).fill(0);el=Array(30*20).fill(0);GND=Array(30*20).fill(0);SLUM={};OUT=0;SLT=0;SLCD=0;W=30;H=20;nex=0;world();dirty=1;updExp();money=2000;pop=0;won=0;FW=1;RVP=0;SF=0;BS={};TB={};SEN=[null,null,null,null,null];$("name").value="My Little City";delete b.dataset.s;b.textContent="↺ New city";save();ui()}
+ if(b.dataset.s){B={};LP=[];TR=[];nu=1;g=Array(30*20).fill(0);hw=Array(30*20).fill(0);rv=Array(30*20).fill(0);el=Array(30*20).fill(0);GND=Array(30*20).fill(0);W=30;H=20;nex=0;world();dirty=1;updExp();money=2000;pop=0;won=0;FW=1;RVP=0;SF=0;BS={};TB={};SEN=[null,null,null,null,null];$("name").value="My Little City";delete b.dataset.s;b.textContent="↺ New city";save();ui()}
  else{b.dataset.s=1;b.textContent="Click again to reset";setTimeout(()=>{delete b.dataset.s;b.textContent="↺ New city"},3000)}};
 window.addEventListener("resize",fit);
 const ADMIN_CODE="metro-admin";let adm=0,pen=0,penT;
@@ -1405,16 +1411,11 @@ dl3:{n:"EV Dealership",e:"🔋",c:4500,k:"c",jobs:20,inc:32,svc:40,t:2,sdg:[7,11
 dl4:{n:"Luxury Motors Showroom",e:"🏎️",c:12000,k:"c",jobs:50,inc:70,svc:60,joy:.006,t:2,w:2,h:2,d:"A gold-trimmed glass showroom for the finest cars in the city."}});
 dkCATS[4].subs.push(["🚗 Auto",["dl1","dl2","dl3","dl4"]]);["dl1","dl2","dl3","dl4"].forEach(id=>dkLOC[id]=[4,dkCATS[4].subs.length-1]);
 GRN.forEach((q,i)=>{const p=q[0].indexOf(" "),nm=q[0].slice(p+1);T["gr"+i]={n:nm,e:q[0].slice(0,p),c:0,k:"s",lbl:i?"paint tile":"erase paint",d:i?"Paint tiles "+nm.toLowerCase()+".":"Turn painted tiles back to grass."}});
-T.sevict={n:"Evict Slum",e:"🚜",c:0,k:"z",lbl:"$60 / level",d:"Clear a slum."};
-T.ssupp={n:"Support Slum",e:"🤝",c:0,k:"z",lbl:"$200 / level",d:"Legalise a slum."};
 {const gids=GRN.map((_,i)=>"gr"+i);
 dkCATS[10].subs.push(["🎨 Paint ground",gids]);gids.forEach(id=>dkLOC[id]=[10,dkCATS[10].subs.length-1]);
-dkCATS.push({e:"🏚️",n:"Slums",subs:[["🏚️ Slum control",["sevict","ssupp"]]]});
-{const ci=dkCATS.length-1;["sevict","ssupp"].forEach(id=>dkLOC[id]=[ci,0])}
 const sel3=sel;sel=t=>{sel3(t);const m=/^gr(\d)$/.exec(t);
  if(m)$("info").textContent=+m[1]?"Paint ground ("+T[t].n+"): click or drag over tiles to turn just those tiles into "+T[t].n.toLowerCase()+". Water can’t be painted.":"Grass: click or drag over painted tiles to turn them back to grass.";
- else if(t=="sevict")$("info").textContent="Evict Slum: click a slum to clear it ($60 per level). Residents are angry for a while (happiness drops), and new slums keep appearing while there are more jobs than homes.";
- else if(t=="ssupp")$("info").textContent="Support Slum: click a slum ($200 per level) to give it water, power and legal status. It becomes a settlement with cheap homes (+4 per level) and no more crime, fires or disease, but it is low quality and still drags happiness down a little."}}
+}}
 
 ST.us.push("sk12");dkLOC.sk12=[1,2];dkG.Health.push("vet1","vet2");dkLOC.vet1=[5,0];dkLOC.vet2=[5,0];
 /* existing buildings also count toward goals */
@@ -1548,7 +1549,7 @@ P.sdg_summit=Gp(bx(.98,.03,.98,0xe8e4d8),cy(.34,.26,0xf1ecdd,0,.03,0,28),Dm(.3,0
 
 load();sel("road");init3d();fit();updExp();ui();toast("WASD / arrows to move · Q/E rotate · Z/X or scroll to zoom · Esc or click a tool again to deselect",7000);
 setInterval(()=>{if(!window.MENU)tick()},1000);
-/* ---- paint ground tile by tile + slums ---- */
+/* ---- paint ground tile by tile  ---- */
 function paintTile(i){const gi=+tool.slice(2);if(rv[i]){if(!dragging)toast("Water can’t be painted. Paint the land next to it.");return 1}if((GND[i]|0)==gi)return 1;GND[i]=gi;dirty=1;return 1}
 function groundRender(){
  if(GGEO){GGEO.dispose();GGEO=null}
@@ -1562,72 +1563,34 @@ function groundRender(){
   for(let q=0;q<6;q++){P[o]=v[q*2];P[o+2]=v[q*2+1];C[o]=c.r;C[o+1]=c.g;C[o+2]=c.b;Nm[o+1]=1;o+=3}}
  const G=new THREE.BufferGeometry();G.setAttribute("position",new THREE.BufferAttribute(P,3));G.setAttribute("normal",new THREE.BufferAttribute(Nm,3));G.setAttribute("color",new THREE.BufferAttribute(C,3));
  const m=new THREE.Mesh(G,mat({vertexColors:true,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));m.position.y=.004;m.receiveShadow=true;cityG.add(m);GGEO=G}
-function slumFix(){
+function groundFix(){
  if(GND.length!=W*H)GND=Array(W*H).fill(0);
  for(let i=0;i<GND.length;i++)if(!GRN[GND[i]])GND[i]=0;
- for(const k in SLUM){const i=+k,z=SLUM[k];if(!z||g[i]!=="slum"||rv[i]||hw[i]){delete SLUM[k];continue}z.lv=Math.min(3,Math.max(1,z.lv|0));z.st=z.st?1:0}
- for(let i=0;i<g.length;i++)if(g[i]==="slum"&&!SLUM[i])g[i]=0}
-function slumInfo(i){const z=SLUM[i];toast(z.st?"🤝 Supported settlement (level "+z.lv+"): "+4*z.lv+" cheap homes. Use 🚜 to clear it.":"🏚️ Illegal slum (level "+z.lv+"): about "+5*z.lv+" squatters. Evict 🚜 or support 🤝 it (Slums tab).",5000)}
-function slumEvict(i){const z=SLUM[i];if(!z){g[i]=0;dirty=1;return 1}
- const c=60*z.lv;if(money<c){toast("Clearing this "+(z.st?"settlement":"slum")+" costs $"+c+".");return 0}
- money-=c;OUT=Math.min(.3,OUT+.02*z.lv);const n=z.st?4*z.lv:5*z.lv;delete SLUM[i];g[i]=0;dirty=1;
- toast("🚜 "+(z.st?"Settlement":"Slum")+" cleared. "+n+" residents were displaced and the public is angry.",4500);return 1}
-function slumTool(i){const z=SLUM[i];
- if(g[i]!=="slum"||!z){if(!dragging)toast("Click a slum (the 🏚️ shacks on empty land).");return 1}
- if(tool=="sevict")return slumEvict(i);
- if(z.st){toast("This slum is already a supported settlement.");return 1}
- const c=200*z.lv;if(money<c){toast("Supporting this slum costs $"+c+".");return 0}
- money-=c;z.st=1;dirty=1;toast("🤝 Supported! Water, power and legal status: "+4*z.lv+" cheap homes.",4500);return 1}
-function slumSpawn(){
- const fac=Object.values(B).filter(b=>{const t=T[b.id];return t&&t.k=="f"&&t.pol>=2}).map(b=>{const r=rc(b);return[r.x+r.w/2,r.y+r.h/2]}),
- tt=new Set(TR.map(q=>q.y*W+q.x)),L=[];let tw=0;
- for(let i=0;i<W*H;i++){if(g[i]||hw[i]||rv[i]||BS[i]||TB[i]||tt.has(i))continue;
-  const x=i%W,y=i/W|0;let near=0,adj=0,riv=0;
-  for(let j=-2;j<=2;j++)for(let k=-2;k<=2;k++){const X=x+k,Y=y+j;if(X<0||Y<0||X>=W||Y>=H)continue;const q=g[Y*W+X];
-   if(q&&q!=="slum"&&(isB(q)||wk(q)))near++;
-   if(Math.abs(j)<=1&&Math.abs(k)<=1&&(j||k)){if(q==="slum")adj++;if(rv[Y*W+X]==1)riv=1}}
-  if(!near&&!adj)continue;
-  let w=1+Math.min(near,4)*.5+adj*2+riv*1.5;fac.forEach(([a,b])=>{if(Math.hypot(a-x,b-y)<5)w+=1.5});
-  L.push([i,w]);tw+=w}
- if(!L.length)return 0;
- let r=Math.random()*tw,pick=L[L.length-1][0];for(const[i,w]of L){r-=w;if(r<=0){pick=i;break}}
- g[pick]="slum";SLUM[pick]={lv:1,st:0};dirty=1;SLCD=12+(Math.random()*10|0);
- toast(SLT++?"🏚️ Another slum has appeared. There are more jobs than homes.":"🏚️ A slum has appeared! Your city is so popular that people who can’t find homes are building shacks illegally. Evict them 🚜 or support them 🤝 (Slums tab), or build more homes.",SLT>1?4000:9000);
- return 1}
-function slumTick(){
- OUT=Math.max(0,OUT-.0012);if(SLCD>0)SLCD--;
- const ks=Object.keys(SLUM),il=ks.filter(k=>!SLUM[k].st);let ri=0;il.forEach(k=>ri+=5*SLUM[k].lv);
- const ni=il.length,vac=S.jobs-pop-ri,want=pop>=25&&S.hap>=.7&&pop>=S.cap-2&&vac>=6;
- if(want&&!SLCD&&ni<12&&ni<1+pop/40&&Math.random()<.06)slumSpawn();
- else if(want&&ni&&Math.random()<.015){const c=il.filter(k=>SLUM[k].lv<3);if(c.length){SLUM[pk(c)].lv++;dirty=1;toast("🏚️ A slum is getting bigger…",3000)}}
- if(ni&&(S.hap<.55||vac<-8)&&Math.random()<.1){const k=pk(il);delete SLUM[k];g[+k]=0;dirty=1;toast("🏚️ A slum emptied out — "+(S.hap<.55?"the city isn’t attractive any more.":"there’s no work left here."),4000)}
- if(ni){
-  if(S.pl<.95&&Math.random()<Math.min(.06,.012*ni)){const l=Math.floor(Math.min(money*.02,400));if(l>0){money-=l;toast("🚨 Break-ins near the slums! Thieves took $"+l+".",4000)}}
-  if(S.hl<.9&&pop>=10&&Math.random()<Math.min(.04,.008*ni)){pop=Math.max(0,pop-Math.ceil(pop*.02));toast("🤒 Disease is spreading in the slums. Build a clinic or support them.",4000)}
-  if(S.fr<.8&&Math.random()<Math.min(.04,.004*ni)){const k=pk(il),z=SLUM[k];if(z){OUT=Math.min(.3,OUT+.02*z.lv);delete SLUM[k];g[+k]=0;dirty=1;toast("🔥 Fire swept through a slum with no fire engines nearby. "+5*z.lv+" people lost their homes.",4500)}}}}
-function slumRender(){
- if(!SLG){const sp=(e,c)=>new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cvs(64,x=>{x.fillStyle="#fff";x.strokeStyle=c;x.lineWidth=4;x.beginPath();x.arc(32,32,26,0,7);x.fill();x.stroke();x.font="30px serif";x.textAlign="center";x.textBaseline="middle";x.fillText(e,32,35)})),depthTest:false});
-  SLG={b:new THREE.BoxGeometry(1,1,1),c:new THREE.CylinderGeometry(1,1,1,8),bad:sp("🏚️","#d6453d"),ok:sp("🤝","#2f8f4e")}}
- const M=c=>SLM[c]||(SLM[c]=mat({color:c})),
- WALL=[0x9a7b5a,0x7d8a94,0xb0573a,0x6f7f6a,0xa89270,0x5c6b7a,0xc4a35a],ROOF=[0x8a6a4a,0x6e7a82,0xa14a2f,0x4f6f8f,0x9aa3a8,0xb8643f],
- TARP=[0x3b8fd9,0xf0a030,0x2f8f4e,0xd9433b],PAS=[0xf2a6a0,0xf2d27a,0x9ad4b0,0x9cc2f0,0xe9b6e0,0xf4c78f];
- for(const k in SLUM){const z=SLUM[k],i=+k,x=i%W,y=i/W|0,G=new THREE.Group();let sd=(Math.imul(i+1,2654435761)+12345)>>>0;
-  const R=()=>{sd=(Math.imul(sd,1664525)+1013904223)>>>0;return sd/4294967296},P=a=>a[R()*a.length|0],
-  box=(w,h,d,c,px,py,pz,ry,rz)=>{const m=new THREE.Mesh(SLG.b,M(c));m.scale.set(w,h,d);m.position.set(px,py+h/2,pz);if(ry)m.rotation.y=ry;if(rz)m.rotation.z=rz;m.castShadow=m.receiveShadow=true;G.add(m);return m},
-  cyl=(r,h,c,px,py,pz)=>{const m=new THREE.Mesh(SLG.c,M(c));m.scale.set(r,h,r);m.position.set(px,py+h/2,pz);m.castShadow=true;G.add(m)};
-  box(.96,.012,.96,z.st?0xb9b4a6:0x6b5a45,0,0,0);
-  const sl=[];for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)sl.push([a*.3,b*.3]);
-  for(let j=sl.length-1;j>0;j--){const r=R()*(j+1)|0,t=sl[j];sl[j]=sl[r];sl[r]=t}
-  const n=2*z.lv;
-  for(let j=0;j<n;j++){const[sx,sz]=sl[j],w=.17+R()*.1,d=.15+R()*.1,h=.09+R()*.09+(z.st?.03:0),ry=(R()-.5)*(z.st?.2:.7),px=sx+(R()-.5)*.05,pz=sz+(R()-.5)*.05;
-   box(w,h,d,z.st?P(PAS):P(WALL),px,.012,pz,ry);
-   box(w+.04,.018,d+.04,z.st?P([0xc0583a,0x8f9aa3]):P(ROOF),px,.012+h,pz,ry,(R()-.5)*(z.st?.04:.25));
-   if(!z.st&&R()<.45)box(w*.7,.012,d*.9,P(TARP),px,.03+h,pz,ry,.1)}
-  const[ex,ez]=sl[n];
-  if(z.st){cyl(.065,.12,0x4fa8e0,.38,.2,.38);cyl(.012,.2,0x666666,.38,.012,.38);cyl(.012,.5,0x6b4a2a,-.4,.012,.38);box(.14,.015,.015,0x6b4a2a,-.4,.5,.38)}
-  else{box(.08,.08,.08,0x8a6a48,ex,.012,ez,R()*3);cyl(.04,.1,0x3b6fa0,ex+.1,.012,ez-.08)}
-  const sp=new THREE.Sprite(z.st?SLG.ok:SLG.bad);sp.scale.set(.38,.38,1);sp.position.set(0,.5+.08*z.lv,0);G.add(sp);
-  G.position.set(wx(x),E(i),wz(y));cityG.add(G)}}
+ for(let i=0;i<g.length;i++)if(g[i]==="slum")g[i]=0}
+
+/* ---- undo / redo (Ctrl+Z, Ctrl+Y / Ctrl+Shift+Z) ---- */
+const UNDOS=[],REDOS=[];
+const undoSnap=()=>({s:JSON.stringify([W,H,g,hw,rv,el,GND,B,nu,LP,TR,BS,TB,FW]),m:money});
+function undoApply(s){const a=JSON.parse(s);if(a[0]!==W||a[1]!==H)return 0;[,,g,hw,rv,el,GND,B,nu,LP,TR,BS,TB,FW]=a;tl=-1;dirty=1;ui();save();return 1}
+function undoBtns(){const u=document.getElementById("undo-b"),r=document.getElementById("redo-b");if(u)u.disabled=!UNDOS.length;if(r)r.disabled=!REDOS.length}
+function doUndo(){const e=UNDOS.pop();if(!e){toast("Nothing to undo.");undoBtns();return}const cur=undoSnap();
+ if(!undoApply(e.s)){UNDOS.length=0;undoBtns();return}
+ money+=e.d;REDOS.push({s:cur.s,d:e.d});ui();toast("↶ Undone");undoBtns()}
+function doRedo(){const e=REDOS.pop();if(!e){toast("Nothing to redo.");undoBtns();return}const cur=undoSnap();
+ if(!undoApply(e.s)){REDOS.length=0;undoBtns();return}
+ money-=e.d;UNDOS.push({s:cur.s,d:e.d});ui();toast("↷ Redone");undoBtns()}
+{let pre=null;const pd=cv.onpointerdown,pu=cv.onpointerup;
+ cv.onpointerdown=e=>{if(!e.button&&!e.shiftKey&&ptrs.size==0)pre=undoSnap();pd(e)};
+ cv.onpointerup=e=>{pu(e);if(pre){const now=undoSnap();if(now.s!==pre.s){UNDOS.push({s:pre.s,d:pre.m-now.m});if(UNDOS.length>40)UNDOS.shift();REDOS.length=0;undoBtns()}pre=null}};
+ cv.onpointercancel=(f=>e=>{pre=null;f(e)})(cv.onpointercancel)}
+addEventListener("keydown",e=>{if(!(e.ctrlKey||e.metaKey)||e.altKey||/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
+ if(e.code=="KeyZ"){e.preventDefault();e.shiftKey?doRedo():doUndo()}else if(e.code=="KeyY"){e.preventDefault();doRedo()}});
+{const ex=$("exp"),o=ex.onclick;ex.onclick=function(){const n=nex;const r=o.apply(this,arguments);if(nex!==n){UNDOS.length=REDOS.length=0;undoBtns()}return r}}
+$("new").addEventListener("click",e=>{if($("new").dataset.s){UNDOS.length=REDOS.length=0;undoBtns()}},true);
+{const st=$("stage"),w=document.createElement("div");w.style.cssText="position:absolute;left:8px;bottom:8px;display:flex;gap:6px;z-index:5";
+ [["undo-b","↶","Undo (Ctrl+Z)",doUndo],["redo-b","↷","Redo (Ctrl+Y)",doRedo]].forEach(([id,t,ti,f])=>{const b=document.createElement("button");b.id=id;b.textContent=t;b.title=ti;b.setAttribute("aria-label",ti);
+  b.style.cssText="font:700 18px/1 system-ui;width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;opacity:.9";b.onclick=f;w.appendChild(b)});
+ st.appendChild(w);undoBtns()}
 
 (function loop(){draw();requestAnimationFrame(loop)})();
 </script><style>
@@ -1796,9 +1759,10 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.28.0",
+const VER="1.29.0",
 LOG=[
-["1.28.0","Slums & tile-by-tile ground",["New 🏚️ Slums. When your city is so good that there are more jobs than homes, people who can’t find housing build illegal shacks on empty land. Slums hurt happiness and bring break-ins, disease and fires.","You decide what to do. 🚜 Evict a slum ($60 a level, with a public outcry), or 🤝 Support it ($200 a level) to turn it into a legal settlement with cheap homes. Both tools are in the new 🏚️ Slums tab, and the bulldozer clears slums too. Click a slum with ✋ No tool to see details.","Slums keep coming back while jobs outnumber homes, so build more housing too.","Ground is now painted tile by tile. In Terrain & Trees → 🎨 Paint ground, pick a material and click or drag over just the tiles you want. Grass erases paint. The old whole-map ground button is gone."],"Nov 8, 2026"],
+["1.29.0","Undo & redo",["Press Ctrl+Z (or ⌘Z) to undo your last build, paint, bulldoze or terrain stroke, and Ctrl+Y or Ctrl+Shift+Z to redo. A drag counts as one step, up to 40 steps. Money spent is refunded on undo.","New ↶ ↷ buttons in the bottom-left of the map for touch screens. History clears when you expand the city or start a new one."],"Nov 8, 2026"],
+["1.28.0","Tile-by-tile ground",["Ground is now painted tile by tile. In Terrain & Trees → 🎨 Paint ground, pick a material and click or drag over just the tiles you want. Grass erases paint. The old whole-map ground button is gone."],"Nov 8, 2026"],
 ["1.27.0","Ground picker in Terrain",["New 🎨 Ground section in the Terrain & Trees tab: click Grass, Sand, Desert, Autumn, Snow or Rock to switch the ground right away, no more cycling through them. The current ground is highlighted, and the 🌱 button in the top bar still works too."],"Nov 8, 2026"],
 ["1.26.0","Car dealerships",["New 🚗 Auto section in the Commerce tab with 4 dealerships: Used Car Lot ($900), Car Dealership ($3,200), EV Dealership ($4,500, counts toward the Global Goals) and Luxury Motors Showroom ($12,000, 2×2).","Each one adds jobs, income and services, and the bigger ones get more of each. The Luxury Showroom also adds a little happiness."],"Nov 8, 2026"],
 ["1.25.0","Cobblestone streets",["New 🪨 Cobblestone street in the Roads tab ($6 a tile): a wide stone-paved street for walking. Pedestrians stroll along it, cars don't drive on it, and buildings that touch it still count as connected.","Cobblestone joins up with roads, dirt roads and footpaths, and curves at corners like the other streets."],"Nov 8, 2026"],
@@ -2334,4 +2298,5 @@ const sel0=sel;sel=t=>{sel0(t);const o=T[t];if(o&&o.sdg&&o.sdg.length){let i=$("
 const nw3=q("new").onclick;q("new").onclick=e=>{const r=!!e.target.dataset.s;nw3(e);if(r){SG={got:[],all:0};svg();SD={sc:[],n:0};lbl()}};
 })();
 </script>
+<script>(()=>{const e=document.getElementById("info");if(!e)return;const f=()=>{e.title=e.textContent};f();new MutationObserver(f).observe(e,{childList:true,characterData:true,subtree:true})})()</script>
 </body></html>
