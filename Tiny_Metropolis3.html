@@ -168,7 +168,7 @@ f3:{n:"Mega Plant",e:"🏗️",c:2000,k:"f",jobs:64,inc:48,pol:3,t:3,w:2,h:2},
 f4:{n:"Sawmill",e:"🪵",c:350,k:"f",jobs:10,inc:7,pol:1,t:1},
 f5:{n:"Warehouse",e:"📦",c:520,k:"f",jobs:16,inc:10,pol:.5,t:2,w:2,h:1},
 f6:{n:"Power Plant",e:"⚡",c:6000,k:"u",jobs:40,inc:34,pwr:240,pol:3,t:3,w:2,h:2},
-wind:{n:"Wind Turbine",e:"🌬️",c:500,k:"u",jobs:1,pwr:14,t:1},
+wind:{n:"Wind Turbine",e:"🌬️",c:500,k:"u",hi:1,jobs:1,pwr:14,t:1},
 solar:{n:"Solar Farm",e:"☀️",c:1800,k:"u",jobs:3,pwr:50,t:1,w:2,h:1},
 wtow:{n:"Water Tower",e:"🗼",c:500,k:"u",jobs:1,twr:60,t:1},
 wtre:{n:"Water Treatment",e:"🚰",c:1000,k:"u",jobs:4,tre:90,t:1,w:2,h:1},
@@ -224,7 +224,29 @@ rain:{n:"Rain Harvester",e:"🌧️",c:700,k:"u",jobs:1,tre:45,twr:45,t:1,d:"Col
 pump:{n:"Pump Station",e:"⚙️",c:900,k:"u",jobs:2,twr:140,t:1,d:"Boosts water pressure so more homes get water."},
 filt:{n:"Filtration Plant",e:"🚿",c:2800,k:"u",jobs:8,tre:240,t:2,w:2,h:1},
 desal:{n:"Desalination Plant",e:"🌊",c:10000,k:"u",jobs:25,tre:950,twr:350,t:2,w:2,h:2,d:"Turns seawater into drinking water: huge treatment plus some delivery."},
-dam:{n:"Hydro Dam",e:"🏞️",c:14000,k:"u",jobs:28,inc:18,pwr:400,twr:500,t:2,w:2,h:2,d:"Makes clean power and stores water for the whole city."},
+dam:{n:"Hydro Dam",e:"🏞️",c:14000,k:"u",hi:1,jobs:28,inc:18,pwr:400,twr:500,t:2,w:2,h:2,d:"Makes clean power and stores water for the whole city."},
+spring:{n:"Artesian Spring",e:"💧",c:400,k:"u",jobs:1,tre:30,twr:30,t:1,d:"A natural spring tapped and piped straight to homes. Cheap, clean and small."},
+fog:{n:"Fog Catcher",e:"🌫️",c:550,k:"u",dr:1,jobs:1,tre:25,twr:25,t:1,d:"Big mesh nets pull drinking water out of the air. Works anywhere."},
+bore:{n:"Borehole Pump",e:"🪣",c:1600,k:"u",dr:1,jobs:2,tre:80,twr:80,t:1,d:"Pumps clean groundwater from deep underground and sends it into the pipes."},
+intake:{n:"River Intake Plant",e:"🏭",c:3800,k:"u",jobs:8,tre:220,twr:180,t:2,w:2,h:1,d:"Draws river water into settling tanks, cleans it and pushes it out to the city."},
+aque:{n:"Aqueduct Station",e:"🏛️",c:6500,k:"u",dr:1,jobs:10,tre:200,twr:420,t:2,w:2,h:2,d:"A long stone aqueduct brings water from far away, with a pump house to treat it."},
+resv:{n:"Reservoir Lake",e:"🏞️",c:9000,k:"u",dr:1,jobs:12,tre:300,twr:520,t:2,w:2,h:2,d:"A big storage lake with an intake tower. Keeps the taps running through shortages."},
+recy:{n:"Water Recycling Plant",e:"♻️",c:11000,k:"u",dr:1,jobs:16,tre:650,twr:300,t:2,w:2,h:2,d:"Cleans used water until it is safe to drink again, and keeps rivers clean."},
+ro:{n:"Reverse Osmosis Plant",e:"🧪",c:20000,k:"u",dr:1,jobs:30,tre:1500,twr:650,t:3,w:2,h:2,d:"Rows of high-pressure membranes make huge amounts of fresh water."},
+fount:{n:"Fountain Plaza",e:"⛲",c:700,k:"p",jobs:1,inc:2,fun:40,joy:.004,grn:1,t:1,d:"A paved plaza with a sparkling fountain. Cools and freshens the air around it."},
+spa:{n:"Hot Spring Spa",e:"♨️",c:5000,k:"p",jobs:14,inc:22,fun:150,joy:.02,grn:1,t:1,w:2,h:1,d:"Steaming stone pools and a wooden bathhouse. Very relaxing."},
+wpark:{n:"Water Park",e:"🛝",c:9000,k:"p",jobs:30,inc:35,fun:320,joy:.02,t:2,w:2,h:2,d:"Slides, a lazy river and splash pools. Packed on sunny days."},
+aqua:{n:"Aquarium",e:"🐠",c:14000,k:"p",jobs:40,inc:50,fun:380,joy:.025,t:2,w:2,h:2,d:"A glowing dome and a giant fish tank. Visitors come from all over."},
+lodge:{n:"Ski Lodge",e:"🎿",c:7000,k:"c",hi:1,jobs:25,svc:150,inc:30,t:2,w:2,h:2,d:"A snowy mountain lodge with a cafe and gear rental. Great on a tall hill."},
+cable:{n:"Cable Car Station",e:"🚠",c:6000,k:"c",hi:1,jobs:20,svc:120,inc:35,t:2,d:"Gondolas glide up the slope. Earns +10% more for every land level it stands on."},
+mine:{n:"Mountain Mine",e:"⛏️",c:8000,k:"f",hi:1,jobs:70,inc:70,pol:2,t:2,w:2,h:2,d:"Digs ore out of the hillside with a rail cart. Earns +10% more for every land level it stands on."},
+meter:{n:"Smart Meter Hub",e:"📟",c:3000,k:"u",jobs:3,sv:1,t:1,d:"Spots leaks and tracks usage. Each hub cuts the city\u2019s water demand by 4% (up to 20%)."},
+tinn:{n:"Budget Inn",e:"🏨",c:2500,k:"c",tour:1,jobs:12,svc:30,inc:14,t:2,d:"Cheap rooms for visitors. Earns more the more attractions (stadiums, parks, museums, landmarks) your city has."},
+thotel:{n:"Grand Hotel",e:"🏩",c:9000,k:"c",tour:1,jobs:40,svc:90,inc:55,t:3,w:2,h:2,d:"A tall hotel with a golden entrance. Tourists pay well if your city has plenty to see."},
+tresort:{n:"Beach Resort",e:"🏖️",c:16000,k:"c",tour:1,jobs:60,svc:140,inc:90,t:2,w:2,h:2,d:"Pool, palms and cabanas. The best tourist income when your city is full of attractions."},
+zoo:{n:"City Zoo",e:"🦁",c:30000,k:"p",jobs:90,inc:90,fun:700,joy:.04,grn:1,big:1,t:3,w:3,h:3,d:"Giraffes, zebras, elephants, lions, penguins and flamingos wander their enclosures. Counts triple as a tourist attraction."},
+farm:{n:"Petting Farm",e:"🐄",c:6000,k:"p",jobs:20,inc:20,fun:200,joy:.02,grn:1,t:2,w:2,h:2,d:"A red barn with cows, sheep and a pig to pet. Kids love it."},
+dogp:{n:"Dog Park",e:"🐕",c:1200,k:"p",jobs:2,inc:3,fun:60,joy:.006,grn:1,t:1,d:"A fenced park where dogs run and play. Freshens the air nearby."},
 lm1:{n:"Statue of Liberty",e:"🗽",c:30000,k:"p",jobs:20,inc:25,fun:300,joy:.02,t:3,bh:3,w:2,h:2,lm:1,d:"A copper-green icon holding her torch high."},
 lm2:{n:"CN Tower",e:"📡",c:60000,k:"p",jobs:35,inc:45,fun:450,joy:.03,t:3,bh:3,w:2,h:2,lm:2,d:"A towering concrete spire with a revolving pod."},
 lm3:{n:"Eiffel Tower",e:"🗼",c:100000,k:"p",jobs:45,inc:70,fun:600,joy:.04,t:3,bh:3,w:3,h:3,lm:3,d:"An iron lattice tower that sparkles at night."},
@@ -304,7 +326,7 @@ me5:{n:"Domed Villa",e:"🏝️",c:340,k:"h",cap:8,tax:.8,q:.9,t:1,s:"me",d:"A w
 me6:{n:"Souk Flats",e:"🏬",c:740,k:"h",cap:26,tax:1.25,q:.85,t:2,s:"me",d:"Flats above the market stalls, with a red awning and a tiled band."},
 me7:{n:"Marrakech Tower",e:"🕌",c:1100,k:"h",cap:40,tax:1.6,q:.95,t:3,s:"me",d:"A terracotta tower with cream bands and a green-tiled pyramid roof."}});
 Object.assign(T,{
-wind2:{n:"Wind Farm",e:"🌬️",c:3800,k:"u",jobs:4,pwr:110,t:2,w:2,h:2,d:"Three big turbines spinning together. Clean, quiet power."},
+wind2:{n:"Wind Farm",e:"🌬️",c:3800,k:"u",hi:1,jobs:4,pwr:110,t:2,w:2,h:2,d:"Three big turbines spinning together. Clean, quiet power."},
 solar2:{n:"Solar Array",e:"☀️",c:4200,k:"u",jobs:6,pwr:120,t:2,w:2,h:2,d:"Rows of tilted solar panels on a concrete pad."},
 gas1:{n:"Gas Power Plant",e:"🔥",c:5500,k:"u",jobs:30,inc:24,pwr:160,pol:1,t:2,w:2,h:2,d:"Burns natural gas: cleaner than a coal plant, with a flare stack."},
 geo1:{n:"Geothermal Plant",e:"♨️",c:9000,k:"u",jobs:14,inc:10,pwr:200,t:2,w:2,h:2,d:"Taps heat from underground. Steam, a turbine hall and a turquoise pool."},
@@ -324,7 +346,7 @@ concert:{n:"Concert Stage",e:"🎤",c:9000,k:"p",jobs:30,inc:40,fun:350,joy:.03,
 trk:{n:"Race Track",e:"🏁",c:30,k:"a",d:"Drag to lay a race circuit ($30/tile). Tiles join up and curve on their own. Build a loop and race cars will start racing around it. Needs dry, empty land."},
 grand1:{n:"Grandstand",e:"🏟️",c:2500,k:"p",jobs:12,inc:30,fun:400,joy:.01,t:2,w:2,h:1,d:"Covered tiered seating. Build it beside a race track."},
 pit1:{n:"Pit Garage",e:"🔧",c:1800,k:"c",jobs:14,inc:14,svc:0,t:2,w:2,h:1,d:"A row of garage bays and a pit wall. Build it beside a race track."}});
-const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
+const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14","mine"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8","lodge","cable","tinn","thotel","tresort"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1","fount","spa","wpark","aqua","dogp","farm","zoo"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
 let GND=Array(W*H).fill(0),GGEO=null;
@@ -335,25 +357,29 @@ const isB=v=>typeof v=="number",same=(v,t)=>v&&isB(v)&&B[v]&&B[v].id==t,rc=b=>b.
 const fp=o=>(o.w||1)+"×"+(o.h||1)+" tiles, R to rotate";
 function fits(x,y,w,h){if(x<0||y<0||x+w>W||y+h>H)return 0;for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(g[j*W+i]||hw[j*W+i]||rv[j*W+i]||el[j*W+i]!=el[y*W+x])return 0;return 1}
 
+let DRT={t:0,sev:0},RN={t:0},FES={t:0},ANI=[],ANT=0;
+function animals(dt){ANT+=dt;ANI.forEach(q=>{const u=q.userData.an,a=u.ph+ANT*u.sp,c=Math.cos(a),n=Math.sin(a),d=u.sp<0?-1:1,w=Math.sin(a*u.g);
+ q.position.set(u.cx+c*u.rx,u.y+Math.abs(w)*(u.bob||0),u.cz+n*u.rz);q.rotation.y=Math.atan2(-c*u.rz*d,-n*u.rx*d);if(u.roll)q.rotation.x=w*u.roll;
+ q.children.forEach(ch=>{if(ch.userData.lg)ch.rotation.z=w*.55*ch.userData.lg})})}
 function calc(){
  const s={ps:0,tre:0,twr:0,dp:0,dw:0,cap:0,jobs:0,svc:0,pq:0,cl:0,tx:0,pr:0,bad:0,fun:0,joy:0,cop:0,fir:0,hlt:0,edu:0},fs=[],hs=[],ps=[];okB={};
  for(const u in B){const b=B[u],r=rc(b);let a=0;if(T[b.id].k=="l"){okB[u]=1;continue}
   for(let j=r.y;j<r.y+r.h&&!a;j++)for(let i=r.x;i<r.x+r.w&&!a;i++)if(D4.some(d=>{const q=at(i+d[0],j+d[1]);return wk(q)||q=="tway"}))a=1;
   if(!a){s.bad++;continue}
-  okB[u]=1;const t=T[b.id],x=r.x+(r.w-1)/2,y=r.y+(r.h-1)/2;
+  okB[u]=1;const t=T[b.id],x=r.x+(r.w-1)/2,y=r.y+(r.h-1)/2,hk=t.hi?1+.1*(el[r.y*W+r.x]|0):1;
   if(t.k=="h"){s.cap+=t.cap;s.pq+=t.cap*t.q;s.tx+=t.cap*t.tax;hs.push([x,y,t])}
-  else if(t.k=="u"){s.jobs+=t.jobs;s.pr+=t.inc||0;s.ps+=t.pwr||0;s.tre+=t.tre||0;s.twr+=t.twr||0;if(t.pol)fs.push([x,y,t.pol])}
-  else{s.jobs+=t.jobs;s.pr+=t.inc;s.dp+=(t.k=="f"?1:.5)*t.jobs;s.dw+=.3*t.jobs;if(t.k=="c"){s.svc+=t.svc;s.cop+=t.cop||0;s.fir+=t.fir||0;s.hlt+=t.hlt||0;s.edu+=t.edu||0;s.joy+=t.joy||0}else if(t.k=="p"){s.fun+=t.fun;s.joy+=t.joy||0;if(t.grn)ps.push([x,y,t.grn])}else fs.push([x,y,t.pol])}}
+  else if(t.k=="u"){s.jobs+=t.jobs;s.pr+=t.inc||0;s.ps+=(t.pwr||0)*hk;const dk=(DRT.t>0&&!t.dr?1-DRT.sev:1)*(RN.t>0&&b.id=="rain"?3:1);s.sv=(s.sv||0)+(t.sv||0);s.tre+=(t.tre||0)*dk;s.twr+=(t.twr||0)*dk;if(t.pol)fs.push([x,y,t.pol])}
+  else{s.jobs+=t.jobs;s.pr+=t.tour?0:t.inc*hk;if(t.tour)s.th=(s.th||0)+t.inc;s.dp+=(t.k=="f"?1:.5)*t.jobs;s.dw+=.3*t.jobs;if(t.k=="c"){s.svc+=t.svc;s.cop+=t.cop||0;s.fir+=t.fir||0;s.hlt+=t.hlt||0;s.edu+=t.edu||0;s.joy+=t.joy||0}else if(t.k=="p"){s.fun+=t.fun;s.joy+=t.joy||0;if(t.grn)ps.push([x,y,t.grn]);if(t.fun>=150||t.lm)s.att=(s.att||0)+(t.lm||t.big?3:1)}else fs.push([x,y,t.pol])}}
  TR.forEach(q=>ps.push([q.x,q.y,T[q.id].grn]));
  hs.forEach(([x,y,t])=>{let p=0;fs.forEach(([a,b,q])=>{const d=Math.hypot(a-x,b-y);if(d<5)p+=q*(1-d/5)});ps.forEach(([a,b,q])=>{const d=Math.hypot(a-x,b-y);if(d<4)p-=q*(1-d/4)});s.cl+=t.cap*(1-Math.min(1,Math.max(0,p)/2.5))});
  pop=Math.min(pop,s.cap);
  s.j=pop?Math.min(1,s.jobs/pop):1;s.s=pop?Math.min(1,s.svc/pop):1;
  s.a=s.cap?s.cl/s.cap:1;s.q=s.cap?s.pq/s.cap:1;
  s.r=pop?Math.min(1,s.fun/pop):1;s.pl=pop<30?1:Math.min(1,s.cop/(pop*.35));s.fr=pop<30?1:Math.min(1,s.fir/(pop*.3));s.hl=pop<30?1:Math.min(1,s.hlt/(pop*.25));s.ed=pop<30?1:Math.min(1,s.edu/(pop*.3));
- const sat=(a,d)=>!s.cap?1:d>0?Math.min(1,a/d):a>0?1:0;s.sw=Math.min(s.tre,s.twr);s.pw=sat(s.ps,pop+s.dp);s.wt=sat(s.sw,(pop+s.dw)*(1+.6*RVP));
- s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.12,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,s.hap*(self.POLF?POLF.h:1));
+ const sat=(a,d)=>!s.cap?1:d>0?Math.min(1,a/d):a>0?1:0;s.sw=Math.min(s.tre,s.twr);s.pw=sat(s.ps,pop+s.dp);s.tm=.4+Math.min(1.6,(s.att||0)*.2);s.pr+=(s.th||0)*s.tm;s.wsv=1-Math.min(.2,.04*(s.sv||0));s.wt=sat(s.sw,(pop+s.dw)*(1+.6*RVP)*s.wsv);
+ s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.08,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,Math.pow(s.hap,1.4)*(FES.t>0?1.06:1)*(self.POLF?POLF.h:1));
  const staff=s.jobs?Math.min(1,pop/s.jobs):0;
- s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul()*(self.POLF?POLF.i:1);
+ s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul()*(FES.t>0?1.25:1)*(self.POLF?POLF.i:1);
  return s}
 
 function ui(){
@@ -365,7 +391,7 @@ function ui(){
  $("pop").textContent="👥 "+Math.floor(pop)+" citizens (room for "+S.cap+") · "+Math.round(pop*S.hap)+" happy";
  {const wb=document.querySelector('.t[data-t="wind"] i');if(wb)wb.textContent=FW?"FREE · 1×1":"$"+T.wind.c+" · 1×1";
   const c=(v,t)=>'<span style="color:var(--'+(v<.98?"bad":"good")+')">'+t+"</span>";
-  $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+S.ps)+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP))+"/"+S.sw)+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
+  $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+Math.round(S.ps))+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP)*S.wsv)+"/"+Math.round(S.sw))+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"")+(DRT.t>0?c(0,"🏜️ Drought "+DRT.t+"s"):"")+(RN.t>0?c(1,"🌧️ Rain "+RN.t+"s"):"")+(FES.t>0?c(1,"🎉 Festival "+FES.t+"s"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
   const uf=S.cap&&pop>=1?(S.pw<.98?1:0)|(S.wt<.98?2:0):0;if(uf!==UF){UF=uf;dirty=1}LV=S.pw}
  [S.j,S.s,S.a,S.q,S.r,S.pw,S.wt,S.pl,S.fr,S.hl,S.ed].forEach((v,i)=>$("b"+i).style.width=v*100+"%");
  document.querySelectorAll(".t").forEach(b=>{const o=T[b.dataset.t];b.classList.toggle("no",cc(o)>money||(o.lm&&o.lm>nex))});
@@ -379,6 +405,7 @@ function ui(){
 function complaint(){const o=[];
  if(S.pw<.98)o.push(S.ps<=0?"We don’t have enough energy — it’s pitch black in here!":"We don’t have enough energy — the lights keep flickering!");
  if(S.wt<.98)o.push(!S.tre&&!S.twr?"There’s no water at all — no treatment plant and no water tower!":!S.tre?"The water isn’t treated — we can’t drink it!":!S.twr?"There’s no water tower — nothing comes out of our taps!":"The water pressure is awful — we need more water!");
+ if(DRT.t>0&&S.wt<.98)o.push("The drought has dried up our taps!");
  if(S.pl<.8)o.push("Crime is out of control — we need more police!");
  if(S.fr<.8)o.push("There’s no one to put out fires!");if(S.hl<.8)o.push("We have no hospital — people are getting sick!");if(S.ed<.6)o.push("Our kids have nowhere to go to school!");
  if(RVP>.35)o.push("The river stinks — it’s full of sewage! We need more water treatment!");
@@ -388,6 +415,9 @@ function tick(){
  if(pop<gr)pop=Math.min(gr,pop+Math.max(1,S.cap*.06));
  else if(S.hap<.3&&pop>pi)pop=Math.max(pi,pop-Math.max(1,pop*.06));
  if(pop>=1&&tick.n%16==8){const c=complaint();if(c)toast(c,4500)}
+ {if(DRT.t>0){if(--DRT.t==0)toast("🌧️ The drought is over. Water supplies are back to normal.",4500)}else if(RN.t==0&&pop>=60&&S.sw>0&&Math.random()<.002){DRT.t=70+Math.floor(Math.random()*50);DRT.sev=.35+Math.random()*.2;toast("☀️ Drought! Wells, springs, rain harvesters and treatment plants make less water. Reservoirs, boreholes, desalination and recycling plants keep working.",7000)}
+  if(FES.t>0){if(--FES.t==0)toast("The festival is over. See you next year!",3500)}else if(pop>=100&&S.r>=.9&&RN.t==0&&Math.random()<.002){FES.t=50+Math.floor(Math.random()*40);toast("🎉 Festival day! Your happy citizens throw a party: +25% income and a happiness boost for a minute.",6000)}
+  if(RN.t>0){RN.t--;if(RVP>0)RVP=Math.max(0,RVP-.01);if(RN.t==0)toast("☀️ The rain has stopped.",3000)}else if(DRT.t==0&&pop>=30&&Math.random()<.002){RN.t=45+Math.floor(Math.random()*30);toast("🌧️ Heavy rain! Rain Harvesters make triple water and the river is washing itself clean.",6000)}}
  {const ws=pop+S.dw,tf=ws>0?Math.min(1,S.tre/ws):1;RVP=rv.includes(1)?Math.max(0,Math.min(1,RVP+(tf<1?(1-tf)*.02-.004:-.015))):0}
  ui();money+=S.inc;ui();
  if(pop>=30&&S.pl<.7&&Math.random()<.05){const l=Math.floor(Math.min(money*.03,500));money-=l;toast("🚨 Crime wave! Thieves stole $"+l+". Build more police.",4000)}
@@ -403,10 +433,10 @@ tick.n=0;
 function toast(m,d=2200){const e=$("toast");e.textContent=m;e.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>e.style.opacity=0,d)}
 
 function sel(t){tool=t;if(T[t].s)showStyle(T[t].s);$("colw").hidden=!T[t].tint;if(T[t].tint)$("pc").value=pcol[t];$("rot").style.display="hfcpu".includes(T[t].k)?"":"none";document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
- const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: you can look around freely. Click a Concert Stage to open its music player. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?(o.d||"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road."):o.k=="a"?o.d:o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access. A highway’s last tile tapers with merge lines: touch a road to its end and cars exit onto it.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (3 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
+ const o=T[t];$("info").textContent=o.k=="n"?"No tool selected: you can look around freely. Click a Concert Stage to open its music player. Pick a tool to build.":o.k=="x"?"Click or drag to remove things (50% refund).":o.k=="r"?(o.d||"Click or drag to draw roads. Corners curve on their own. Buildings must touch a road."):o.k=="a"?o.d:o.k=="w"?(tool=="hwy2"?"Grand Highway: a wider divided highway with 3 lanes each way ($80/tile). Drag over a normal highway to upgrade it for $40/tile. ":"")+"Drag to build a divided highway ($40/tile). Every highway stays its own road, so parallel ones never merge. Cross a road or another highway to get an overpass. Highways do not serve buildings, so keep normal roads for access. A highway’s last tile tapers with merge lines: touch a road to its end and cars exit onto it.":o.k=="v"?"Click or drag to paint water ($5/tile). Roads and highways can bridge it. Bulldoze water to remove it.":o.k=="t"?(tool=="raise"?"Click or drag to raise land (10 levels max, $20 each). ":"Click or drag to lower land. ")+"Buildings need flat ground, and land under a building cannot be changed.":
  tool=="toll"?("Toll Booth: click a straight piece of highway to build a toll gantry ($"+o.c+"). Every car on the highway pays $"+TOLL+" as it drives through, and slows a little. Bulldoze to remove (50% refund)."):o.k=="l"?"Street Lamp: click anywhere on a tile (even a road’s edge) to place it exactly there. Glows at night. Bulldoze a tile to remove its lamps.":o.k=="h"?o.n+" ("+fp(o)+"): houses "+o.cap+" citizens. "+(o.d?o.d+" ":"")+"Nicer homes make people happier.":
  o.k=="g"?o.n+": "+o.d+" Click or drag to plant ($"+o.c+" each) on empty land. Cleans the air for homes within 4 tiles, so plant several near factories. Bulldoze to remove.":
- o.k=="u"?o.n+" ("+fp(o)+"): "+(o.d?o.d+" ":"")+(o.pwr?"generates "+o.pwr+" power. ":"")+(o.tre?"treats water for "+o.tre+" citizens"+(o.twr?"":" (needs a water tower to deliver it; untreated sewage pollutes rivers)")+". ":"")+(o.twr?"delivers water to "+o.twr+" citizens"+(o.tre?"":" (needs a treatment plant)")+". ":"")+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.pol?", pollution "+"●".repeat(o.pol):"")+". Must touch a road.":
+ o.k=="u"?o.n+" ("+fp(o)+"): "+(o.d?o.d+" ":"")+(o.dr?"Drought-proof. ":"")+(o.hi&&o.k=="u"?"Highland bonus: +10% power per land level. ":"")+(o.pwr?"generates "+o.pwr+" power. ":"")+(o.tre?"treats water for "+o.tre+" citizens"+(o.twr?"":" (needs a water tower to deliver it; untreated sewage pollutes rivers)")+". ":"")+(o.twr?"delivers water to "+o.twr+" citizens"+(o.tre?"":" (needs a treatment plant)")+". ":"")+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.pol?", pollution "+"●".repeat(o.pol):"")+". Must touch a road.":
  o.k=="f"?o.n+" ("+fp(o)+"): "+o.jobs+" jobs, +$"+o.inc+"/s, pollution "+"●".repeat(o.pol)+". Keep away from homes.":
  o.bs?o.n+": "+o.d+" ($"+o.c+"/tile)":o.pk?o.n+" ("+fp(o)+"): "+o.d+" "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s. Must touch a road.":o.st?o.n+" ("+fp(o)+"): "+o.d+" Needs a road touching it and track along its platform side (press R to turn it). "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s.":o.bt?o.n+" ("+fp(o)+"): "+o.d+" Needs a road behind it and water in front: press R so it faces the water. "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s.":(o.cop||o.fir||o.hlt||o.edu)?o.n+" ("+fp(o)+"): "+o.d+" Covers "+(o.cop||o.fir||o.hlt||o.edu)+" citizens, "+o.jobs+" jobs. Must touch a road.":o.lm?o.n+" ("+fp(o)+"): "+o.d+" Fun for "+o.fun+" citizens, "+o.jobs+" jobs, +$"+o.inc+"/s, happiness +"+Math.round(o.joy*100)+"%. Only one per city. Must touch a road.":o.k=="p"?o.n+" ("+fp(o)+"): fun for "+o.fun+" citizens, "+o.jobs+" jobs"+(o.inc?", +$"+o.inc+"/s":"")+(o.grn?", freshens nearby air":"")+(o.joy?", boosts happiness +"+Math.round(o.joy*100)+"%":"")+(o.tint?". Pick an outer color below":"")+"."+(o.mus?" Click it with ✋ No tool to open the music player.":""):
  o.n+" ("+fp(o)+"): "+o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s."+(o.gov?" Choose ✋ No tool (Esc), then click it to elect senators.":"")}
@@ -498,7 +528,7 @@ function lk(a,b,c,d){const i=b*W+a,j=d*W+c;if(!hw[i]||!hw[j])return;const dx=c-a
  [[i,f],[j,r]].forEach(([k,q])=>{const o=hw[k]&15;hw[k]|=q;if((o|q)==15&&o!=15)hw[k]=q&5?hw[k]|16:hw[k]&~16});dirty=1}
 
 /* ---- terrain ---- */
-const EH=.3,MXE=3,E=i=>el[i]*EH,TM={},SD=mat({color:0x8a6a48}),BGS={};
+const EH=.3,MXE=10,E=i=>el[i]*EH,TM={},SD=mat({color:0x8a6a48}),BGS={};
 /* ---- traffic ---- */
 const DIR=[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]],pk=a=>a[Math.random()*a.length|0],cd=()=>{const n=performance.now(),d=(n-(cd.t||n))/1000;cd.t=n;return d};
 let carG,CR=[],spT=0;
@@ -1052,6 +1082,98 @@ proto.gov1=G(bx(.9,.05,.8,0xd8d2c0),bx(.7,.36,.5,0xefe8d8,0,.05,-.05),...[-.27,-
    ...[-.28,0,.28].map(x=>bx(.12,.1,.14,0x6f7780,x,.48,.26)),bx(.14,.4,.02,0xe9f6ff,0,.03,.35),
    bx(.5,.03,.16,0x4fa8e0,.12,.03,.44),bx(.3,.22,.2,0x8fa3b5,-.32,.03,.4),bx(.34,.03,.24,0x5d6772,-.32,.25,.4),gl(.16,.08,.02,0xffe9a8,-.32,.1,.51));
 
+  /* ---- extra water supply ---- */
+  {const hz=(r,len,c,x,y,z)=>{const m=cy(r,len,c,x,0,z,12);m.rotation.z=D;m.position.set(x,y+r,z);return m},
+   wb=(c=.9)=>pl(0xb8c0c8,c);
+  /* artesian spring */
+  proto.spring=G(pl(0x9bd08a,.9),dm(.22,0x8a8f94,-.16,.1,-.1,.75),dm(.14,0x9a9fa4,-.02,.06,-.22,.8),dm(.12,0x7d8288,-.34,.05,.06,.8),cy(.24,.03,0x8a8f94,.12,.03,.12,16),cy(.2,.02,0x4fc3f7,.12,.06,.12,16),cy(.03,.1,0x4fc3f7,-.06,.18,-.04,8),bx(.06,.04,.06,0x3b8fd9,.3,.03,-.2),cy(.04,.2,0x3b8fd9,.3,.06,-.2,8));
+  /* fog catcher */
+  proto.fog=G(wb(),bx(.05,.62,.05,0x6f7780,-.34,.03,0),bx(.05,.62,.05,0x6f7780,.34,.03,0),gl(.68,.46,.02,0xe6f2fa,0,.2,0),bx(.7,.04,.1,0x3b8fd9,0,.17,.03),bx(.7,.02,.02,0xa9b6c2,0,.4,0),bx(.7,.02,.02,0xa9b6c2,0,.3,0),cy(.11,.2,0x9fb8c8,.34,.03,.28,14),cn3(.12,.07,0x5d7a90,.34,.23,.28,14),cy(.015,.1,0x3b8fd9,.2,.04,.1,6));
+  /* borehole pump */
+  proto.bore=G(wb(),bx(.34,.3,.3,0x8fa3b5,-.1,.03,-.05),bx(.38,.04,.34,0x5d6772,-.1,.33,-.05),gl(.14,.14,.02,0xffe9a8,-.1,.08,.105),cy(.05,.5,0x3b8fd9,.28,.03,-.2,8),bx(.36,.05,.05,0x3b8fd9,.1,.5,-.2),cy(.1,.05,0x9aa0a6,.28,.03,.3,10),bx(.05,.05,.3,0x3b8fd9,.28,.07,.1),gs(.035,0xe03c3c,.28,.62,-.2));
+  /* river intake plant (1 cell, tiled 2x1) */
+  proto.intake=G(bx(.98,.04,.98,0xb8c0c8),bx(.9,.04,.26,0x4fa8e0,0,.04,-.4),bx(.9,.14,.06,0xcfd3d8,0,.04,-.26),...[-.3,-.15,0,.15,.3].map(x=>bx(.02,.1,.02,0x6f7780,x,.18,-.26)),bx(.9,.24,.36,0x8fa3b5,0,.04,.12),bx(.94,.04,.4,0x5d6772,0,.28,.12),gl(.6,.07,.02,0xffe9a8,0,.12,.305),cy(.14,.07,0xeceff1,-.28,.04,-.1,16),cy(.11,.02,0x4fc3f7,-.28,.11,-.1,16),cy(.14,.07,0xeceff1,.28,.04,-.1,16),cy(.11,.02,0x4fc3f7,.28,.11,-.1,16));
+  /* aqueduct station (2x2) */
+  proto.aque=G(pl(0x9bd08a),...[-.42,-.21,0,.21,.42].map(x=>bx(.1,.5,.14,0xd8cfbd,x,.03,-.15)),bx(.98,.06,.16,0xcfc6b2,0,.38,-.15),bx(.98,.08,.2,0xe2d9c4,0,.52,-.15),bx(.92,.03,.12,0x4fa8e0,0,.6,-.15),bx(.4,.28,.34,0x8fa3b5,-.3,.03,.3),bx(.44,.04,.38,0x5d6772,-.3,.31,.3),gl(.16,.1,.02,0xffe9a8,-.3,.1,.47),cy(.15,.34,0xcfd4d9,.28,.03,.3,16),cy(.155,.04,0xe9f4ff,.28,.37,.3,16),bx(.3,.05,.05,0x3b8fd9,-.02,.3,.3));
+  /* reservoir lake (2x2) */
+  proto.resv=G(pl(0x9bd08a),bx(.96,.1,.96,0x8a7a62,0,.03,0),bx(.8,.03,.8,0x4fa8e0,0,.13,0),bx(.4,.02,.06,0x9aa0a6,.0,.14,.1),cy(.08,.32,0xcfd4d9,.3,.13,.3,12),cy(.1,.04,0xeceff1,.3,.44,.3,12),cn3(.1,.09,0x3f6f9a,.3,.48,.3,12),bx(.4,.03,.05,0x9aa0a6,.1,.38,.3),bx(.18,.14,.18,0x8fa3b5,-.38,.03,.38));
+  /* water recycling plant (2x2) */
+  proto.recy=G(pl(0xb8c0c8),...[-.3,0,.3].map((x,i)=>G(cy(.15,.16,0xeceff1,x,.03,-.25,20),cy(.12,.02,[0x7fd36f,0x4fc3f7,0x4fc3f7][i],x,.19,-.25,20))),bx(.9,.28,.34,0x8fa3b5,0,.03,.22),bx(.94,.04,.38,0x5d6772,0,.31,.22),bx(.6,.02,.24,0x1f4a8a,0,.35,.22),gl(.6,.08,.02,0xffe9a8,0,.12,.395),bx(.8,.05,.05,0x3fae5a,0,.07,-.02),gs(.04,0x3fae5a,.4,.12,.4));
+  /* reverse osmosis plant (2x2) */
+  proto.ro=G(pl(0xb8c0c8),...[-.32,-.12,.08].map(z=>G(hz(.07,.8,0x3b8fd9,0,.04,z),bx(.04,.15,.04,0xeceff1,-.3,.04,z),bx(.04,.15,.04,0xeceff1,.3,.04,z),bx(.03,.15,.1,0xeceff1,0,.04,z))),bx(.9,.3,.28,0x8fa3b5,0,.03,.36),bx(.94,.04,.32,0x4a6a88,0,.33,.36),gl(.7,.08,.02,0xffe9a8,0,.14,.505),cy(.06,.2,0xd9433b,.38,.03,.12,10),bx(.05,.05,.5,0x3b8fd9,-.42,.1,-.12),cy(.04,.7,0x9aa0a6,-.4,.03,.36,8),gs(.03,0xff3b2f,-.4,.76,.36))}
+
+  /* ---- fun with water + lodge, drought-proof flags ---- */
+  {["pump","wtow","wtow2","desal","dam"].forEach(id=>{T[id].dr=1});
+   const A=(n,r,y,c,e)=>[...Array(n)].map((_,i)=>{const a=i*Math.PI*2/n;return gs(.025,c,Math.cos(a)*r,y,Math.sin(a)*r,e)});
+  /* fountain plaza */
+  proto.fount=G(pl(0xe3d9c4,.96),cy(.36,.08,0xd8dde2,0,.03,0,24),cy(.32,.02,0x4fc3f7,0,.1,0,24),cy(.07,.3,0xcfd4d9,0,.1,0,12),cy(.18,.05,0xd8dde2,0,.3,0,16),cy(.15,.015,0x4fc3f7,0,.35,0,16),gs(.045,0xbfe9ff,0,.5,0,0xbfe9ff),...A(6,.22,.22,0xbfe9ff,0xbfe9ff),bx(.1,.06,.1,0xcfc6b2,-.4,.03,.4),bx(.1,.06,.1,0xcfc6b2,.4,.03,.4));
+  /* hot spring spa (1 cell, tiled 2x1) */
+  {const rf=ro(.34,.14,0x5a3a22,.28);rf.position.x=.22;rf.position.z=.3;
+   proto.spa=G(bx(.98,.04,.98,0xa89f91),cy(.28,.08,0x8a8f94,-.22,.04,.05,20),cy(.24,.02,0x7fd6e0,-.22,.12,.05,20),cy(.19,.08,0x8a8f94,.26,.04,-.2,16),cy(.15,.02,0x7fd6e0,.26,.12,-.2,16),bx(.42,.24,.28,0x8a5a3a,.22,.04,.3),rf,gl(.14,.14,.02,0xffe9a8,.22,.06,.45),gs(.07,0xffffff,-.22,.3,.05,0xe8f4f8),gs(.05,0xffffff,-.16,.42,.1,0xe8f4f8),gs(.06,0xffffff,.26,.28,-.2,0xe8f4f8))}
+  /* water park (2x2) */
+  {const sl=bx(.6,.06,.08,0xf2c230,-.12,.3,-.3);sl.rotation.z=-.5;const sl2=bx(.6,.06,.08,0x3b8fd9,.1,.3,-.12);sl2.rotation.z=.5;
+   proto.wpark=G(pl(0x9bd08a),bx(.5,.03,.4,0x4fc3f7,-.22,.03,.28),cy(.17,.03,0x4fc3f7,.3,.03,.3,20),bx(.12,.55,.12,0xe05a47,-.36,.03,-.3),sl,bx(.12,.4,.12,0x3b8fd9,.3,.03,-.12),sl2,
+    cy(.015,.2,0xeeeeee,-.05,.03,.42,6),cn3(.1,.05,0xff6b6b,-.05,.23,.42,10),cy(.015,.2,0xeeeeee,.4,.03,.05,6),cn3(.1,.05,0xf2c230,.4,.23,.05,10),gs(.03,0x7fd6ff,-.2,.14,.3,0x7fd6ff))}
+  /* aquarium (2x2) */
+  proto.aqua=G(pl(0xb8c0c8),bx(.9,.3,.6,0x4a7fa8,0,.03,-.1),dm(.3,0x6fb3d8,0,.33,-.1,.5),gl(.7,.1,.02,0x9fe3ff,0,.12,.205,0x9fe3ff),bx(.3,.2,.2,0xeceff1,0,.03,.3),bx(.34,.03,.24,0x5d6772,0,.23,.3),cg(.1,.4,0x7fd6ff,.38,.03,.34,16,0x7fd6ff),gs(.03,0xff9f43,.38,.25,.34,0xff9f43),gs(.025,0xffffff,.0,.26,.42));
+  /* ski lodge (2x2) */
+  {const rf=ro(.62,.4,0xf2f6fa,.33);rf.scale.z=.8;
+   proto.lodge=G(pl(0xf0f4f8),bx(.7,.3,.5,0x8a5a3a,0,.03,0),rf,bx(.08,.3,.08,0x6f6258,.22,.3,-.1),gl(.14,.2,.02,0xffe9a8,0,.03,.255),gl(.16,.1,.02,0xffe9a8,-.22,.14,.255),gl(.16,.1,.02,0xffe9a8,.22,.14,.255),
+    cy(.02,.1,0x6b4a2c,-.4,.03,.34,6),cn3(.14,.4,0x2f6f4e,-.4,.12,.34,10),cy(.02,.1,0x6b4a2c,.4,.03,.34,6),cn3(.12,.34,0x2f6f4e,.4,.12,.34,10),bx(.03,.32,.02,0xd9433b,-.1,.03,.32),bx(.03,.32,.02,0x3b8fd9,-.04,.03,.32))}
+  }
+
+  /* ---- hill buildings + smart meter ---- */
+  {
+  proto.meter=G(pl(0xb8c0c8,.9),bx(.4,.4,.3,0x4a6a88,0,.03,-.05),gl(.28,.16,.02,0x7fd6ff,0,.2,.105,0x7fd6ff),cy(.015,.5,0x9aa0a6,.14,.43,-.1,6),gs(.04,0xff3b2f,.14,.95,-.1,0xff3b2f),bx(.6,.05,.05,0x3b8fd9,0,.04,.32),cy(.07,.12,0xeceff1,-.3,.04,.32,12),cy(.055,.02,0x4fc3f7,-.3,.15,.32,12));
+  proto.cable=G(pl(0xf0f4f8,.96),bx(.5,.3,.36,0xd9433b,-.18,.03,.05),bx(.56,.04,.4,0x5d6772,-.18,.33,.05),gl(.3,.1,.02,0xffe9a8,-.18,.14,.235,0xffe9a8),cy(.03,.75,0x6f7780,.34,.03,-.1,6),bx(.9,.015,.015,0x333b44,.12,.7,-.1),bx(.012,.1,.012,0x333b44,.3,.6,-.1),bx(.16,.12,.12,0xf2c230,.3,.48,-.1),gl(.1,.06,.02,0xbfe9ff,.3,.52,-.035,0xbfe9ff),cn3(.1,.3,0x2f6f4e,.4,.1,.38,10));
+  proto.mine=G(pl(0xb8b09a),dm(.5,0x8a8478,-.12,.12,-.22,.6),dm(.28,0x9a9488,.28,.1,-.3,.6),bx(.34,.24,.1,0x2e2a26,-.12,.03,.08),bx(.04,.28,.04,0x6b4a2c,-.3,.03,.1),bx(.04,.28,.04,0x6b4a2c,.06,.03,.1),bx(.4,.04,.06,0x6b4a2c,-.12,.28,.1),bx(.04,.02,.4,0x777f88,-.16,.04,.36),bx(.04,.02,.4,0x777f88,-.08,.04,.36),bx(.16,.1,.12,0xd9433b,-.12,.06,.4),cy(.06,.55,0x8a7a62,.38,.03,.2,6),bx(.34,.04,.08,0x555b63,.2,.4,.2),cn3(.15,.14,0x6f7780,.3,.03,.42,8));
+  }
+
+  /* ---- hotels ---- */
+  {
+  proto.tinn=G(pl(0xd8d2c0,.96),bx(.62,.5,.42,0,0,.03,-.05,wt(3,4,"#c9b48a","#ffe9a8")),bx(.68,.04,.48,0x8a5a3a,0,.53,-.05),bx(.5,.04,.14,0xd9433b,0,.18,.2),gl(.3,.08,.02,0xffe9a8,0,.42,.17,0xffe9a8),cy(.015,.2,0x6f7780,.3,.53,-.05,6),gs(.03,0xff3b2f,.3,.76,-.05,0xff3b2f));
+  proto.thotel=G(pl(0xd8d2c0),bx(.9,.14,.7,0xe6dfcf,0,.03,0),bx(.52,1.1,.4,0,-.1,.17,-.1,wt(11,4,"#7a6a58","#ffe9a8")),bx(.56,.04,.44,0x3a4652,-.1,1.27,-.1),bx(.4,.04,.22,0xd4b24a,.2,.17,.3),bx(.03,.14,.03,0xd4b24a,.04,.03,.4),bx(.03,.14,.03,0xd4b24a,.36,.03,.4),gl(.3,.1,.02,0xffe9a8,.2,.05,.205,0xffe9a8),cy(.015,.3,0x9aa0a6,-.1,1.31,-.1,6),gs(.03,0xff3b2f,-.1,1.64,-.1,0xff3b2f));
+  proto.tresort=G(pl(0xf2e2b0),bx(.84,.22,.3,0xf4efe3,0,.03,-.3),bx(.88,.03,.34,0xd9433b,0,.25,-.3),gl(.6,.08,.02,0xffe9a8,0,.1,-.145,0xffe9a8),bx(.56,.03,.3,0x4fc3f7,-.1,.03,.2),bx(.6,.015,.34,0xe8f4f8,-.1,.025,.2),cy(.02,.3,0x7a5230,.36,.03,.28,6),gs(.12,0x2f8f4e,.36,.36,.28),cy(.02,.26,0x7a5230,-.4,.03,.4,6),gs(.1,0x2f8f4e,-.4,.32,.4),cy(.012,.2,0xeeeeee,.3,.03,.02,6),cn3(.1,.05,0xf2c230,.3,.23,.02,10),cy(.012,.2,0xeeeeee,-.35,.03,.04,6),cn3(.1,.05,0x3b8fd9,-.35,.23,.04,10));
+  }
+
+  /* ---- animals: zoo, petting farm, dog park ---- */
+  {
+  const lg=(x,z,hy,len,r,c)=>{const q=G(cy(r,len,c,0,-len,0,6));q.position.set(x,hy,z);q.userData.lg=(x||.001)*(z||.001)>0?1:-1;return q},
+   an=(m,cx,cz,rx,rz,sp,ph,g,o={})=>{m.rotation.order="YXZ";m.userData.an=Object.assign({cx,cz,rx,rz,sp,ph,g,y:.042},o);m.position.set(cx+Math.cos(ph)*rx,.042,cz+Math.sin(ph)*rz);return m},
+   fence=(cx,cz,w,d,c=0x8a5a3a)=>[bx(w,.05,.012,c,cx,.035,cz-d/2),bx(w,.05,.012,c,cx,.035,cz+d/2),bx(.012,.05,d,c,cx-w/2,.035,cz),bx(.012,.05,d,c,cx+w/2,.035,cz)],
+   legs4=(x,z,hy,len,r,c)=>[lg(x,z,hy,len,r,c),lg(x,-z,hy,len,r,c),lg(-x,z,hy,len,r,c),lg(-x,-z,hy,len,r,c)],
+   giraffe=()=>G(bx(.1,.07,.05,0xe0b24a,0,.1,0),...legs4(.035,.018,.1,.1,.01,0xd9a43f),bx(.025,.17,.025,0xe0b24a,.05,.15,0),bx(.055,.03,.032,0xe0b24a,.06,.31,0),bx(.008,.025,.008,0x8a5a2a,.055,.34,.01),bx(.008,.025,.008,0x8a5a2a,.055,.34,-.01),bx(.026,.01,.03,0x8a5a2a,-.025,.17,0),bx(.026,.01,.03,0x8a5a2a,.02,.17,0),bx(.027,.02,.027,0x8a5a2a,.05,.21,0),bx(.012,.05,.012,0xe0b24a,-.06,.12,0)),
+   elephant=()=>G(bx(.17,.1,.085,0x8d939a,0,.07,0),...legs4(.055,.03,.07,.07,.018,0x7b8188),bx(.065,.075,.07,0x8d939a,.11,.09,0),bx(.022,.075,.022,0x7b8188,.15,.03,0),bx(.012,.065,.055,0x9aa0a8,.1,.1,.06),bx(.012,.065,.055,0x9aa0a8,.1,.1,-.06),bx(.035,.008,.008,0xf4efe3,.15,.1,.02),bx(.035,.008,.008,0xf4efe3,.15,.1,-.02),bx(.012,.05,.012,0x7b8188,-.09,.06,0)),
+   zebra=()=>G(bx(.11,.07,.045,0xf4f4f4,0,.075,0),...[-.04,-.015,.01,.035].map(x=>bx(.01,.072,.047,0x222a33,x,.075,0)),...legs4(.036,.016,.075,.075,.008,0x2a2f36),bx(.025,.06,.03,0xf4f4f4,.065,.12,0),bx(.05,.03,.03,0xf4f4f4,.095,.14,0),bx(.012,.05,.01,0x222a33,.05,.14,0),bx(.012,.04,.01,0x222a33,-.06,.1,0)),
+   lion=(m)=>G(bx(.1,.055,.045,0xd9a45a,0,.055,0),...legs4(.035,.016,.055,.055,.009,0xc8934a),bx(.045,.045,.045,0xd9a45a,.07,.07,0),...(m?[bx(.025,.07,.07,0x8a5a2a,.055,.062,0)]:[]),bx(.006,.012,.012,0x222a33,.094,.095,.014),bx(.006,.012,.012,0x222a33,.094,.095,-.014),bx(.06,.012,.012,0xd9a45a,-.075,.08,0),gs(.012,0x8a5a2a,-.105,.085,0)),
+   penguin=()=>G(cy(.022,.07,0x222a33,0,.012,0,10),bx(.012,.045,.03,0xf4f4f4,.018,.02,0),gs(.02,0x222a33,0,.095,0),bx(.014,.007,.01,0xf2a030,.022,.09,0),bx(.03,.006,.03,0xf2a030,.005,.006,0)),
+   flamingo=()=>G(dm(.03,0xf08aa0,0,.125,0,.8),lg(0,.008,.11,.11,.0035,0xe0607a),lg(0,-.008,.1,.1,.0035,0xe0607a),bx(.008,.075,.008,0xf08aa0,.03,.14,0),gs(.014,0xf08aa0,.034,.22,0),bx(.022,.007,.007,0x222a33,.05,.22,0),bx(.05,.012,.02,0xf08aa0,-.035,.13,0)),
+   cow=()=>G(bx(.11,.065,.05,0xf4f4f4,0,.07,0),bx(.03,.067,.052,0x222a33,-.025,.07,0),bx(.02,.067,.052,0x222a33,.03,.07,0),bx(.04,.045,.04,0xf4f4f4,.08,.09,0),bx(.015,.025,.035,0xf0a0a8,.105,.085,0),...legs4(.035,.018,.07,.07,.01,0xe8e8e8),bx(.01,.05,.01,0x222a33,-.06,.07,0)),
+   sheep=()=>G(dm(.045,0xf2f2f2,0,.075,0,.75),bx(.03,.032,.03,0x333b44,.055,.075,0),...legs4(.02,.012,.05,.05,.006,0x333b44)),
+   pig=()=>G(bx(.085,.05,.045,0xf0a0a8,0,.045,0),bx(.035,.04,.04,0xf0a0a8,.06,.055,0),bx(.012,.02,.025,0xe08a95,.082,.05,0),...legs4(.025,.015,.045,.045,.01,0xe08a95),bx(.012,.012,.012,0xf0a0a8,-.05,.07,0)),
+   dog=(c)=>G(bx(.07,.035,.03,c,0,.045,0),bx(.035,.03,.03,c,.05,.06,0),bx(.008,.015,.01,0x4a3a2c,.045,.09,.012),bx(.008,.015,.01,0x4a3a2c,.045,.09,-.012),bx(.04,.012,.012,c,-.055,.07,0),...legs4(.024,.01,.045,.045,.007,c));
+  /* city zoo (3x3) */
+  proto.zoo=G(pl(0x9bd08a),bx(.12,.012,.96,0xe3d9c4,0,.03,0),bx(.96,.012,.12,0xe3d9c4,0,.03,0),cy(.07,.04,0xd8dde2,0,.04,0,16),cy(.055,.02,0x4fc3f7,0,.08,0,16),gs(.02,0xbfe9ff,0,.13,0,0xbfe9ff),
+   bx(.34,.012,.34,0xd8c27a,-.25,.03,-.25),...fence(-.25,-.25,.34,.34),bx(.34,.012,.34,0xb89a6a,.25,.03,-.25),...fence(.25,-.25,.34,.34),bx(.34,.012,.34,0xa8a090,-.25,.03,.25),...fence(-.25,.25,.34,.34),bx(.34,.012,.34,0xe8f4f8,.25,.03,.25),...fence(.25,.25,.34,.34),
+   bx(.14,.008,.1,0x4fc3f7,.31,.042,-.2),bx(.12,.008,.1,0x4fc3f7,.32,.042,.3),dm(.05,0x7a7468,-.36,.045,.36,.7),dm(.04,0x8a8478,-.15,.04,.34,.7),
+   cy(.012,.12,0x7a5230,-.38,.04,-.37,6),dm(.06,0x6f9a3a,-.38,.2,-.37,.35),cy(.012,.1,0x7a5230,.12,.04,-.37,6),dm(.05,0x6f9a3a,.12,.18,-.37,.35),
+   bx(.05,.12,.05,0xd4b24a,-.11,.03,.46),bx(.05,.12,.05,0xd4b24a,.11,.03,.46),bx(.27,.04,.05,0xd4b24a,0,.15,.46),gl(.16,.04,.02,0xffe9a8,0,.17,.49,0xffe9a8),
+   an(giraffe(),-.25,-.25,.08,.06,.35,0,16,{bob:.003}),an(giraffe(),-.25,-.25,.08,.06,.35,Math.PI,16,{bob:.003}),an(zebra(),-.25,-.25,.12,.1,-.5,1.5,18,{bob:.004}),
+   an(elephant(),.25,-.25,.09,.07,.3,0,14,{bob:.002}),an(elephant(),.25,-.25,.09,.07,.3,Math.PI,14,{bob:.002}),
+   an(lion(1),-.25,.25,.1,.08,.4,0,20,{bob:.003}),an(lion(0),-.25,.25,.1,.08,.4,Math.PI*.8,20,{bob:.003}),
+   an(penguin(),.2,.22,.05,.04,.7,0,22,{roll:.18}),an(penguin(),.2,.22,.05,.04,.7,2.1,22,{roll:.18}),an(penguin(),.2,.22,.05,.04,.7,4.2,22,{roll:.18}),
+   an(flamingo(),.32,.3,.035,.025,.35,0,16),an(flamingo(),.32,.3,.035,.025,.35,Math.PI,16));
+  /* petting farm (2x2) */
+  {const rf=ro(.3,.13,0x6b4a2c,.29);rf.position.x=-.28;rf.position.z=-.3;
+   proto.farm=G(pl(0x9bd08a),bx(.36,.26,.28,0xc0483a,-.28,.03,-.3),rf,gl(.12,.16,.02,0xf4efe3,-.28,.03,-.155),cy(.07,.38,0xcfd4d9,.1,.03,-.38,12),dm(.07,0xb8c0c8,.1,.42,-.38,.6),
+    bx(.1,.012,.4,0xe3d9c4,-.2,.03,.2),bx(.5,.012,.46,0xa9c97a,.15,.03,.2),...fence(.15,.2,.5,.46),cy(.04,.06,0xd4b24a,.38,.04,-.08,10),cy(.04,.06,0xd4b24a,.32,.04,-.12,10),
+    an(cow(),.15,.2,.12,.1,.3,0,16,{bob:.002}),an(cow(),.15,.2,.12,.1,.3,Math.PI,16,{bob:.002}),an(sheep(),.15,.2,.08,.07,-.4,1,18,{bob:.003}),an(sheep(),.15,.2,.08,.07,-.4,4,18,{bob:.003}),an(pig(),.15,.2,.14,.12,.5,2,20,{bob:.003}))}
+  /* dog park (1x1) */
+  proto.dogp=G(pl(0x9bd08a,.98),bx(.9,.012,.9,0xa9c97a,0,.03,0),...fence(0,0,.9,.9,0xcfc6b2),bx(.2,.03,.06,0x8a5a3a,-.25,.06,.34),bx(.2,.025,.015,0x8a5a3a,-.25,.1,.37),bx(.03,.03,.03,0x6f7780,-.25,.03,.34),bx(.03,.03,.03,0x6f7780,-.15,.03,.34),
+   cy(.02,.2,0x7a5230,.3,.04,-.3,6),dm(.1,0x4f9a45,.3,.28,-.3,.9),cy(.04,.07,0x4a525c,-.34,.04,-.34,8),gs(.02,0xf2c230,.1,.06,.08),
+   an(dog(0xb07a3a),0,0,.28,.25,1.1,0,16,{bob:.006}),an(dog(0x4a3a2c),0,0,.22,.3,-.95,1.5,16,{bob:.006}));
+  }
+
   /* ===== LANDMARK 1: Statue of Liberty (2x2) ===== */
   {const C=0x6fb5a0,S=0xcfc8b8,f2=bx(.8,.08,.8,0xb8b0a0,0,.03,0);f2.rotation.y=D/2;
    const ra=bx(.055,.38,.055,C,.1,.96,0);ra.rotation.z=-.3;
@@ -1183,13 +1305,13 @@ function world(){
  if(ctl)ctl.maxDistance=Math.max(130,Math.max(W,H)*1.6);const s=Math.max(W,H)*.8;Object.assign(L.shadow.camera,{left:-s,right:s,top:s,bottom:-s});L.shadow.camera.updateProjectionMatrix()}
 
 function rebuild(){
- bgFix();groundFix();if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;XG.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
+ bgFix();groundFix();if(cityG)scene.remove(cityG);cityG=new THREE.Group();LB.length=0;SPN.length=0;ANI.length=0;XG.length=0;NL=-1;TR=TR.filter(q=>{const i=q.y*W+q.x;return(!g[i]||g[i]=="path")&&!hw[i]&&!rv[i]});
  g.forEach((id,i)=>{if(!wk(id)||isX(id))return;const x=i%W,y=i/W|0,m=rk(x,y);
   const o=new THREE.Mesh(rg,rmat(m,id));o.position.set(wx(x),.05+E(i),wz(y));o.renderOrder=1;
   const hh=[[0,-1],[1,0],[0,1],[-1,0]].map(([a,b],k)=>m&(1<<k)?Math.max(el[i],el[(y+b)*W+x+a]):el[i]);
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
- arender();trender();groundRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q)});
+ arender();trender();groundRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q);if(q.userData.an)ANI.push(q)});
   if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=(T[b.id].bh||T[b.id].t*.6+.7)+(big?1:0);o.add(sp)}
   else if(UF&&T[b.id].k=="h")[1,2].forEach((m,k)=>{if(UF&m){const sp=new THREE.Sprite(BUB[k]);sp.scale.set(.42,.42,1);sp.position.set(UF==3?(k?.22:-.22):0,T[b.id].t*.6+.8,0);o.add(sp)}})
   o.position.set(wx(r.x)+(r.w-1)/2,E(r.y*W+r.x),wz(r.y)+(r.h-1)/2);cityG.add(o)}
@@ -1241,7 +1363,7 @@ function binfoShow(u){BI=u;binfoDraw();binfoPlace()}
 function binfoDraw(){
  const p=document.getElementById("binfo");if(!p||!BI)return;
  const b=B[BI];if(!b){binfoHide();return}
- const t=T[b.id],ok=!!okB[BI],wm=1+.6*RVP;let en=0,wa=0,mk="";
+ const t=T[b.id],ok=!!okB[BI],wm=1+.6*RVP,rr=rc(b),L=t.hi?el[rr.y*W+rr.x]|0:0;let en=0,wa=0,mk="";
  if(ok&&S&&t.k!="l"){
   if(t.k=="h"){const res=S.cap?pop*t.cap/S.cap:0;en=res;wa=res*wm}
   else if(t.k=="u"){en=0;wa=0}
@@ -1250,9 +1372,12 @@ function binfoDraw(){
  let h='<button class="bx" aria-label="Close">×</button><div class="bt">'+(t.e||"")+" "+t.n+"</div>"+
   row("⚡ Energy used",binfoNum(en))+row("💧 Water used",binfoNum(wa));
  if(t.k=="u"){
-  if(t.pwr)h+=row("⚡ Energy made",binfoNum(t.pwr));
+  if(t.pwr)h+=row("⚡ Energy made",binfoNum(t.pwr*(1+.1*L)));
+  if(t.sv)h+=row("💧 Demand saved","−4%");
   if(t.tre)h+=row("🚰 Water treated",binfoNum(t.tre));
-  if(t.twr)h+=row("🗼 Water delivered",binfoNum(t.twr))}
+  if(t.twr)h+=row("🗼 Water delivered",binfoNum(t.twr));if(t.dr&&(t.tre||t.twr))h+=row("🏜️ Drought","Proof")}
+ if(t.tour&&S)h+=row("🧳 Tourism income","×"+S.tm.toFixed(1));
+ if(t.hi)h+=row("⛰️ Highland bonus",L>0?"+"+L*10+"%":"+0% (build higher)");
  if(!ok)h+='<div class="bn">Needs a road touching it — not running yet.</div>';
  p.innerHTML=h;p.classList.add("on");
  p.querySelector(".bx").onclick=binfoHide}
@@ -1311,7 +1436,7 @@ function draw(){
  if(ghostFor!==tool)setGhost();
  if(dirty){dirty=0;rebuild()}
  camKeys();ctl.update();
- const dt=cd();sky(dt);SPN.forEach(q=>q.rotation.z-=dt*2);try{xgates(dt)}catch(e){console.error(e)}try{cars(dt)}catch(e){console.error(e)}try{peds(dt)}catch(e){console.error(e)}try{planes(dt)}catch(e){console.error(e)}try{boats(dt)}catch(e){console.error(e)}try{race(dt)}catch(e){console.error(e)}try{trains(dt)}catch(e){console.error(e)}hl.visible=!!hov&&tool!="none";
+ const dt=cd();sky(dt);SPN.forEach(q=>q.rotation.z-=dt*2);try{animals(dt)}catch(e){console.error(e)}try{xgates(dt)}catch(e){console.error(e)}try{cars(dt)}catch(e){console.error(e)}try{peds(dt)}catch(e){console.error(e)}try{planes(dt)}catch(e){console.error(e)}try{boats(dt)}catch(e){console.error(e)}try{race(dt)}catch(e){console.error(e)}try{trains(dt)}catch(e){console.error(e)}hl.visible=!!hov&&tool!="none";
  if(hov){const[x,y]=hov,t=T[tool],bd=!!proto[tool],w=t.w||1,h=t.h||1,ew=bd&&rot&1?h:w,eh=bd&&rot&1?w:h,occ=g[y*W+x];
   const red=T[tool].k=="s"?!!rv[y*W+x]:tool=="bull"?occ:T[tool].k=="g"?((occ&&occ!="path")||hw[y*W+x]||rv[y*W+x]||money<cc(t)):tool=="lamp"?(isB(occ)&&occ)||hw[y*W+x]||money<cc(t):tool=="toll"?(!hw[y*W+x]||TB[y*W+x]||money<cc(t)):bd?(!fits(x,y,ew,eh)&&!(t.tint&&same(occ,tool)))||money<cc(t)||(t.bt&&!bfw(x,y,ew,eh,rot)):t.bs?(!bgOK(x,y,t)||money<cc(t)):(((tool=="rail"&&occ=="road")||(tool=="road"&&occ=="rail"))?money<cc(t):(("wtv".includes(T[tool].k)?occ&&isB(occ):occ)||money<cc(t)));
   hl.material.color.set(red?0xe03c3c:0xffffff);hl.scale.set(ew,1,eh);hl.position.set(wx(x)+(ew-1)/2,.09+E(y*W+x),wz(y)+(eh-1)/2);
@@ -1485,7 +1610,7 @@ sk11:{n:"Business Plaza Towers",e:"🏢",c:9000,k:"c",jobs:190,inc:150,svc:80,t:
 ["sk10","sk11"].forEach(id=>{dkG.Commerce.push(id);dkLOC[id]=[4,0]})}
 Object.assign(T,{
 metro:{n:"Metro Station",e:"🚇",c:3800,k:"c",jobs:20,inc:24,svc:90,t:2,sdg:[11,9,13],d:"An underground station entrance with a glowing M sign. Great for dense districts."},
-obs:{n:"Observation Tower",e:"🔭",c:7000,k:"p",jobs:12,inc:20,fun:220,joy:.012,pri:4,t:3,bh:3,d:"A tall concrete shaft with a glass viewing deck and a beacon. Boosts pride."},
+obs:{n:"Observation Tower",e:"🔭",c:7000,k:"p",hi:1,jobs:12,inc:20,fun:220,joy:.012,pri:4,t:3,bh:3,d:"A tall concrete shaft with a glass viewing deck and a beacon. Boosts pride."},
 skypark:{n:"Sky Park",e:"🌳",c:1500,k:"p",jobs:3,inc:2,fun:90,grn:1.2,joy:.004,t:1,sdg:[11,15,13],d:"A raised garden park with trees, a pond and a path. Freshens the air nearby."}});
 dkG.Railway.push("metro");dkLOC.metro=[7,0];dkG.Recreation.push("obs","skypark");dkLOC.obs=[8,0];dkLOC.skypark=[8,0];
 Object.assign(T,{
@@ -1519,7 +1644,7 @@ sk18:{n:"Sakura Sky Terraces",e:"🌸",c:4600,k:"h",cap:66,tax:1.9,q:1,t:4,s:"as
 ["sk13","sk14","sk15","sk16","sk17","sk18"].forEach(id=>{ST.as.push(id);dkLOC[id]=[1,3]});
 /* existing buildings also count toward goals */
 (()=>{const M={2:["f13"],3:["med1","hos1","pool","skate","court","park1","play","park2","garden"],4:["lib1","school1","school2","school3","uni1"],5:["school1","school2","school3","uni1"],
-6:["well","rain","wtow","pump","wtre","filt","wtow2","wtre2","desal","dam"],7:["wind","wind2","solar","solar2","geo1","dam","nuc1"],8:["c6","bank1","c8"],
+6:["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"],7:["wind","wind2","solar","solar2","geo1","dam","nuc1"],8:["c6","bank1","c8"],
 9:["aterm","atwr","stn1","stn2","dock1","f15","f14","hang"],11:["park1","park2","play","garden","stn1","stn2"],12:["f7"],13:["wind","wind2","solar","solar2","geo1","dam","nuc1"],
 15:["park2","garden"],16:["pol1","pol2","pol3","jail","court1","court2","gov1","gov2"],17:["aterm","dock1","pier1","stn1","stn2"]};
  Object.keys(M).forEach(k=>M[k].forEach(id=>{if(T[id])(T[id].sdg=T[id].sdg||[]).push(+k)}))})();
@@ -2180,8 +2305,9 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.37.0",
+const VER="1.38.0",
 LOG=[
+["1.38.0", "Water supply, droughts, fun buildings & taller mountains", ["8 new buildings in the 💧 Water tab that add water to your city: ⛲ Artesian Spring, 🌫️ Fog Catcher, 🪣 Borehole Pump, 🏭 River Intake Plant, 🏛️ Aqueduct Station, 🏞️ Reservoir Lake, ♻️ Water Recycling Plant and 🧪 Reverse Osmosis Plant.", "Each one treats and delivers water on its own, so you don\u2019t need a separate tower. Small ones are cheap, and the big ones are expensive but supply thousands of citizens. Click any of them to see how much water they treat and deliver.", "They also count toward the Clean Water & Sanitation goal.", "The ⛰️ Raise land tool can now build up to 10 levels high instead of 3, so you can make real hills and mountains. Each level still costs $20. Bridges and elevated roads keep working on the new heights, and your old saves load as before.","New ⛰️ highland bonus: Wind Turbines, Wind Farms, Observation Towers, Ski Lodges and the new buildings below earn or make +10% more for every land level they stand on, up to double on a level-10 mountain. Click one to see its bonus.","New ⛏️ Mountain Mine (Industry) and 🚠 Cable Car Station (Commerce) for your hills, and a 📟 Smart Meter Hub in the Water tab that cuts the city\u2019s water demand by 4% per hub, up to 20%.","New 🌧️ heavy rain storms: for about a minute your Rain Harvesters make triple water and the river cleans itself. The HUD shows a Rain countdown. Rain and drought never happen at the same time.","New 🧳 tourism: a 🏨 Budget Inn, 🏩 Grand Hotel and 🏖️ Beach Resort in Commerce. Their income depends on your attractions: every stadium, park, museum, big fun building and landmark brings tourists (landmarks count triple), from ×0.4 with nothing to see up to ×2.0 with 8+ attractions. Click a hotel to see its tourism multiplier.","New 🎉 festivals: when your citizens have plenty to do (the Fun bar is nearly full) and you have 100+ citizens, a festival can break out for about a minute: +25% income and a small happiness boost.","The 🏞️ Hydro Dam now also gets the highland bonus: +10% power per land level.","New 🦁 City Zoo (3×3, $30,000) in Recreation with real animals that walk around their enclosures: giraffes, a zebra, elephants, lions, penguins and flamingos, all with swinging legs. It counts triple as a tourist attraction for your hotels.","New 🐄 Petting Farm (2×2, $6,000) with a barn, silo, cows, sheep and a pig, and a 🐕 Dog Park (1×1, $1,200) where two dogs run laps.","Happiness is harder to get. Small gaps now cost more: a city that used to sit at 90% now lands around 86%, and 70% drops to about 61%. Only a city that gets almost everything right stays near 100%. Parks and landmarks add a bit less joy, and growth and income follow the lower happiness, so keep your services topped up.","Random ☀️ droughts now hit cities with 60+ citizens. For about a minute, wells, springs, rain harvesters and treatment plants make 35-55% less water, and the HUD shows a 🏜️ Drought countdown. Reservoirs, aqueducts, boreholes, fog catchers, recycling, reverse osmosis, desalination, hydro dams, pumps and towers are drought-proof, and so is any building that says so in its info. Build a mix of sources and you won\u2019t notice.","5 new buildings: ⛲ Fountain Plaza and ♨️ Hot Spring Spa, 🛝 Water Park and 🐠 Aquarium in Recreation, and a 🎿 Ski Lodge in Commerce (nice on top of your new tall hills)."], "Nov 11, 2026"],
 ["1.37.0", "Skytrains & narrow one-way streets", ["New 🚈 Skytrain Track ($60 a tile) and 🚉 Skytrain Station ($1,500) at the end of the Rail tab. Drag elevated track on tall pillars over roads, empty land or water. It can’t pass through buildings or highways. Bulldoze a tile to remove it and get half back.", "Click a piece of track with the Station tool to build a roofed station with side platforms, stairs and a green sign. Every station gets a premade name (Central, Riverside, Old Town and more). Click a built station with the Station tool or the look tool to rename it: pick a premade name or type your own.", "White and green four-car trains shuttle along the track, stop at stations and turn around at the end of the line. Each stop pays a fare that grows with your population, and every station gives a small boost to income and happiness. At night the station lights glow and the train windows light up.", "One-way streets are now narrow streets with a curb and arrows. Drag the One-way street tool over empty land to build one in the direction you drag ($10 a tile, the same as a road), or click an existing road to make it one-way. Click again to flip it, and once more to make it a normal road.", "The ↔️ Two-way street tool was removed. Click a one-way street until it turns back into a normal road."], "Nov 11, 2026"],
 ["1.36.0","One-way streets",["Two new tools at the end of the Roads tab: ➡️ One-way street ($8 a tile) and ↔️ Two-way street (free).","Drag along a road in the direction cars should drive and it turns into a one-way street with arrows painted on it. You can also click a road to make it one-way, click again to flip the direction, and once more to make it two-way again. It works on regular roads and dirt roads.","Cars follow the arrows: they only leave a one-way street the way it points, they can’t turn onto one against its direction, and they drive down the middle of the road.","One-way streets are saved with your city, survive map expansions and undo/redo, and work when other mayors visit your city."],"Nov 11, 2026"],
 ["1.35.0","Building creator upgrades",["Undo and redo in the Building creator: use the ↶ ↷ buttons or Ctrl+Z and Ctrl+Y. Press Delete to remove the selected part.","3 new part shapes: Gable roof (a ridge roof for houses), Dome and Sphere, next to Block, Windows, Cylinder, Cone, Pyramid roof and Neon glow. Every part can now be turned in 15° steps, and buildings can hold up to 60 parts.","Quick color swatches for each part, plus 📍 Center and ⬆ Stack on previous buttons to line parts up fast. Mirror also flips the part's turn.","Choose a base for your building: none, a grass pad, a stone pad or a sand pad.","The 3D preview now zooms with the mouse wheel, and a 🌙 Night button shows how your windows and neon glow will look after dark.","New templates: Gable house, Neon tower and Domed hall, next to Cottage, Glass tower, Pagoda and Shop.","📤 Share code gives you a code for any building, and 📥 Load code opens a friend's building so you can edit it and save your own copy."],"Nov 11, 2026"],
