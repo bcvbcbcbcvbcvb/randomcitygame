@@ -2180,8 +2180,9 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.36.0",
+const VER="1.37.0",
 LOG=[
+["1.37.0", "Skytrains & narrow one-way streets", ["New 🚈 Skytrain Track ($60 a tile) and 🚉 Skytrain Station ($1,500) at the end of the Rail tab. Drag elevated track on tall pillars over roads, empty land or water. It can’t pass through buildings or highways. Bulldoze a tile to remove it and get half back.", "Click a piece of track with the Station tool to build a roofed station with side platforms, stairs and a green sign. Every station gets a premade name (Central, Riverside, Old Town and more). Click a built station with the Station tool or the look tool to rename it: pick a premade name or type your own.", "White and green four-car trains shuttle along the track, stop at stations and turn around at the end of the line. Each stop pays a fare that grows with your population, and every station gives a small boost to income and happiness. At night the station lights glow and the train windows light up.", "One-way streets are now narrow streets with a curb and arrows. Drag the One-way street tool over empty land to build one in the direction you drag ($10 a tile, the same as a road), or click an existing road to make it one-way. Click again to flip it, and once more to make it a normal road.", "The ↔️ Two-way street tool was removed. Click a one-way street until it turns back into a normal road."], "Nov 11, 2026"],
 ["1.36.0","One-way streets",["Two new tools at the end of the Roads tab: ➡️ One-way street ($8 a tile) and ↔️ Two-way street (free).","Drag along a road in the direction cars should drive and it turns into a one-way street with arrows painted on it. You can also click a road to make it one-way, click again to flip the direction, and once more to make it two-way again. It works on regular roads and dirt roads.","Cars follow the arrows: they only leave a one-way street the way it points, they can’t turn onto one against its direction, and they drive down the middle of the road.","One-way streets are saved with your city, survive map expansions and undo/redo, and work when other mayors visit your city."],"Nov 11, 2026"],
 ["1.35.0","Building creator upgrades",["Undo and redo in the Building creator: use the ↶ ↷ buttons or Ctrl+Z and Ctrl+Y. Press Delete to remove the selected part.","3 new part shapes: Gable roof (a ridge roof for houses), Dome and Sphere, next to Block, Windows, Cylinder, Cone, Pyramid roof and Neon glow. Every part can now be turned in 15° steps, and buildings can hold up to 60 parts.","Quick color swatches for each part, plus 📍 Center and ⬆ Stack on previous buttons to line parts up fast. Mirror also flips the part's turn.","Choose a base for your building: none, a grass pad, a stone pad or a sand pad.","The 3D preview now zooms with the mouse wheel, and a 🌙 Night button shows how your windows and neon glow will look after dark.","New templates: Gable house, Neon tower and Domed hall, next to Cottage, Glass tower, Pagoda and Shop.","📤 Share code gives you a code for any building, and 📥 Load code opens a friend's building so you can edit it and save your own copy."],"Nov 11, 2026"],
 ["1.34.0","Custom building creator",["New 🛠️ Custom tab in the build dock. Press ➕ Creator to open the Building creator, where you design your own buildings and then place them in your city.","Build the shape from up to 40 parts: Blocks, Windows (lit at night), Cylinders, Cones, Roofs, Spheres and Neon glow. Pick each part's color, size and position with sliders, and copy or mirror parts to build faster. Start from a template (Cottage, Glass tower, Pagoda or Shop) if you like.","A live 3D preview spins as you build. Drag it to turn the building around.","Choose what it is: Housing, Commerce or Park / fun, a 1×1 or 2×2 footprint, and a level from 1 to 10. Higher levels hold more people or give more jobs and income, and cost more. The cost and stats are shown while you design.","Your buildings appear in 🛠️ Custom → My buildings. You can edit or delete them any time, and edits update buildings already in your city.","Custom buildings are saved with your city, so they show up when other mayors visit it and when you load it on another device."],"Nov 11, 2026"],
@@ -2727,4 +2728,135 @@ const nw3=q("new").onclick;q("new").onclick=e=>{const r=!!e.target.dataset.s;nw3
 })();
 </script>
 <script>(()=>{const e=document.getElementById("info");if(!e)return;const f=()=>{e.title=e.textContent};f();new MutationObserver(f).observe(e,{childList:true,characterData:true,subtree:true})})()</script>
+<script>
+(()=>{
+/* ---- Skytrain: elevated BTS-style rail on pillars, with roofed stations ---- */
+const D4=[[0,-1],[1,0],[0,1],[-1,0]],KY=K+"_sky",CT=60,CS=1500,TH=1.15,RN=.9;
+let SKY={},skG=null,tG=null,TN=[],tT=0,dd=1;
+try{const d=JSON.parse(localStorage.getItem(KY));if(d&&d.t)d.t.forEach(([x,y,s,n])=>SKY[x+","+y]={x,y,s,n})}catch(e){}
+const store=()=>{try{localStorage.setItem(KY,JSON.stringify({t:Object.values(SKY).map(o=>[o.x,o.y,o.s,o.n||null])}))}catch(e){}},
+ tk=(x,y)=>SKY[x+","+y],hd=(x,y)=>E(y*W+x)+TH,stn=()=>Object.values(SKY).filter(o=>o.s),chg=()=>{store();dd=1;ui()},
+ sg=(()=>{const c=document.createElement("canvas");c.width=128;c.height=40;const x=c.getContext("2d");x.fillStyle="#2fa44f";x.fillRect(0,0,128,40);x.fillStyle="#fff";x.font="700 24px system-ui,sans-serif";x.textAlign="center";x.fillText("SKYTRAIN",64,28);return new THREE.CanvasTexture(c)})();
+const NAMES=["Central","Riverside","Old Town","Market Street","Park Lane","Harbor Point","University","Tech Park","Sky Plaza","Garden Gate","Lakeside","City Hall"],
+ nm=()=>{const f=NAMES.filter(n=>!stn().some(q=>q.n==n));return f.length?f[Math.floor(Math.random()*f.length)]:"Station "+(stn().length+1)},
+ TX={},snTex=n=>TX[n]||(TX[n]=(()=>{const c=document.createElement("canvas");c.width=256;c.height=77;const x=c.getContext("2d");x.fillStyle="#2fa44f";x.fillRect(0,0,256,77);x.fillStyle="#fff";x.textAlign="center";let f=34;x.font="700 "+f+"px system-ui,sans-serif";while(x.measureText(n).width>236&&f>14){f-=2;x.font="700 "+f+"px system-ui,sans-serif"}x.fillText(n,128,44);x.font="600 15px system-ui,sans-serif";x.fillText("SKYTRAIN",128,67);return new THREE.CanvasTexture(c)})()),
+ LM=new THREE.MeshBasicMaterial({color:0x8a9096}),WM=new THREE.MeshBasicMaterial({color:0x3b5a74}),
+ lbx=(w,h,d,m,x,y,z)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);q.position.set(x,y+h/2,z);return q};
+Object.assign(T,{
+sky:{n:"Skytrain Track",e:"🚈",c:CT,k:"a",d:"Drag to lay elevated track ($60/tile) on tall pillars. It runs right over roads, land or water and needs no ground space."},
+skystn:{n:"Skytrain Station",e:"🚉",c:CS,k:"a",d:"Click a piece of skytrain track to build a roofed elevated station with platforms and stairs. Trains stop here and pay fares. Click a built station to rename it."}});
+dkG.Railway.push("sky","skystn");dkLOC.sky=[7,0];dkLOC.skystn=[7,0];
+/* one-way street: a narrow street you build by dragging; the two-way street tool is removed */
+T.oneway.c=0;T.oneway.lbl="$10/tile";T.oneway.d="A narrow street where cars drive one way, shown by arrows. Drag to build it in the direction cars should go.";
+{const j=dkG.Roads.indexOf("twoway");if(j>=0)dkG.Roads.splice(j,1);delete T.twoway;delete dkLOC.twoway}
+/* the build dock is drawn once at load, so redraw it to show the new tools */
+(()=>{const tb=document.getElementById("tb");if(!tb)return;
+tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))})();
+/* rename popup: premade names as buttons, or type your own */
+document.head.insertAdjacentHTML("beforeend","<style>#sk-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:24}#sk-m.on{display:flex}#sk-m .bx{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:16px;width:min(92vw,360px);display:flex;flex-direction:column;gap:10px}#sk-m input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}#sk-m .nm{display:flex;flex-wrap:wrap;gap:4px}#sk-m .qr{display:flex;gap:6px}#sk-m .qr button{flex:1;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}</style>");
+let pdT=0,ro=null;document.addEventListener("pointerdown",()=>{pdT=performance.now()},true);
+const md=document.createElement("div");md.id="sk-m";md.innerHTML='<div class="bx"><b>🚉 Rename station</b><small style="color:var(--mut)">Pick a premade name or type your own.</small><input id="sk-i" maxlength="24" placeholder="Station name"><div class="nm" id="sk-n"></div><div class="qr"><button id="sk-s">Save</button><button id="sk-c">Cancel</button></div></div>';document.body.append(md);
+const rI=document.getElementById("sk-i"),rN=document.getElementById("sk-n"),
+ closeR=()=>{md.classList.remove("on");ro=null},
+ openR=o=>{ro=o;rI.value=o.n||"";rN.replaceChildren();
+  NAMES.forEach(n=>{const used=stn().some(q=>q!==o&&q.n==n),b=document.createElement("button");b.className="chip"+(n==o.n?" on":"");b.textContent=n;b.title=used?"Already used by another station":"";b.style.opacity=used?.5:1;b.onclick=()=>{rI.value=n;rN.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c===b))};rN.append(b)});
+  md.classList.add("on");setTimeout(()=>{rI.focus();rI.select()},30)},
+ saveR=()=>{if(!ro)return;const v=rI.value.trim().slice(0,24);if(v&&v!==ro.n){ro.n=v;chg();toast("🚉 Station renamed to "+v)}closeR()};
+document.getElementById("sk-s").onclick=saveR;document.getElementById("sk-c").onclick=closeR;
+md.onclick=e=>{if(e.target===md)closeR()};
+rI.onkeydown=e=>{e.stopPropagation();if(e.key=="Enter")saveR();else if(e.key=="Escape")closeR()};
+const put0=put;
+put=function(x,y){
+ if(window.TMV)return put0(x,y);
+ const k=x+","+y,i=y*W+x,o=SKY[k];
+ if(T[tool].k=="n"&&o&&o.s){openR(o);return 1}
+ if(tool=="oneway"){
+  const pv=owL;
+  if(!g[i]&&!hw[i]&&!rv[i]){tool="road";try{put0(x,y)}finally{tool="oneway"}if(!g[i])return 0}
+  if(!owIs(i)){owL=null;if(!pv&&!dragging)toast("One-way streets go on roads or empty land.");return 1}
+  owL=[x,y];
+  if(!pv){owF={x,y};owM=0;return 1}
+  const d=DIR.findIndex(q=>q[0]==x-pv[0]&&q[1]==y-pv[1]);if(d<0)return 1;
+  owM=1;let ok=1;
+  [[pv[0],pv[1]],[x,y]].forEach(([a,b])=>{const j=b*W+a;if(ok&&owIs(j))ok=owSet(j,d)});
+  return ok}
+ if(tool=="bull"&&o){money+=o.s?CS/2:CT/2;delete SKY[k];chg();return 1}
+ if(tool=="sky"){if(o)return 1;const v=g[i];
+  if(hw[i]||(v&&isB(v))){if(!dragging)toast("Skytrain track can’t pass through buildings or highways.");return 1}
+  if(money<CT){toast("Not enough money for skytrain track ($"+CT+").");return 1}
+  money-=CT;SKY[k]={x,y,s:0};chg();return 1}
+ if(tool=="skystn"){
+  if(!o){if(!dragging)toast("Build the station on skytrain track.");return 1}
+  if(o.s){if(performance.now()-pdT<60)openR(o);return 1}
+  if(money<CS){toast("Not enough money for a station ($"+CS+").");return 1}
+  money-=CS;o.s=1;o.n=nm();chg();toast("🚉 "+o.n+" station built. Trains will stop here.");return 1}
+ return put0(x,y)};
+function dsp(o){o.traverse(m=>{if(m.geometry)m.geometry.dispose();if(m.material&&!m.material.map)m.material.dispose()})}
+function draw(){
+ if(typeof scene=="undefined"||!scene)return;
+ if(skG){scene.remove(skG);dsp(skG)}
+ skG=new THREE.Group();
+ const A=(...a)=>a.forEach(m=>{m.castShadow=true;skG.add(m)}),GW=.16,RO=.035,GC=0xd9dcdf,RC=0x4a4f55,TC=0x3fae5a;
+ Object.values(SKY).forEach(o=>{
+  const{x,y,s}=o;if(x>=W||y>=H)return;
+  const i=y*W+x,e=hd(x,y),b=E(i),cx=wx(x),cz=wz(y),n=D4.map(([a,c])=>!!tk(x+a,y+c)),ax=n[1]||n[3]||!(n[0]||n[2]);
+  A(bx(.07,e-b,.07,0xb4b8bd,cx,b,cz),bx(.12,.06,.12,0x9ea3a9,cx,b,cz),ax?bx(.06,.04,.26,0xa7acb2,cx,e-.04,cz):bx(.26,.04,.06,0xa7acb2,cx,e-.04,cz),bx(GW,.07,GW,GC,cx,e,cz));
+  D4.forEach(([a,c],k)=>{if(!n[k])return;
+   if(a)A(bx(.5,.07,GW,GC,cx+a*.25,e,cz),bx(.5,.02,GW+.02,TC,cx+a*.25,e,cz),bx(.5,.014,.014,RC,cx+a*.25,e+.07,cz-RO),bx(.5,.014,.014,RC,cx+a*.25,e+.07,cz+RO));
+   else A(bx(GW,.07,.5,GC,cx,e,cz+c*.25),bx(GW+.02,.02,.5,TC,cx,e,cz+c*.25),bx(.014,.014,.5,RC,cx-RO,e+.07,cz+c*.25),bx(.014,.014,.5,RC,cx+RO,e+.07,cz+c*.25))});
+  if(!n.some(v=>v))A(bx(GW,.014,.014,RC,cx,e+.07,cz-RO),bx(GW,.014,.014,RC,cx,e+.07,cz+RO));
+  if(!s)return;
+  const PO=.19,PW=.15;
+  [-1,1].forEach(q=>{
+   A(ax?bx(.8,.07,PW,0xe4e7ea,cx,e,cz+q*PO):bx(PW,.07,.8,0xe4e7ea,cx+q*PO,e,cz),
+     ax?bx(.8,.012,.02,0xf2c230,cx,e+.07,cz+q*.12):bx(.02,.012,.8,0xf2c230,cx+q*.12,e+.07,cz));
+   [-1,1].forEach(r=>A(cy(.015,.18,0xb4b8bd,ax?cx+r*.38:cx+q*.26,e+.07,ax?cz+q*.26:cz+r*.38)))});
+  A(ax?bx(.9,.025,.6,0x3aa655,cx,e+.25,cz):bx(.6,.025,.9,0x3aa655,cx,e+.25,cz),ax?bx(.86,.018,.56,0xf3f7fa,cx,e+.275,cz):bx(.56,.018,.86,0xf3f7fa,cx,e+.275,cz),bx(.025,.06,.025,0x555a60,cx,e+.293,cz));[-1,1].forEach(q=>{const l=new THREE.Mesh(new THREE.BoxGeometry(ax?.7:.03,.012,ax?.03:.7),LM);l.position.set(cx+(ax?0:q*.19),e+.238,cz+(ax?q*.19:0));skG.add(l)});
+  const sn=new THREE.Mesh(new THREE.PlaneGeometry(.4,.12),new THREE.MeshBasicMaterial({map:snTex(o.n||(o.n=nm())),side:THREE.DoubleSide}));sn.position.set(cx,e+.41,cz);if(!ax)sn.rotation.y=Math.PI/2;skG.add(sn);
+  const hh=e-b+.07,th=Math.atan2(hh,RN),Ln=Math.hypot(hh,RN),st=ax?bx(.12,.04,Ln,0xc3c7cc,0,0,0):bx(Ln,.04,.12,0xc3c7cc,0,0,0);
+  if(ax){st.position.set(cx,(b+e+.07)/2,cz+.27+RN/2);st.rotation.x=th}else{st.position.set(cx+.27+RN/2,(b+e+.07)/2,cz);st.rotation.z=-th}
+  A(st)})
+ scene.add(skG)}
+function mkTr(){const o=[];for(let i=0;i<4;i++){const G=new THREE.Group();
+ G.add(bx(.09,.07,.3,0xf1f4f6),bx(.093,.018,.302,0x2fa44f,0,.014,0),lbx(.094,.022,.24,WM,0,.04,0),bx(.075,.01,.28,0xc9ced3,0,.07,0));
+ G.traverse(z=>z.castShadow=true);o.push(G)}return o}
+function pay(t){const v=Math.round(12+Math.random()*14+Math.min(40,(typeof pop=="number"?pop:0)/30));money+=v;if(Math.random()<.25)toast("🚈 "+(t&&t.n||"Skytrain")+": +$"+v,2200)}
+function run(dt){
+ if(!tG||tG.parent!==scene){tG=new THREE.Group();scene.add(tG);TN.forEach(o=>o.c.forEach(m=>tG.add(m)))}
+ tT-=dt;const ss=stn().filter(o=>D4.some(([a,c])=>tk(o.x+a,o.y+c)));
+ if(tT<=0){tT=4;if(ss.length&&TN.length<Math.min(6,ss.length*2)){const o=ss[Math.floor(Math.random()*ss.length)],a=D4.findIndex(([p,q])=>tk(o.x+p,o.y+q)),c=mkTr();c.forEach(m=>{m.visible=false;tG.add(m)});TN.push({c,x:o.x,y:o.y,fx:o.x,fy:o.y,s:1,a,dw:2,pts:[[wx(o.x),wz(o.y),hd(o.x,o.y)]]})}}
+ for(let n=TN.length-1;n>=0;n--){const o=TN[n];
+  if(!tk(o.x,o.y)||!tk(o.fx,o.fy)){o.c.forEach(m=>tG.remove(m));TN.splice(n,1);continue}
+  if(o.dw>0)o.dw-=dt;
+  else if(o.s>=1){const c=[0,1,2,3].filter(i=>i!=(o.a+2)%4&&tk(o.x+D4[i][0],o.y+D4[i][1]));
+   if(!c.length){o.a=(o.a+2)%4;o.dw=2.5}
+   else{const i=c.includes(o.a)&&Math.random()<.8?o.a:c[Math.floor(Math.random()*c.length)];o.a=i;o.fx=o.x;o.fy=o.y;o.x+=D4[i][0];o.y+=D4[i][1];o.s=0}}
+  else{o.s=Math.min(1,o.s+dt*1.6);if(o.s>=1&&tk(o.x,o.y).s){o.dw=3.5;pay(tk(o.x,o.y))}}
+  const h0=hd(o.fx,o.fy),px=wx(o.fx)+(o.x-o.fx)*o.s,pz=wz(o.fy)+(o.y-o.fy)*o.s,py=h0+(hd(o.x,o.y)-h0)*o.s,L=o.pts[o.pts.length-1];
+  if(Math.hypot(px-L[0],pz-L[1])>.01)o.pts.push([px,pz,py]);if(o.pts.length>300)o.pts.splice(0,o.pts.length-300);
+  const at=d=>{let a=0;for(let k=o.pts.length-1;k>0;k--){const p=o.pts[k],q=o.pts[k-1],sl=Math.hypot(p[0]-q[0],p[1]-q[1]);if(sl>0&&a+sl>=d){const f=(d-a)/sl;return[p[0]+(q[0]-p[0])*f,p[1]+(q[1]-p[1])*f,p[2]+(q[2]-p[2])*f]}a+=sl}return null};
+  o.c.forEach((m,i)=>{const d=i*.34,p=at(d);if(!p){m.visible=false;return}const f=at(Math.max(0,d-.1))||p,b=at(d+.1)||p;m.visible=true;m.position.set(p[0],p[2]+.085,p[1]);if(Math.hypot(f[0]-b[0],f[1]-b[1])>.001)m.rotation.y=Math.atan2(f[0]-b[0],f[1]-b[1])})}}
+let lt=performance.now();
+(function lp(){requestAnimationFrame(lp);const n=performance.now(),dt=Math.min(.1,(n-lt)/1e3);lt=n;
+ if(typeof scene=="undefined"||!scene)return;
+ {const nt=typeof night!="undefined"&&night;LM.color.setHex(nt?0xfff0b0:0x8a9096);WM.color.setHex(nt?0xffe8a0:0x3b5a74)}
+ if(dd||!skG||skG.parent!==scene){dd=0;try{draw()}catch(e){console.error(e)}}
+ try{run(dt)}catch(e){console.error(e)}})();
+const NM={},nmat=m=>NM[m]||(NM[m]=(()=>{const Z=128,c=document.createElement("canvas");c.width=c.height=Z;const x=c.getContext("2d"),h=Z/2,U=[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]],A=U.filter(u=>m&u[2]),P2=u=>[h+u[0]*h,h+u[1]*h],cv=A.length==2&&A[0][0]+A[1][0]!=0&&A[0][1]+A[1][1]!=0;
+ const path=()=>{x.beginPath();if(cv){const a=P2(A[0]),b=P2(A[1]);x.moveTo(a[0],a[1]);x.quadraticCurveTo(h,h,b[0],b[1])}else(A.length?A:[U[0],U[2]]).forEach(u=>{const e=P2(u);x.moveTo(h,h);x.lineTo(e[0],e[1])})},
+ S=(w,col)=>{x.lineWidth=w*Z;x.strokeStyle=col;x.lineCap="butt";x.lineJoin="round";path();x.stroke()};
+ S(.56,"#cfd3d7");S(.48,"#4b5058");return mat({map:new THREE.CanvasTexture(c),transparent:true})})());
+function narrow(){if(!cityG)return;
+ cityG.children.forEach(o=>{if(!o.isMesh||o.geometry!==rg)return;
+  const x=Math.round(o.position.x+W/2-.5),y=Math.round(o.position.z+H/2-.5),i=y*W+x;
+  if(x<0||y<0||x>=W||y>=H||OW[i]===undefined||!owIs(i)||Math.abs(wx(x)-o.position.x)>.01)return;
+  o.material=nmat(rk(x,y))})}
+const rb0=rebuild;rebuild=function(){rb0.apply(this,arguments);try{narrow()}catch(e){console.error(e)}dd=1};
+const sel1=sel;sel=t=>{sel1(t);if(t=="oneway")document.getElementById("info").textContent="One-way street ($10 a tile): a narrow street. Drag to build it in the direction cars should drive, or click an existing road to make it one-way (click again to flip it, and once more to turn it back into a normal two-way road). Cars follow the arrows."};
+const c0=calc;calc=function(){const s=c0();try{const n=stn().length;s.inc*=1+Math.min(.1,.015*n);s.hap=Math.min(1,s.hap*(1+Math.min(.05,.008*n)))}catch(e){}return s};
+const nb=document.getElementById("new");
+if(nb){const o0=nb.onclick;nb.onclick=e=>{const r=!!e.target.dataset.s;o0(e);if(r){SKY={};store();dd=1}}}
+})();
+</script>
 </body></html>
