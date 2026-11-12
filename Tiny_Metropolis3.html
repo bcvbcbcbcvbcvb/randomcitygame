@@ -1626,6 +1626,13 @@ dl2:{n:"Car Dealership",e:"🚗",c:3200,k:"c",jobs:24,inc:28,svc:45,t:2,d:"A gla
 dl3:{n:"EV Dealership",e:"🔋",c:4500,k:"c",jobs:20,inc:32,svc:40,t:2,sdg:[7,11,13],d:"Electric cars, solar panels on the roof and free charging posts."},
 dl4:{n:"Luxury Motors Showroom",e:"🏎️",c:12000,k:"c",jobs:50,inc:70,svc:60,joy:.006,t:2,w:2,h:2,d:"A gold-trimmed glass showroom for the finest cars in the city."}});
 dkCATS[4].subs.push(["🚗 Auto",["dl1","dl2","dl3","dl4"]]);["dl1","dl2","dl3","dl4"].forEach(id=>dkLOC[id]=[4,dkCATS[4].subs.length-1]);
+Object.assign(T,{
+mall2:{n:"Grand Mall",e:"🛍️",c:6500,k:"c",jobs:110,inc:100,svc:230,joy:.004,t:3,w:3,h:3,d:"A two-storey mall with a glass atrium, a drop-off canopy and a big car park."},
+mall3:{n:"Outlet Village",e:"🛒",c:5200,k:"c",jobs:80,inc:85,svc:180,joy:.008,t:3,w:3,h:3,d:"Open-air pastel shops around a fountain plaza with a clock tower. Shoppers love it."},
+mall4:{n:"Luxury Galleria",e:"💎",c:14000,k:"c",jobs:130,inc:170,svc:260,joy:.01,t:4,w:3,h:3,d:"A cream stone arcade with gold trim, a glass dome, a columned entrance and fountains."},
+mall5:{n:"Mega Mall",e:"🎡",c:26000,k:"c",jobs:280,inc:300,svc:420,joy:.012,t:4,w:4,h:4,d:"A huge cross-shaped mall with a glass dome, four anchor stores, car parks and a ferris wheel."}});
+{const i=dkG.Commerce.indexOf("c3");if(i>=0)dkG.Commerce.splice(i,1);const ml=["c3","mall2","mall3","mall4","mall5"];dkCATS[4].subs.push(["🛍️ Malls",ml]);ml.forEach(id=>dkLOC[id]=[4,dkCATS[4].subs.length-1])}
+
 GRN.forEach((q,i)=>{const p=q[0].indexOf(" "),nm=q[0].slice(p+1);T["gr"+i]={n:nm,e:q[0].slice(0,p),c:0,k:"s",lbl:i?"paint tile":"erase paint",d:i?"Paint tiles "+nm.toLowerCase()+".":"Turn painted tiles back to grass."}});
 {const gids=GRN.map((_,i)=>"gr"+i);
 dkCATS[10].subs.push(["🎨 Paint ground",gids]);gids.forEach(id=>dkLOC[id]=[10,dkCATS[10].subs.length-1]);
@@ -1748,6 +1755,53 @@ P.tr2=G(pad(0xf0e2b0),bx(.54,.2,.4,0xfdf8ee,-.08,.03),R(.5,.26,0xc9a34a,.23,-.08
 P.tr3=G(pad(0x9bd488),bx(.6,.07,.54,0x6b4a2c,0,.03),bx(.46,.22,.38,0x9a6a3e,0,.1),R(.5,.2,0xb5523b,.32),R(.3,.2,0xb5523b,.46),gs(.03,0xd4a62a,0,.68,0),W(.12,0,.12,.195));
 P.tr4=G(bx(.98,.3,.5,0,0,0,0,wt(2,4,"#d9bf94","#ffeaa6")),R(.5,.2,0x8a4a3a,.3,0,0,1.4),bx(.98,.04,.12,0xd9433b,0,.18,.3),bx(.12,.2,.02,0x6a4a2c,0,0,.255));
 P.tr5=G(bx(.7,1,.5,0,0,0,0,wt(4,3,"#f0e8d8","#ffeaa6")),bx(.74,.04,.54,0x2f8f8a,0,1),bx(.74,.03,.1,0x2f8f8a,0,.33,.3),bx(.74,.03,.1,0x2f8f8a,0,.66,.3),palm(-.3,.36),S(.08,0x4fb35a,.2,1.06,0));
+/* ===== Bigger malls ===== */
+{const CC=[0xd9433b,0x3b78b8,0xeeeeee,0x2f2f36,0xf2c230,0x3fae5a,0x9b59b6],
+ cr=(x,z,c)=>{const o=car(x,z,c,D);o.scale.setScalar(.6);return o},
+ lot=(x,z,w,d,n,s=0)=>{const a=[bx(w,.012,d,0x4f4f58,x,.03,z),bx(w-.04,.004,.008,0xffffff,x,.042,z)];for(let i=0;i<n;i++){const px=x-w/2+(i+.5)*w/n;if((i*5+s)%4)a.push(cr(px,z-d/4,CC[(i+s)%7]));if((i*3+s)%3)a.push(cr(px,z+d/4,CC[(i*2+s)%7]))}return a},
+ vault=(r,k,len,c,x,y,z,az,e=0x7ad0ff)=>{const ge=new THREE.CylinderGeometry(r,r,len,14,1,false,0,Math.PI).rotateZ(Math.PI/2);ge.scale(1,k,1);if(az)ge.rotateY(Math.PI/2);const m=new THREE.Mesh(ge,gm(c,e));m.position.set(x,y,z);m.userData.ns=1;return m},
+ dome=(r,c,x,y,z,e)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,8,0,Math.PI*2,0,Math.PI/2),e?gm(c,e):mat({color:c}));m.position.set(x,y,z);if(e)m.userData.ns=1;return m},
+ lamp=(x,z)=>[cy(.008,.16,0x777777,x,.03,z,5),gs(.02,0xffe9a8,x,.2,z,0xffd060)],
+ shop=(x,z,c,rc)=>[bx(.2,.2,.2,c,x,.03,z),R(.15,.1,rc,.23,x,z),gl(.12,.09,.02,0xbfe6ff,x,.06,z+.1,0xffd27a),bx(.14,.02,.05,rc,x,.18,z+.12)],
+ wheel=(x,z)=>{const a=[],r=new THREE.Mesh(new THREE.TorusGeometry(.11,.007,6,24),mat({color:0xf2f2f2}));r.position.set(x,.2,z);a.push(r,bx(.012,.17,.012,0x9aa3ad,x-.05,.03,z),bx(.012,.17,.012,0x9aa3ad,x+.05,.03,z),gs(.015,0xcccccc,x,.2,z));
+  for(let i=0;i<4;i++){const s=bx(.22,.005,.005,0xf2f2f2);s.position.set(x,.2,z);s.rotation.z=i*Math.PI/4;a.push(s)}
+  for(let i=0;i<8;i++)a.push(gs(.018,[0xd9433b,0xf2c230,0x3b78b8,0x3fae5a][i%4],x+.11*Math.cos(i*Math.PI/4),.18+.11*Math.sin(i*Math.PI/4),z));return a};
+/* Grand Mall: two storeys, glass barrel-vault atrium, drop-off canopy, parking lot and pylon sign */
+P.mall2=G(pad(0x6a6a72),...lot(0,.32,.86,.28,7,1),
+ bx(.92,.34,.46,0,0,.03,-.2,wt(3,12,"#efe3cf","#fff0c8")),bx(.96,.03,.5,0x8a7a6a,0,.37,-.2),
+ gl(.34,.36,.1,0xbfe6ff,0,.03,.03,0xffe2a0),vault(.17,.9,.5,0xbfe6ff,0,.4,-.2,1),
+ bx(.4,.025,.14,0xf2f2f2,0,.3,.12),...[-.18,.18].map(x=>cy(.012,.27,0xeeeeee,x,.03,.17,6)),
+ ...[-.36,.36].flatMap(x=>[bx(.2,.09,.03,x<0?0xd9433b:0x3b78b8,x,.27,.012),gl(.15,.15,.02,0xbfe6ff,x,.05,.012,0xffe2a0)]),
+ cy(.012,.4,0x888888,.42,.03,.46,5),gl(.12,.14,.03,0xd9433b,.42,.3,.46,0xff5a40),
+ palm(-.46,.2,.7),palm(-.46,.42,.7),palm(.46,.2,.7),
+ bx(.08,.05,.08,0xaab0b8,-.3,.4,-.3),bx(.08,.05,.08,0xaab0b8,.3,.4,-.1),flag(.46,.4));
+/* Outlet Village: open-air pastel shops round a fountain plaza with a clock tower */
+P.mall3=G(pad(0xb8b0a0),bx(.5,.02,.56,0xe8dcc0,0,.03,.06),
+ cy(.09,.04,0xd8e4ec,0,.05,.08,16),cy(.02,.12,0xd8e4ec,0,.09,.08,8),gs(.035,0x7ad0ff,0,.24,.08,0x40b0ff),
+ ...[[-.36,-.38,0xf2a6c0,0xb04a6a],[-.14,-.38,0xf2c230,0xd9433b],[.14,-.38,0x7ad0c8,0x2f8f8a],[.36,-.38,0xf08a5d,0x8a3a2a],
+  [-.4,-.14,0xa8c8f0,0x3b78b8],[-.4,.1,0xc8b6f0,0x7a4bd0],[-.4,.34,0xf2a6c0,0xd9433b],
+  [.4,-.14,0xf2c230,0x8a5a3a],[.4,.1,0x7ad0c8,0xd9433b],[.4,.34,0xf08a5d,0x2f8f8a]].flatMap(([x,z,c,r])=>shop(x,z,c,r)),
+ bx(.08,.5,.08,0xe8dcc0,0,.03,-.38),R(.07,.14,0xb04a3a,.53,0,-.38),gl(.05,.05,.01,0xfff4d0,0,.4,-.338,0xffe080),
+ ...[-.3,-.15,0,.15,.3].map(x=>gs(.016,0xffd27a,x,.3,-.2,0xffb040)),...lamp(-.2,.3),...lamp(.2,.3),
+ S(.07,0x4fb35a,-.2,.1,.36),S(.07,0x4fb35a,.2,.1,.36),palm(0,.44,.8),flag(-.3,.44,0xf2a6c0),flag(.3,.44,0xf2c230));
+/* Luxury Galleria: cream stone hall, gold trim, glass dome, copper-green wing domes, portico, fountains */
+P.mall4=G(pad(0xd8d0c0),bx(.82,.3,.5,0,0,.03,-.17,wt(3,9,"#f1e7d3","#fff0c8")),bx(.86,.03,.54,0xd4a62a,0,.33,-.17),
+ ...[-.43,.43].flatMap(x=>[bx(.14,.42,.52,0xf1e7d3,x,.03,-.16),bx(.16,.03,.54,0xd4a62a,x,.45,-.16),dome(.085,0x2f8f6a,x,.48,-.16),gs(.02,0xffd27a,x,.58,-.16,0xffb040)]),
+ dome(.2,0xbfe6ff,0,.36,-.17,0x7ad0ff),cy(.205,.03,0xd4a62a,0,.36,-.17,20),cy(.008,.14,0xd4a62a,0,.56,-.17,5),gs(.025,0xffd27a,0,.72,-.17,0xffb040),
+ ...[-.25,-.15,-.05,.05,.15,.25].map(x=>cy(.016,.28,0xf4efe6,x,.03,.17,10)),bx(.62,.04,.14,0xf4efe6,0,.31,.14),bx(.62,.02,.145,0xd4a62a,0,.35,.14),
+ gl(.4,.2,.02,0xbfe6ff,0,.05,.085,0xffe2a0),gl(.3,.05,.02,0xd4a62a,0,.27,.09,0xd4a62a),
+ bx(.5,.02,.12,0xe8dcc0,0,.03,.3),
+ ...[-.34,.34].flatMap(x=>[cy(.08,.03,0xcfe4f0,x,.03,.38,16),cy(.012,.1,0xd8e4ec,x,.06,.38,6),gs(.025,0x7ad0ff,x,.18,.38,0x40b0ff)]),
+ flag(-.46,.46),flag(.46,.46,0xd4a62a));
+/* Mega Mall (4x4): cross-shaped hall, glass dome atrium, four anchor stores, big parking lots and a ferris wheel */
+P.mall5=G(pad(0x62626a),...lot(.32,.32,.28,.26,2,0),...lot(.32,-.32,.28,.26,2,2),...lot(-.32,-.32,.28,.26,2,3),...wheel(-.32,.32),
+ bx(.96,.28,.3,0,0,.03,0,wt(3,14,"#ead9c0","#fff0c8")),bx(.98,.03,.32,0xb05a4a,0,.31,0),
+ bx(.3,.27,.96,0,0,.03,0,wt(3,14,"#ead9c0","#fff0c8")),bx(.32,.03,.98,0xb05a4a,0,.3,0),
+ ...[[.43,0,0x3b78b8],[-.43,0,0xd9433b],[0,.43,0xf2c230],[0,-.43,0x2f8f6a]].flatMap(([x,z,c])=>x?[bx(.1,.36,.36,c,x,.03,0),bx(.12,.02,.38,0x555a60,x,.39,0),gl(.02,.08,.24,0xfff4d0,x*1.12,.27,0,0xffe8a0)]:[bx(.36,.36,.1,c,0,.03,z),bx(.38,.02,.12,0x555a60,0,.39,z),gl(.24,.08,.02,0xfff4d0,0,.27,z*1.12,0xffe8a0)]),
+ dome(.2,0xbfe6ff,0,.34,0,0x7ad0ff),cy(.205,.03,0xd4a62a,0,.34,0,20),cy(.008,.12,0xd4a62a,0,.54,0,5),gs(.025,0xffd27a,0,.68,0,0xffb040),
+ ...[-.29,.29].flatMap(v=>[gl(.16,.04,.1,0xbfe6ff,v,.34,0,0x7ad0ff),gl(.1,.04,.16,0xbfe6ff,0,.33,v,0x7ad0ff)]),
+ cy(.012,.4,0x888888,.2,.03,.46,5),gl(.1,.14,.03,0xd9433b,.2,.3,.46,0xff5a40));
+}
 P.tr6=G(pad(0xf0e2b0),gl(.4,.02,.3,0x4fc3f7,0,.03,.08),...[[-.3,-.3],[.3,-.3],[-.3,.32],[.3,.32]].flatMap(([x,z])=>[bx(.26,.16,.24,0xfdf8ee,x,.03,z),R(.22,.14,0xc9a34a,.19,x,z)]),palm(0,-.36,.9));
 P.tr7=G(bx(.62,.9,.5,0,0,0,0,wt(5,3,"#f4efe6","#bfe6ff")),bx(.52,.6,.42,0,0,.94,0,wt(3,3,"#f4efe6","#bfe6ff")),bx(.42,.5,.34,0,0,1.58,0,wt(3,2,"#f4efe6","#bfe6ff")),bx(.66,.04,.54,0x2f8f8a,0,.9),bx(.56,.04,.46,0x2f8f8a,0,1.54),bx(.46,.04,.38,0x2f8f8a,0,2.08),S(.08,0x4fb35a,0,2.16,0),palm(.34,.3,.9))}
 /* 3D models for the new items (called at the end of protos()) */
@@ -2305,8 +2359,11 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.38.0",
+const VER="1.41.0",
 LOG=[
+["1.41.0", "Drive any car", ["Click any car with the ✋ No tool (or the 👁 look tool) to take the wheel. The car leaves the traffic and you drive it yourself; the camera follows.","Drive with W/S (or ↑/↓) to speed up and brake, A/D (or ←/→) to steer, Space for the handbrake. Esc or the 🅿️ Park button puts the car back into traffic. On phones and tablets, on-screen arrow buttons appear.","You can drive on roads and highways. Cars stop at the edge of the road, and buses, school buses, police cars, fire trucks and ambulances are slower or faster in their own way."], "Nov 12, 2026"],
+["1.40.0", "Bigger, better malls", ["New 🛍️ Malls tab in Commerce with the original Mall plus four new ones: 🛍️ Grand Mall (3×3, $6,500), 🛒 Outlet Village (3×3, $5,200), 💎 Luxury Galleria (3×3, $14,000) and 🎡 Mega Mall (4×4, $26,000).","Grand Mall has a glass barrel-vault atrium, a drop-off canopy, a car park full of cars and a pylon sign. Outlet Village is an open-air plaza of pastel shops with a fountain, fairy lights and a clock tower.","Luxury Galleria has gold trim, a glass dome, copper-green wing domes, a columned entrance and twin fountains. Mega Mall is a cross-shaped hall with a glass dome, four anchor stores, big car parks and a ferris wheel. All of them glow at night.","Bigger malls earn more, employ more people and cover a wider area with shopping. Click one to see its stats."], "Nov 12, 2026"],
+["1.39.0", "Skytrains over roads", ["Skytrain track can now run over roads for any distance, not just across them. Track can no longer be blocked by a road, and the old one-tile crossing limit is gone.","Roads and one-way streets can now be built underneath skytrain track (drag a road under it, or lay track on top of one). Bulldoze the track first, then the road, to remove both.","Where track runs along a road, slim supports stand at the edge of the street every other tile, so nothing ever stands on the pavement. Highways still can\u2019t go under track."], "Nov 12, 2026"],
 ["1.38.0", "Water supply, droughts, fun buildings & taller mountains", ["8 new buildings in the 💧 Water tab that add water to your city: ⛲ Artesian Spring, 🌫️ Fog Catcher, 🪣 Borehole Pump, 🏭 River Intake Plant, 🏛️ Aqueduct Station, 🏞️ Reservoir Lake, ♻️ Water Recycling Plant and 🧪 Reverse Osmosis Plant.", "Each one treats and delivers water on its own, so you don\u2019t need a separate tower. Small ones are cheap, and the big ones are expensive but supply thousands of citizens. Click any of them to see how much water they treat and deliver.", "They also count toward the Clean Water & Sanitation goal.", "The ⛰️ Raise land tool can now build up to 10 levels high instead of 3, so you can make real hills and mountains. Each level still costs $20. Bridges and elevated roads keep working on the new heights, and your old saves load as before.","New ⛰️ highland bonus: Wind Turbines, Wind Farms, Observation Towers, Ski Lodges and the new buildings below earn or make +10% more for every land level they stand on, up to double on a level-10 mountain. Click one to see its bonus.","New ⛏️ Mountain Mine (Industry) and 🚠 Cable Car Station (Commerce) for your hills, and a 📟 Smart Meter Hub in the Water tab that cuts the city\u2019s water demand by 4% per hub, up to 20%.","New 🌧️ heavy rain storms: for about a minute your Rain Harvesters make triple water and the river cleans itself. The HUD shows a Rain countdown. Rain and drought never happen at the same time.","New 🧳 tourism: a 🏨 Budget Inn, 🏩 Grand Hotel and 🏖️ Beach Resort in Commerce. Their income depends on your attractions: every stadium, park, museum, big fun building and landmark brings tourists (landmarks count triple), from ×0.4 with nothing to see up to ×2.0 with 8+ attractions. Click a hotel to see its tourism multiplier.","New 🎉 festivals: when your citizens have plenty to do (the Fun bar is nearly full) and you have 100+ citizens, a festival can break out for about a minute: +25% income and a small happiness boost.","The 🏞️ Hydro Dam now also gets the highland bonus: +10% power per land level.","New 🦁 City Zoo (3×3, $30,000) in Recreation with real animals that walk around their enclosures: giraffes, a zebra, elephants, lions, penguins and flamingos, all with swinging legs. It counts triple as a tourist attraction for your hotels.","New 🐄 Petting Farm (2×2, $6,000) with a barn, silo, cows, sheep and a pig, and a 🐕 Dog Park (1×1, $1,200) where two dogs run laps.","Happiness is harder to get. Small gaps now cost more: a city that used to sit at 90% now lands around 86%, and 70% drops to about 61%. Only a city that gets almost everything right stays near 100%. Parks and landmarks add a bit less joy, and growth and income follow the lower happiness, so keep your services topped up.","Random ☀️ droughts now hit cities with 60+ citizens. For about a minute, wells, springs, rain harvesters and treatment plants make 35-55% less water, and the HUD shows a 🏜️ Drought countdown. Reservoirs, aqueducts, boreholes, fog catchers, recycling, reverse osmosis, desalination, hydro dams, pumps and towers are drought-proof, and so is any building that says so in its info. Build a mix of sources and you won\u2019t notice.","5 new buildings: ⛲ Fountain Plaza and ♨️ Hot Spring Spa, 🛝 Water Park and 🐠 Aquarium in Recreation, and a 🎿 Ski Lodge in Commerce (nice on top of your new tall hills)."], "Nov 11, 2026"],
 ["1.37.0", "Skytrains & narrow one-way streets", ["New 🚈 Skytrain Track ($60 a tile) and 🚉 Skytrain Station ($1,500) at the end of the Rail tab. Drag elevated track on tall pillars over roads, empty land or water. It can’t pass through buildings or highways. Bulldoze a tile to remove it and get half back.", "Click a piece of track with the Station tool to build a roofed station with side platforms, stairs and a green sign. Every station gets a premade name (Central, Riverside, Old Town and more). Click a built station with the Station tool or the look tool to rename it: pick a premade name or type your own.", "White and green four-car trains shuttle along the track, stop at stations and turn around at the end of the line. Each stop pays a fare that grows with your population, and every station gives a small boost to income and happiness. At night the station lights glow and the train windows light up.", "One-way streets are now narrow streets with a curb and arrows. Drag the One-way street tool over empty land to build one in the direction you drag ($10 a tile, the same as a road), or click an existing road to make it one-way. Click again to flip it, and once more to make it a normal road.", "The ↔️ Two-way street tool was removed. Click a one-way street until it turns back into a normal road.", "Skytrain pillars never stand in a road anymore: track crosses a road in a single tile with no pillar, roads can’t be built under a pillar, and stations can’t sit over a road. The track, trains and station platforms are also wider.", "Fixed Twin Dragon Towers being drawn about twice as wide as its 2×2 plot, which made it spill over neighbouring roads.", "More skytrain life: trains now have headlights and red tail lights, up to 10 run at once on bigger networks, fares grow with the number of stations, and passengers wait on station platforms (more in bigger cities). Stations count their riders (click a station to see it, and it is saved), and you get a toast every 1,000 riders."], "Nov 11, 2026"],
 ["1.36.0","One-way streets",["Two new tools at the end of the Roads tab: ➡️ One-way street ($8 a tile) and ↔️ Two-way street (free).","Drag along a road in the direction cars should drive and it turns into a one-way street with arrows painted on it. You can also click a road to make it one-way, click again to flip the direction, and once more to make it two-way again. It works on regular roads and dirt roads.","Cars follow the arrows: they only leave a one-way street the way it points, they can’t turn onto one against its direction, and they drive down the middle of the road.","One-way streets are saved with your city, survive map expansions and undo/redo, and work when other mayors visit your city."],"Nov 11, 2026"],
@@ -2869,7 +2926,7 @@ const NAMES=["Central","Riverside","Old Town","Market Street","Park Lane","Harbo
  LM=new THREE.MeshBasicMaterial({color:0x8a9096}),WM=new THREE.MeshBasicMaterial({color:0x3b5a74}),
  lbx=(w,h,d,m,x,y,z)=>{const q=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);q.position.set(x,y+h/2,z);return q};
 Object.assign(T,{
-sky:{n:"Skytrain Track",e:"🚈",c:CT,k:"a",d:"Drag to lay elevated track ($60/tile) on tall pillars. It runs right over roads, land or water and needs no ground space."},
+sky:{n:"Skytrain Track",e:"🚈",c:CT,k:"a",d:"Drag to lay elevated track ($60/tile) on tall pillars. It runs right over roads (for as long as you like), land or water. Roads can be built underneath."},
 skystn:{n:"Skytrain Station",e:"🚉",c:CS,k:"a",d:"Click a piece of skytrain track to build a roofed elevated station with platforms and stairs. Trains stop here and pay fares. Click a built station to rename it."}});
 dkG.Railway.push("sky","skystn");dkLOC.sky=[7,0];dkLOC.skystn=[7,0];
 /* one-way street: a narrow street you build by dragging; the two-way street tool is removed */
@@ -2908,9 +2965,8 @@ put=function(x,y){
   [[pv[0],pv[1]],[x,y]].forEach(([a,b])=>{const j=b*W+a;if(ok&&owIs(j))ok=owSet(j,d)});
   return ok}
  if(tool=="bull"&&o){money+=o.s?CS/2:CT/2;delete SKY[k];chg();return 1}
- if(o&&!onRd(x,y)&&(T[tool].k=="r"||tool=="oneway"||tool=="hwy")){if(!dragging)toast("A skytrain pillar stands here. Bulldoze the track first.");return 1}
+ if(o&&!onRd(x,y)&&tool=="hwy"){if(!dragging)toast("Highways can\u2019t go under skytrain track. Bulldoze the track first.");return 1}
  if(tool=="sky"){if(o)return 1;const v=g[i];
-  if(onRd(x,y)&&D4.some(([a,c])=>tk(x+a,y+c)&&onRd(x+a,y+c))){if(!dragging)toast("Track can cross a road only one tile wide, so no pillar ever stands in the street.");return 1}
   if(hw[i]||(v&&isB(v))){if(!dragging)toast("Skytrain track can’t pass through buildings or highways.");return 1}
   if(money<CT){toast("Not enough money for skytrain track ($"+CT+").");return 1}
   money-=CT;SKY[k]={x,y,s:0};chg();return 1}
@@ -2920,7 +2976,7 @@ put=function(x,y){
   if(o.s){if(performance.now()-pdT<60)openR(o);return 1}
   if(money<CS){toast("Not enough money for a station ($"+CS+").");return 1}
   money-=CS;o.s=1;o.n=nm();chg();toast("🚉 "+o.n+" station built. Trains will stop here.");return 1}
- return put0(x,y)};
+ const r0=put0(x,y);if(o)dd=1;return r0};
 function dsp(o){o.traverse(m=>{if(m.geometry)m.geometry.dispose();if(m.material&&!m.material.map)m.material.dispose()})}
 function draw(){
  if(typeof scene=="undefined"||!scene)return;
@@ -2930,7 +2986,9 @@ function draw(){
  Object.values(SKY).forEach(o=>{
   const{x,y,s}=o;if(x>=W||y>=H)return;
   const i=y*W+x,e=hd(x,y),b=E(i),cx=wx(x),cz=wz(y),n=D4.map(([a,c])=>!!tk(x+a,y+c)),ax=n[1]||n[3]||!(n[0]||n[2]);
-  const rdT=onRd(x,y);A(rdT?null:bx(.09,e-b,.09,0xb4b8bd,cx,b,cz),rdT?null:bx(.14,.06,.14,0x9ea3a9,cx,b,cz),rdT?null:(ax?bx(.06,.04,.4,0xa7acb2,cx,e-.04,cz):bx(.4,.04,.06,0xa7acb2,cx,e-.04,cz)),bx(GW,.07,GW,GC,cx,e,cz));
+  const rdT=onRd(x,y);
+  if(rdT&&!s&&((x+y)&1)==0&&D4.some(([a,c])=>tk(x+a,y+c)&&onRd(x+a,y+c))){const cs=[[1,1],[-1,1],[1,-1],[-1,-1]].find(([p,q])=>!onRd(x+p,y)&&!onRd(x,y+q)&&!hw[y*W+x+p]&&!hw[(y+q)*W+x]);if(cs){const px=cx+cs[0]*.45,pz=cz+cs[1]*.45;A(bx(.08,e-b,.08,0xb4b8bd,px,b,pz),bx(.13,.05,.13,0x9ea3a9,px,b,pz),bx(.45,.05,.07,0xa7acb2,cx+cs[0]*.225,e-.05,cz),bx(.07,.05,.45,0xa7acb2,px,e-.05,cz+cs[1]*.225))}}
+  A(rdT?null:bx(.09,e-b,.09,0xb4b8bd,cx,b,cz),rdT?null:bx(.14,.06,.14,0x9ea3a9,cx,b,cz),rdT?null:(ax?bx(.06,.04,.4,0xa7acb2,cx,e-.04,cz):bx(.4,.04,.06,0xa7acb2,cx,e-.04,cz)),bx(GW,.07,GW,GC,cx,e,cz));
   D4.forEach(([a,c],k)=>{if(!n[k])return;
    if(a)A(bx(.5,.07,GW,GC,cx+a*.25,e,cz),bx(.5,.02,GW+.02,TC,cx+a*.25,e,cz),bx(.5,.014,.014,RC,cx+a*.25,e+.07,cz-RO),bx(.5,.014,.014,RC,cx+a*.25,e+.07,cz+RO));
    else A(bx(GW,.07,.5,GC,cx,e,cz+c*.25),bx(GW+.02,.02,.5,TC,cx,e,cz+c*.25),bx(.014,.014,.5,RC,cx-RO,e+.07,cz+c*.25),bx(.014,.014,.5,RC,cx+RO,e+.07,cz+c*.25))});
@@ -2988,6 +3046,72 @@ const sel1=sel;sel=t=>{sel1(t);if(t=="oneway")document.getElementById("info").te
 const c0=calc;calc=function(){const s=c0();try{const n=stn().length;s.inc*=1+Math.min(.1,.015*n);s.hap=Math.min(1,s.hap*(1+Math.min(.05,.008*n)))}catch(e){}return s};
 const nb=document.getElementById("new");
 if(nb){const o0=nb.onclick;nb.onclick=e=>{const r=!!e.target.dataset.s;o0(e);if(r){SKY={};store();dd=1}}}
+})();
+</script>
+<script>
+/* ===== Drive a car: with the ✋ No tool (or 👁 look tool) click any car to take the wheel ===== */
+(function(){
+const st=document.getElementById("stage");if(!st)return;
+const cars0=cars,camKeys0=camKeys,sel0=sel,
+ NMS={police:"Police car",fire:"Fire truck",amb:"Ambulance",sbus:"School bus"},
+ KM={KeyW:"f",ArrowUp:"f",KeyS:"b",ArrowDown:"b",KeyA:"l",ArrowLeft:"l",KeyD:"r",ArrowRight:"r",Space:"h"};
+let dv=null,lt=performance.now(),shown="";const kd={f:0,b:0,l:0,r:0,h:0};
+document.head.insertAdjacentHTML("beforeend","<style>#dv-h{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:12;display:none;align-items:center;flex-wrap:wrap;justify-content:center;gap:8px 12px;max-width:94%;background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:8px 12px;font:600 13px system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25)}#dv-h.on{display:flex}#dv-h small{font-weight:400;color:var(--mut)}#dv-h button{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}#dv-p{position:absolute;left:0;right:0;bottom:64px;z-index:12;display:none;justify-content:space-between;padding:0 14px;pointer-events:none}#dv-p div{display:flex;gap:8px;pointer-events:auto}#dv-p button{width:62px;height:62px;font-size:24px;border-radius:50%;border:2px solid var(--line);background:var(--panel);color:var(--ink);opacity:.9;touch-action:none}@media(pointer:coarse){#dv-p.on{display:flex}}</style>");
+const hud=document.createElement("div");hud.id="dv-h";hud.innerHTML='<span id="dv-t">🚗 Driving</span><small>W/S gas &amp; brake · A/D steer · Space handbrake · Esc park</small><button id="dv-x">🅿️ Park</button>';
+const pad=document.createElement("div");pad.id="dv-p";pad.innerHTML='<div><button data-k="l">◀</button><button data-k="r">▶</button></div><div><button data-k="b">▼</button><button data-k="f">▲</button></div>';
+st.append(hud,pad);
+const dvT=hud.querySelector?hud.querySelector("#dv-t"):null;
+pad.querySelectorAll("button").forEach(b=>{const k=b.dataset.k,on=e=>{kd[k]=1;e.preventDefault()},off=()=>{kd[k]=0};b.addEventListener("pointerdown",on);["pointerup","pointerleave","pointercancel"].forEach(t=>b.addEventListener(t,off))});
+const xb=hud.querySelector("#dv-x");if(xb)xb.addEventListener("click",()=>stop());
+const tileOf=(x,z)=>[Math.floor(x+W/2),Math.floor(z+H/2)],
+ okT=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&!!(rd(g[y*W+x])||hw[y*W+x]),
+ dirOf=a=>{let b=0,bd=-9;for(let d=0;d<4;d++){const v=DIR[d][0]*Math.sin(a)+DIR[d][1]*Math.cos(a);if(v>bd){bd=v;b=d}}return b},
+ dvFind=(cx,cy)=>{const r=cv.getBoundingClientRect(),v=new THREE.Vector3();let best=null,bd=34*34;
+  CR.forEach(c=>{if(!c.m||!c.m.visible)return;v.set(c.m.position.x,c.m.position.y+.06,c.m.position.z);v.project(cam);if(v.z>1||v.z<-1)return;const sx=r.left+(v.x+1)/2*r.width,sy=r.top+(1-v.y)/2*r.height,d=(sx-cx)*(sx-cx)+(sy-cy)*(sy-cy);if(d<bd){bd=d;best=c}});return best};
+function start(c){const i=CR.indexOf(c);if(i<0)return;CR.splice(i,1);for(const k in CK)CK[k]=0;
+ const sp=c.m.userData.sp||1;
+ dv={c,m:c.m,px:c.m.position.x,pz:c.m.position.z,a:c.m.rotation.y,y:c.m.position.y,v:Math.min(c.v||0,2*sp),vm:3*sp,z:40};
+ lt=performance.now();shown="";hud.classList.add("on");pad.classList.add("on");
+ toast("🚗 You’re driving! W/S speed up and brake, A/D steer, Esc to park.",4500)}
+function stop(){if(!dv)return;const d=dv;dv=null;hud.classList.remove("on");pad.classList.remove("on");for(const k in kd)kd[k]=0;
+ const[x,y]=tileOf(d.px,d.pz),c=d.c;
+ if(!okT(x,y)||!carG||d.m.parent!==carG){if(d.m.parent)d.m.parent.remove(d.m);return}
+ const dd=dirOf(d.a);c.x=x;c.y=y;c.k=hw[y*W+x]?1:0;c.d0=dd;c.ln=c.k?(Math.random()*3|0):0;
+ c.s=Math.max(0,Math.min(.99,(d.px-wx(x))*DIR[dd][0]+(d.pz-wz(y))*DIR[dd][1]+.5));
+ c.hx=DIR[dd][0];c.hz=DIR[dd][1];c.wt=0;c.v=(c.k?2.4+Math.random()*1.2:1.1+Math.random()*.6)*(c.m.userData.sp||1);
+ if(!pick(c)){carG.remove(c.m);return}
+ CR.push(c);place(c)}
+function drive(){const d=dv,n=performance.now(),dt=Math.min(.05,Math.max(0,(n-lt)/1e3));lt=n;
+ if(!carG||d.m.parent!==carG){dv=null;hud.classList.remove("on");pad.classList.remove("on");return}
+ const sp=d.m.userData.sp||1;
+ if(kd.f)d.v+=(d.v<0?5:2.4)*sp*dt;else if(kd.b)d.v-=(d.v>0?5:2)*sp*dt;
+ if(kd.h)d.v-=Math.sign(d.v)*Math.min(Math.abs(d.v),6*dt);
+ if(!kd.f&&!kd.b)d.v-=d.v*Math.min(1,1.1*dt);
+ d.v=Math.max(-1.2*sp,Math.min(d.vm,d.v));
+ d.a+=((kd.l?1:0)-(kd.r?1:0))*2.2*dt*Math.max(-1,Math.min(1,d.v/1.1));
+ const nx=d.px+Math.sin(d.a)*d.v*dt,nz=d.pz+Math.cos(d.a)*d.v*dt,ok0=(x,z)=>{const t=tileOf(x,z);return okT(t[0],t[1])},ok1=(x,z)=>[[.1,.1],[.1,-.1],[-.1,.1],[-.1,-.1]].every(([a,b])=>ok0(x+a,z+b)),ok=ok1(d.px,d.pz)?ok1:ok0;
+ if(ok(nx,nz)){d.px=nx;d.pz=nz}else if(ok(nx,d.pz)){d.px=nx;d.v*=.7}else if(ok(d.px,nz)){d.pz=nz;d.v*=.7}else d.v*=-.25;
+ const t=tileOf(d.px,d.pz),dd=dirOf(d.a),ty=ed({k:hw[t[1]*W+t[0]]?1:0,x:t[0],y:t[1],d0:dd},dd);
+ d.y+=(ty-d.y)*Math.min(1,dt*10);d.m.position.set(d.px,d.y,d.pz);d.m.rotation.set(0,d.a,0);
+ const tx=(NMS[d.m.userData.pc]||"Car")+" · "+Math.round(Math.abs(d.v)*28)+" km/h";if(tx!==shown){shown=tx;if(dvT)dvT.textContent="🚗 "+tx}}
+cars=function(dt){cars0(dt);if(dv)try{drive()}catch(e){console.error(e);stop()}};
+camKeys=function(){if(!dv){camKeys0();return}
+ CV[0]=CV[1]=0;const t=ctl.target,o=cam.position.clone().sub(t);
+ if(dv.z>0){dv.z--;const l=o.length();o.setLength(l+(9-l)*.08)}
+ t.x+=(dv.px-t.x)*.18;t.z+=(dv.pz-t.z)*.18;t.y=0;cam.position.copy(t).add(o)};
+addEventListener("keydown",e=>{if(!dv)return;const tg=e.target&&e.target.tagName;if(tg=="INPUT"||tg=="TEXTAREA"||e.ctrlKey||e.metaKey||e.altKey)return;
+ if(e.code=="Escape"){stop();e.stopImmediatePropagation();return}
+ const k=KM[e.code];if(!k)return;kd[k]=1;e.preventDefault();e.stopImmediatePropagation()},true);
+addEventListener("keyup",e=>{const k=KM[e.code];if(!k)return;kd[k]=0;if(dv)e.stopImmediatePropagation()},true);
+addEventListener("blur",()=>{for(const k in kd)kd[k]=0});
+const act=new Set();let sx=0,sy=0,stt=0,multi=0;
+cv.addEventListener("pointerdown",e=>{act.add(e.pointerId);if(act.size>1)multi=1;else{multi=0;sx=e.clientX;sy=e.clientY;stt=performance.now()}});
+cv.addEventListener("pointercancel",e=>{act.delete(e.pointerId)});
+cv.addEventListener("pointerup",e=>{act.delete(e.pointerId);if(act.size||multi||dv||e.button||e.shiftKey)return;
+ if(Math.hypot(e.clientX-sx,e.clientY-sy)>8||performance.now()-stt>600)return;
+ if(!(tool=="none"||(T[tool]&&T[tool].k=="n")))return;
+ const c=dvFind(e.clientX,e.clientY);if(c)start(c)});
+sel=function(t){sel0.apply(this,arguments);if(t=="none"||(T[t]&&T[t].k=="n")){const i=document.getElementById("info");if(i&&!/drive it/.test(i.textContent))i.textContent+=" Tip: click a car to drive it!"}};
 })();
 </script>
 </body></html>
