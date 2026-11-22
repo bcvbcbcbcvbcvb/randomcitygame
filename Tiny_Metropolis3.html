@@ -347,7 +347,7 @@ trk:{n:"Race Track",e:"🏁",c:30,k:"a",d:"Drag to lay a race circuit ($30/tile)
 grand1:{n:"Grandstand",e:"🏟️",c:2500,k:"p",jobs:12,inc:30,fun:400,joy:.01,t:2,w:2,h:1,d:"Covered tiered seating. Build it beside a race track."},
 pit1:{n:"Pit Garage",e:"🔧",c:1800,k:"c",jobs:14,inc:14,svc:0,t:2,w:2,h:1,d:"A row of garage bays and a pit wall. Build it beside a race track."}});
 const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14","mine"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8","lodge","cable","tinn","thotel","tresort"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1","fount","spa","wpark","aqua","dogp","farm","zoo"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
-const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(3,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
+const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(4,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
 let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
 let GND=Array(W*H).fill(0),GGEO=null;
 const cv=$("cv");
@@ -1449,7 +1449,7 @@ function fit(){const r=$("stage").getBoundingClientRect();
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(r.width,r.height);
  cam.aspect=r.width/r.height;cam.updateProjectionMatrix()}
 
-function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB,gm:GND,cb:cbUsed(),ow:OW}))}catch(e){}}
+function save(){try{localStorage.setItem(K,JSON.stringify({n:$("name").value,m:money,p:pop,g,h:hw,r:rv,e:el,w:won,W,H,x:nex,B,u:nu,v:2,t:TOD,l:LP,f:FW,q:RVP,tr:TR,sn:SEN,sf:SF,bs:BS,tb:TB,gm:GND,cb:cbUsed(),ow:OW,co:window.TMQ}))}catch(e){}}
 function load(){try{const d=JSON.parse(window.TMV?window.TMV.s:localStorage.getItem(K));if(d&&d.g&&d.g.length==(d.W||22)*(d.H||14)){W=d.W||22;H=d.H||14;hw=d.h&&d.h.length==W*H?d.h:Array(W*H).fill(0);rv=d.r&&d.r.length==W*H?d.r:Array(W*H).fill(0);el=d.e&&d.e.length==W*H?d.e:Array(W*H).fill(0);GND=d.gm&&d.gm.length==W*H?d.gm:Array(W*H).fill(GI|0);nex=d.x||0;OW=owClean(d.ow);$("name").value=d.n;if(typeof d.t=="number")TOD=d.t;FW=d.f===undefined||d.f?1:0;RVP=+d.q||0;LP=Array.isArray(d.l)?d.l:[];TR=Array.isArray(d.tr)?d.tr.filter(q=>q&&T[q.id]):[];money=d.m;pop=d.p;won=d.w;SF=+d.sf||0;BS=d.bs&&typeof d.bs=="object"?d.bs:{};TB=d.tb&&typeof d.tb=="object"?d.tb:{};SEN=[0,1,2,3,4].map(i=>d.sn&&d.sn[i]&&SBON[d.sn[i].r]!==undefined?d.sn[i]:null);
  if(d.v==2){g=d.g;B=d.B||{};nu=d.u||1}
  else{g=d.g.map(v=>v&&v!="road"?0:v);B={};nu=1;d.g.forEach((v,i)=>{if(v&&v!="road"&&T[v]){const u=nu++;B[u]={id:v,x:i%W,y:i/W|0,r:0,w:1,h:1};g[i]=u}})}}}catch(e){}}
@@ -2278,7 +2278,7 @@ if(window.TMV){document.body.classList.add("tmview");const bn=document.createEle
 const L=localStorage,g$=id=>document.getElementById(id),rid=()=>Math.random().toString(36).slice(2,9),mkE=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e};
 let S0={};try{S0=JSON.parse(L.getItem("tm_on")||"{}")}catch(e){}const put=()=>{try{L.setItem("tm_on",JSON.stringify(S0))}catch(e){}};
 let db=null,auth=null,uid=null,me=S0.name||"",ed=false,rows=[],ev={},cur="",lastP="";
-const hd=document.querySelector("header"),bl=mkE("button","🏆"),ba=mkE("button","👤");bl.title="Leaderboard";const bs=mkE("button","💾 Slot "+SLOT);bs.title="Save slots";hd.append(bs,bl,ba);
+const hd=document.querySelector("header"),bl=mkE("button","🏆"),ba=mkE("button","👤");bl.title="Leaderboard";const bs=mkE("button",SLOT>3?"💾 Slots":"💾 Slot "+SLOT);bs.title="Save slots";hd.append(bs,bl,ba);
 const lbl=()=>ba.textContent=me?"👤 "+me:db?"👤 Sign up":"👤 Offline";lbl();
 const banner=(t,ms)=>{const b=g$("on-ban");b.textContent=t;b.hidden=false;clearTimeout(banner.t);banner.t=setTimeout(()=>b.hidden=true,ms)};
 let hasPw=false,fl="",vmsg="";
@@ -2342,7 +2342,7 @@ setInterval(cloudSave,45000);
 async function cloudLoad(){if(window.TMV)return"Go back to your own city first.";try{const d=await db.doc("saves/"+uid).get();if(!d.exists)return"No cloud saves yet. Build something and wait a minute.";const x=d.data(),sl={...(x.slots||{})};if(x.data&&!sl[1])sl[1]=x.data;const ks=Object.keys(sl).filter(k=>SL.includes(+k));if(!ks.length)return"No cloud saves yet.";
   if(!confirm("Replace your local save"+(ks.length>1?"s in slots ":" in slot ")+ks.join(", ")+" with your cloud save"+(ks.length>1?"s":"")+"?"))return"Cancelled.";
   ks.forEach(k=>L.setItem(sk(+k),sl[k]));location.reload();return"Loading…"}catch(e){return"Couldn’t load."}}
-async function push(f){if(window.TMV||!db||!me||!uid)return;const p={name:me,pop:Math.round(pop),money:Math.floor(money),city:g$("name").value,at:Date.now()},k=p.pop+"|"+p.money;if(!f&&k==lastP)return;lastP=k;try{await db.doc("scores/"+uid).set(p)}catch(e){lastP=""}}
+async function push(f){if(window.TMV||SLOT>3||!db||!me||!uid)return;const p={name:me,pop:Math.round(pop),money:Math.floor(money),city:g$("name").value,at:Date.now()},k=p.pop+"|"+p.money;if(!f&&k==lastP)return;lastP=k;try{await db.doc("scores/"+uid).set(p)}catch(e){lastP=""}}
 setInterval(push,20000);
 function wheel(d){const o=g$("on-wh"),x=g$("on-wc").getContext("2d"),n=d.segs.length,a=2*Math.PI/n,F=2*Math.PI*6-(d.idx+.5)*a,t0=performance.now(),C=["#e6584d","#f2b632","#4fb36a","#3b8fd9","#9b59d0","#f08a3a","#2fb5a8","#d9559b"],P=Math.PI/2;
  o.hidden=false;g$("on-wr").textContent=d.win?"🎡 Picking a random player…":"🎡 Global wheel spin!";
@@ -2430,8 +2430,9 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.41.0",
+const VER="1.42.0",
 LOG=[
+["1.42.0", "Build a city with a friend", ["New 🤝 Co-op button in the top bar and main menu. One player creates a room and gets a 6-letter code; the friend types it under Join a friend. You both build in the same city at the same time and see each other\u2019s roads, buildings, terrain, trees, lamps, tolls, one-way streets and skytrain change within a second.","Money is shared: the host\u2019s city pays out income and everyone spends from the same wallet. A \u201cX is building\u201d note shows when your friend changes something, and the button shows who is online.","The co-op city lives in its own slot, so your own cities in slots 1\u20133 are never touched. Leave any time and come back later with the same code; the city is kept in the room.","Undo, redo and New city are turned off in co-op so nobody can erase the other\u2019s work. Expanding the city, Random terrain and Generate river are shared too.","Needs both players to be signed in, and a one-time Firestore rules update for the rooms collection (the Co-op window shows the exact rules if they\u2019re missing). Senate, laws, news and your leaderboard score stay per player."], "Nov 22, 2026"],
 ["1.41.0", "Drive any car", ["Click any car with the ✋ No tool (or the 👁 look tool) to take the wheel. The car leaves the traffic and you drive it yourself; the camera follows.","Drive with W/S (or ↑/↓) to speed up and brake, A/D (or ←/→) to steer, Space for the handbrake. Esc or the 🅿️ Park button puts the car back into traffic. On phones and tablets, on-screen arrow buttons appear.","You can drive on roads and highways. Cars stop at the edge of the road, and buses, school buses, police cars, fire trucks and ambulances are slower or faster in their own way."], "Nov 12, 2026"],
 ["1.40.0", "Bigger, better malls", ["New 🛍️ Malls tab in Commerce with the original Mall plus four new ones: 🛍️ Grand Mall (3×3, $6,500), 🛒 Outlet Village (3×3, $5,200), 💎 Luxury Galleria (3×3, $14,000) and 🎡 Mega Mall (4×4, $26,000).","Grand Mall has a glass barrel-vault atrium, a drop-off canopy, a car park full of cars and a pylon sign. Outlet Village is an open-air plaza of pastel shops with a fountain, fairy lights and a clock tower.","Luxury Galleria has gold trim, a glass dome, copper-green wing domes, a columned entrance and twin fountains. Mega Mall is a cross-shaped hall with a glass dome, four anchor stores, big car parks and a ferris wheel. All of them glow at night.","Bigger malls earn more, employ more people and cover a wider area with shopping. Click one to see its stats."], "Nov 12, 2026"],
 ["1.39.0", "Skytrains over roads", ["Skytrain track can now run over roads for any distance, not just across them. Track can no longer be blocked by a road, and the old one-tile crossing limit is gone.","Roads and one-way streets can now be built underneath skytrain track (drag a road under it, or lay track on top of one). Bulldoze the track first, then the road, to remove both.","Where track runs along a road, slim supports stand at the edge of the street every other tile, so nothing ever stands on the pavement. Highways still can\u2019t go under track."], "Nov 12, 2026"],
@@ -2507,10 +2508,10 @@ function menu(){
  const has=Object.keys(B).length>0;
  b.append(mk("div","🏙️ Tiny Metropolis","mm-t"),mk("div","Build roads, homes, power and water — and grow your city.","mm-s"));
  const pl=mk("button",has?"▶ Continue":"▶ Start building","mm-b pri");if(has){pl.append(mk("small",q("name").value+" · 👥 "+Math.floor(pop)))}pl.onclick=closeMenu;
- const nc=mk("button","🆕 New city","mm-b");nc.onclick=()=>{if(!confirm("Start a new city in slot "+SLOT+"? This erases the current city in this slot."))return;const n=q("new");n.click();n.click();closeMenu()};
+ const nc=mk("button","🆕 New city","mm-b");nc.onclick=()=>{if(SLOT>3){alert("New city is turned off in co-op. Leave the room first (🤝 Co-op).");return}if(!confirm("Start a new city in slot "+SLOT+"? This erases the current city in this slot."))return;const n=q("new");n.click();n.click();closeMenu()};
  const sl=mk("button","💾 Save slots","mm-b");sl.append(mk("small","slot "+SLOT));sl.onclick=slotsView;
  const lg=mk("button","📜 Update log","mm-b");if(sv()!==VER)lg.append(mk("small","● NEW"));lg.onclick=openLog;
- b.append(pl,nc,sl,lg,mk("div","Version "+VER,"mm-v"));
+ const cob2=mk("button","🤝 Play with a friend","mm-b");cob2.append(mk("small",SLOT>3?"in a room":"co-op"));cob2.onclick=()=>{closeMenu();window.TMCO&&window.TMCO.open()};b.append(pl,nc,sl,cob2,lg,mk("div","Version "+VER,"mm-v"));
  q("mm").classList.add("on")}
 function closeMenu(){window.MENU=0;q("mm").classList.remove("on")}
 q("menub").onclick=menu;
@@ -2999,7 +3000,7 @@ const NAMES=["Central","Riverside","Old Town","Market Street","Park Lane","Harbo
 Object.assign(T,{
 sky:{n:"Skytrain Track",e:"🚈",c:CT,k:"a",d:"Drag to lay elevated track ($60/tile) on tall pillars. It runs right over roads (for as long as you like), land or water. Roads can be built underneath."},
 skystn:{n:"Skytrain Station",e:"🚉",c:CS,k:"a",d:"Click a piece of skytrain track to build a roofed elevated station with platforms and stairs. Trains stop here and pay fares. Click a built station to rename it."}});
-dkG.Railway.push("sky","skystn");dkLOC.sky=[7,0];dkLOC.skystn=[7,0];
+window.TMSKY={get:()=>SKY,chg};dkG.Railway.push("sky","skystn");dkLOC.sky=[7,0];dkLOC.skystn=[7,0];
 /* one-way street: a narrow street you build by dragging; the two-way street tool is removed */
 T.oneway.c=0;T.oneway.lbl="$10/tile";T.oneway.d="A narrow street where cars drive one way, shown by arrows. Drag to build it in the direction cars should go.";
 {const j=dkG.Roads.indexOf("twoway");if(j>=0)dkG.Roads.splice(j,1);delete T.twoway;delete dkLOC.twoway}
@@ -3183,6 +3184,333 @@ cv.addEventListener("pointerup",e=>{act.delete(e.pointerId);if(act.size||multi||
  if(!(tool=="none"||(T[tool]&&T[tool].k=="n")))return;
  const c=dvFind(e.clientX,e.clientY);if(c)start(c)});
 sel=function(t){sel0.apply(this,arguments);if(t=="none"||(T[t]&&T[t].k=="n")){const i=document.getElementById("info");if(i&&!/drive it/.test(i.textContent))i.textContent+=" Tip: click a car to drive it!"}};
+})();
+</script>
+<style>
+#co-m{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:40;padding:12px;box-sizing:border-box}
+#co-m.on{display:flex}
+.co-box{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:16px;width:min(94vw,420px);max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.co-box b{font:700 20px Fredoka,system-ui,sans-serif}
+.co-box small,.co-box p{color:var(--mut);margin:0;font-size:13px;line-height:1.4}
+.co-box button,.co-box input,.co-box select{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 12px;box-sizing:border-box;max-width:100%}
+.co-box button{font-weight:600;cursor:pointer}
+.co-box button:disabled{opacity:.5;cursor:default}
+.co-box button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.co-code{font:700 34px/1.1 Fredoka,system-ui,sans-serif;letter-spacing:.18em;text-align:center;user-select:all;border:2px dashed var(--line);border-radius:12px;padding:10px}
+.co-mem{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.co-rules{font:12px/1.4 ui-monospace,Menlo,monospace;white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;max-height:200px;overflow:auto;user-select:all}
+body.tmco #undo-b,body.tmco #redo-b,body.tmco #new{display:none!important}
+</style>
+<div id="co-m"><div class="co-box" id="co-box"></div></div>
+<script>
+/* ---- Co-op: build one city together with a friend (Firestore rooms) ---- */
+(()=>{
+const K4="tinymetro1_s4",LSK="tm_coop",OUT="tm_co_out",INCO=SLOT===4,VIEW=!!window.TMV;
+const q$=id=>document.getElementById(id),
+ mkH=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e},
+ rdC=()=>{try{return JSON.parse(localStorage.getItem(LSK))||null}catch(e){return null}},
+ wrC=o=>{try{o?localStorage.setItem(LSK,JSON.stringify(o)):localStorage.removeItem(LSK)}catch(e){}},
+ rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const RULES="match /rooms/{code} {\n  allow get: if request.auth != null;\n  allow create: if request.auth != null\n    && request.resource.data.host == request.auth.uid;\n  allow update: if request.auth != null && (\n    resource.data.host == request.auth.uid ||\n    request.resource.data.diff(resource.data)\n      .affectedKeys().hasOnly(['seq','mem']));\n  match /ops/{op} {\n    allow read: if request.auth != null;\n    allow create: if request.auth != null\n      && request.resource.data.by == request.auth.uid;\n  }\n}";
+
+/*CORE*/
+const SKEYS=["g","hw","rv","el","GND"],MKEYS=["B","BS","TB","OW","LP","TR","SK"];
+const LA={g:()=>g,hw:()=>hw,rv:()=>rv,el:()=>el,GND:()=>GND};
+const nz=a=>{const o=new Array(a.length);for(let i=0;i<a.length;i++){const v=a[i];o[i]=v==null?0:v}return o};
+const skG=()=>window.TMSKY?window.TMSKY.get():{};
+const lk=l=>l.x+","+l.y+","+l.ox+","+l.oz;
+const MF={
+ B:{get(){const o={};for(const u in B){const b=B[u];o[u]=[b.id,b.x,b.y,b.r|0,b.w||1,b.h||1,b.col===undefined?null:b.col,b.free?1:0]}return o},
+  set(k,v){if(!T[v[0]])return false;const e=B[k]||{};e.id=v[0];e.x=v[1];e.y=v[2];e.r=v[3];e.w=v[4];e.h=v[5];if(v[6]===null)delete e.col;else e.col=v[6];if(v[7])e.free=1;else delete e.free;B[k]=e;return true},
+  del(k){delete B[k]}},
+ BS:{get:()=>BS,set(k,v){BS[k]=v},del(k){delete BS[k]}},
+ TB:{get:()=>TB,set(k,v){TB[k]=v},del(k){delete TB[k]}},
+ OW:{get:()=>OW,set(k,v){OW[k]=v},del(k){delete OW[k]}},
+ LP:{get(){const o={};LP.forEach(l=>{o[lk(l)]=[l.x,l.y,l.ox,l.oz]});return o},
+  set(k,v){if(!LP.some(l=>l.x==v[0]&&l.y==v[1]&&l.ox==v[2]&&l.oz==v[3]))LP.push({x:v[0],y:v[1],ox:v[2],oz:v[3]})},
+  del(k){LP=LP.filter(l=>lk(l)!==k)}},
+ TR:{get(){const o={};TR.forEach(q=>{o[q.x+","+q.y]=q});return o},
+  set(k,v){const i=TR.findIndex(q=>q.x==v.x&&q.y==v.y);if(i>=0)TR[i]=v;else TR.push(v)},
+  del(k){TR=TR.filter(q=>(q.x+","+q.y)!==k)}},
+ SK:{get(){const o={},S0=skG();for(const k in S0){const t=S0[k];o[k]=[t.x,t.y,t.s?1:0,t.n||null]}return o},
+  set(k,v){const S0=skG(),e=S0[k];S0[k]={x:v[0],y:v[1],s:v[2],n:v[3],r:e?e.r||0:0}},
+  del(k){delete skG()[k]}}};
+function SH(){const m={};for(const k of MKEYS)m[k]=MF[k].get();
+ return{a:{g:nz(g),hw:nz(hw),rv:nz(rv),el:nz(el),GND:nz(GND)},m,s:{W,H,nex,FW:FW?1:0,n:q$("name").value}}}
+function usedCB(m){const o={};if(typeof CB==="undefined")return o;for(const u in m.B){const id=m.B[u][0];if(CB[id])o[id]=CB[id]}return o}
+function diff(b,c){
+ if(b.s.W!==c.s.W||b.s.H!==c.s.H)return{f:1,S:c,cb:usedCB(c.m)};
+ const p={},a={},m={},s={};
+ for(const k of SKEYS){const x=b.a[k],y=c.a[k];if(x.length!==y.length)return{f:1,S:c,cb:usedCB(c.m)};const ch=[];for(let i=0;i<y.length;i++)if(x[i]!==y[i])ch.push([i,y[i]]);if(ch.length)a[k]=ch}
+ for(const k of MKEYS){const x=b.m[k],y=c.m[k],ch={};let n=0;
+  for(const i in y){const v=y[i],w=x[i];if(w===undefined||(typeof v==="object"?JSON.stringify(v)!==JSON.stringify(w):v!==w)){ch[i]=v;n++}}
+  for(const i in x)if(y[i]===undefined){ch[i]=null;n++}
+  if(n)m[k]=ch}
+ for(const k in c.s)if(c.s[k]!==b.s[k])s[k]=c.s[k];
+ if(Object.keys(a).length)p.a=a;if(Object.keys(m).length)p.m=m;if(Object.keys(s).length)p.s=s;
+ if(m.B){const cb={};let any=0;for(const u in m.B){const v=m.B[u];if(v&&typeof CB!=="undefined"&&CB[v[0]]){cb[v[0]]=CB[v[0]];any=1}}if(any)p.cb=cb}
+ return p}
+const isEmpty=p=>!p.a&&!p.m&&!p.s&&!p.f;
+function regCB(cb){if(!cb||typeof cbNorm!=="function")return;for(const id in cb)if(!CB[id]){const o=cbNorm(cb[id]);if(o){o.del=1;cbReg(o)}}}
+function applyFull(S){
+ regCB(S.cb);
+ W=S.s.W;H=S.s.H;nex=S.s.nex;FW=S.s.FW;
+ g=S.a.g.slice();hw=S.a.hw.slice();rv=S.a.rv.slice();el=S.a.el.slice();GND=S.a.GND.slice();
+ B={};LP=[];TR=[];BS={};TB={};OW={};{const S0=skG();for(const k in S0)delete S0[k]}
+ for(const k of MKEYS)for(const i in S.m[k])MF[k].set(i,S.m[k][i]);
+ q$("name").value=S.s.n;world();dirty=1;tl=-1;updExp();
+ if(window.TMSKY)window.TMSKY.chg()}
+function applyP(p,base){
+ if(p.f){applyFull(p.S);return 1}
+ regCB(p.cb);
+ if(p.a)for(const k in p.a){const arr=LA[k](),b=base&&base.a[k];for(const[i,v]of p.a[k])if(i<arr.length){arr[i]=v;if(b)b[i]=v}}
+ if(p.m)for(const k in p.m){const ad=MF[k],bm=base&&base.m[k];for(const i in p.m[k]){const v=p.m[k][i];if(v===null){ad.del(i);if(bm)delete bm[i]}else{const ok=ad.set(i,v);if(ok!==false&&bm)bm[i]=v}}}
+ if(p.s)for(const k in p.s){const v=p.s[k];if(k==="nex"){nex=v;updExp()}else if(k==="FW")FW=v;else if(k==="n")q$("name").value=v;if(base)base.s[k]=v}
+ if(p.m&&p.m.SK&&window.TMSKY)window.TMSKY.chg();
+ dirty=1;tl=-1;return 0}
+function chunk(p){
+ if(p.f)return[p];
+ const out=[],lim=12000,first={};
+ for(const k of["m","s","cb"])if(p[k])first[k]=p[k];
+ if(Object.keys(first).length)out.push(first);
+ if(p.a)for(const k in p.a){const l=p.a[k];for(let i=0;i<l.length;i+=lim)out.push({a:{[k]:l.slice(i,i+lim)}})}
+ return out.length?out:[{}]}
+/*ENDCORE*/
+
+/* ---------- connection state ---------- */
+let db=null,uid=null,myName="",ref=null,opsRef=null,room=(INCO&&(rdC()||{}).room)||"",R={},isHost=false,ready=false,applying=false,started=false,
+ base=null,baseStr=null,mLast=0,appliedSeq=0,snapAt=0,outbox=[],ledger=[],ownOids=new Set(),hostInc=0,busy=false,
+ stat="",msg="",showRules=false,lastToast=0,lastM=-1,lastS=-1,lastI=-1,putMsg=0;
+const FB=()=>window.firebase&&firebase.apps&&firebase.apps.length?firebase:null;
+const hostOnline=()=>isHost||!!(R.mem&&R.mem[R.host]&&Date.now()-R.mem[R.host].at<90000);
+const adj=d=>{const m0=money;money=Math.max(0,money+d);mLast+=money-m0};
+const saveOut=()=>{try{localStorage.setItem(OUT,JSON.stringify({room,out:outbox}))}catch(e){}};
+const online=()=>{const n=Date.now(),m=R.mem||{};return Object.keys(m).filter(i=>n-m[i].at<90000).length};
+
+/* ---------- header button ---------- */
+const hdr=document.querySelector("header"),cob=mkH("button","🤝 Co-op");cob.id="co-b";cob.title="Build a city together with a friend";
+if(hdr)hdr.append(cob);
+function upd(){cob.textContent=INCO&&room?"🤝 "+room+(online()>1?" · 👥"+online():""):"🤝 Co-op";cob.title=stat||"Build a city together with a friend";if(M.classList.contains("on"))render()}
+
+/* ---------- dialog ---------- */
+const M=q$("co-m"),BX=q$("co-box");
+const open=()=>{msg="";render();M.classList.add("on")},close=()=>M.classList.remove("on");
+M.addEventListener("click",e=>{if(e.target===M)close()});
+cob.onclick=open;
+const explain=e=>{if(e&&e.code==="permission-denied"){showRules=true;return"Your Firebase database rules don’t allow co-op rooms yet. Paste the rules below into Firestore → Rules (one time), then try again."}return"Couldn’t reach the room ("+((e&&e.code)||"error")+"). Check your connection and try again."};
+async function run(fn,btn){if(btn)btn.disabled=true;msg="Working…";render();try{await fn();}catch(e){msg=typeof e==="string"?e:explain(e)}if(msg==="Working…")msg="";render()}
+function render(){
+ BX.replaceChildren();
+ const x=mkH("button","Close");x.onclick=close;
+ BX.append(mkH("b","🤝 Build together"));
+ if(VIEW){BX.append(mkH("p","You’re looking at another mayor’s city. Go back to your own city first."),x);return}
+ if(!FB()){BX.append(mkH("p","Online features aren’t available right now."),x);return}
+ if(!uid){const a=mkH("button","👤 Sign in / Sign up","pri");a.onclick=()=>{close();const b=[...document.querySelectorAll("header button")].find(z=>/^👤/.test(z.textContent));if(b)b.click()};
+  BX.append(mkH("p","Sign in first so your friend sees your name. Co-op rooms live in your online account."),a,x);return}
+ INCO&&room?coopView():personalView();
+ if(msg)BX.append(mkH("small",msg));
+ if(showRules){const d=mkH("div");d.append(mkH("small","Firestore rules to add inside your existing “match /databases/{database}/documents” block:"),mkH("div",RULES,"co-rules"));
+  const c=mkH("button","📋 Copy rules");c.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(RULES).then(()=>{c.textContent="Copied ✓"},()=>{})};d.append(c);BX.append(d)}
+ BX.append(x)}
+function personalView(){
+ const c=rdC();
+ if(c&&c.room){const b=mkH("button","▶ Back to our co-op city ("+c.room+")","pri");b.onclick=goSaved;BX.append(mkH("small","You have a shared city in progress."),b)}
+ BX.append(mkH("p","Make one city with a friend: you both build in it at the same time and see each other’s changes live. Your own cities in slots 1–3 are never touched."));
+ const sl=mkH("select");[["cur","Use my current city ("+(q$("name").value||"My city")+")"],["new","Start a brand-new city together"]].forEach(([v,t])=>{const o=mkH("option",t);o.value=v;sl.append(o)});
+ const mk=mkH("button","🆕 Create a room","pri");mk.onclick=()=>run(()=>createRoom(sl.value),mk);
+ BX.append(mkH("b","Host a room"),sl,mk);
+ const inp=mkH("input");inp.placeholder="Friend’s room code";inp.maxLength=8;inp.autocomplete="off";inp.style.textTransform="uppercase";
+ const jn=mkH("button","🔑 Join");jn.onclick=()=>run(()=>joinRoom(inp.value),jn);
+ inp.onkeydown=e=>{e.stopPropagation();if(e.key==="Enter")jn.click()};
+ BX.append(mkH("b","Join a friend"),inp,jn)}
+function coopView(){
+ BX.append(mkH("div",room||"…","co-code"),mkH("small","Send this code to your friend. They open 🤝 Co-op, type it under “Join a friend”, and you build the same city together."));
+ const cp=mkH("button","📋 Copy code");cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(room).then(()=>{cp.textContent="Copied ✓"},()=>{})};BX.append(cp);
+ const now=Date.now(),mem=R.mem||{},l=mkH("div",null,"co-mem");
+ Object.keys(mem).forEach(id=>{const m=mem[id],on=now-m.at<90000;l.append(mkH("span",(m.n||"Player")+(id===uid?" (you)":"")+(id===R.host?" · host":"")+" — "+(on?"🟢 online":"⚪ away")))});
+ if(l.childNodes.length)BX.append(l);
+ BX.append(mkH("small",stat||(ready?"✅ Connected. Money is shared and is paid out by the host’s city.":"Connecting…")));
+ BX.append(mkH("small","Undo and New city are turned off while you build together, so nobody erases the other’s work."));
+ const rs=mkH("button","🔄 Re-sync from the room");rs.onclick=()=>run(()=>resync(false),rs);
+ const bk=mkH("button","← Back to my own city");bk.onclick=()=>leave(false);
+ const lv=mkH("button","🚪 Leave this room for good");lv.onclick=()=>{if(confirm("Leave room "+room+"? Your copy of the shared city is deleted from this device (your friend keeps it). You can rejoin with the code."))leave(true)};
+ BX.append(rs,bk,lv)}
+
+/* ---------- switching between your own city and the co-op city ---------- */
+function enterCo(code,blob,sky){
+ try{save()}catch(e){}
+ const ret=SLOT===4?((rdC()||{}).ret||1):SLOT;
+ for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.indexOf(K4)===0)localStorage.removeItem(k)}
+ localStorage.setItem(K4,blob);if(sky)localStorage.setItem(K4+"_sky",sky);
+ wrC({room:code,ret});try{localStorage.removeItem(OUT)}catch(e){}
+ localStorage.setItem("tm_slot","4");location.reload()}
+function goSaved(){try{save()}catch(e){}const c=rdC()||{};wrC({...c,ret:SLOT});localStorage.setItem("tm_slot","4");location.reload()}
+function leave(forget){
+ const c=rdC()||{},ret=Math.min(3,Math.max(1,+c.ret||1));
+ try{save()}catch(e){}
+ if(forget){for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.indexOf(K4)===0)localStorage.removeItem(k)}wrC(null);try{localStorage.removeItem(OUT)}catch(e){}}
+ localStorage.setItem("tm_slot",String(ret));location.reload()}
+const blank=()=>{const n=30*20,z=()=>Array(n).fill(0);return{n:"Our City",m:2000,p:0,g:z(),h:z(),r:z(),e:z(),w:0,W:30,H:20,x:0,B:{},u:1,v:2,t:10,l:[],f:1,q:0,tr:[],sn:[null,null,null,null,null],sf:0,bs:{},tb:{},gm:z(),cb:{},ow:{}}};
+async function createRoom(src){
+ let blob,sky=null;
+ if(src==="new")blob=JSON.stringify(blank());
+ else{try{save()}catch(e){}blob=localStorage.getItem(K);sky=localStorage.getItem(K+"_sky")}
+ let d;try{d=JSON.parse(blob)}catch(e){throw"Couldn’t read your city."}
+ if(!d||!d.g)throw"Build something first, or start a brand-new city together.";
+ d.co=0;blob=JSON.stringify(d);
+ if(blob.length>900000)throw"This city is too big to share yet (over about 900 KB). Try a brand-new city together.";
+ const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let code="",ok=false;
+ for(let t=0;t<6&&!ok;t++){code="";for(let i=0;i<6;i++)code+=A[Math.random()*A.length|0];
+  let s;try{s=await db.doc("rooms/"+code).get()}catch(e){throw explain(e)}
+  if(!s.exists)ok=true}
+ if(!ok)throw"Couldn’t find a free room code. Try again.";
+ try{await db.doc("rooms/"+code).set({host:uid,hn:myName,cn:d.n||"",at:Date.now(),snap:blob,sky:sky||null,snapSeq:0,seq:0,m:Math.floor(d.m||0),mseq:0,inc:0,mem:{[uid]:{n:myName,at:Date.now()}}})}catch(e){throw explain(e)}
+ enterCo(code,blob,sky)}
+async function joinRoom(raw){
+ const code=String(raw||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+ if(code.length<4)throw"Type the room code your friend gave you.";
+ let s;try{s=await db.doc("rooms/"+code).get()}catch(e){throw explain(e)}
+ if(!s.exists)throw"No room with that code. Check the letters and try again.";
+ const r=s.data();if(!r.snap)throw"That room has no city yet.";
+ if(!confirm("Join "+(r.hn||"your friend")+"’s room "+code+"? Your own cities stay safe in slots 1–3."))return;
+ let d;try{d=JSON.parse(r.snap)}catch(e){throw"That room’s city couldn’t be read."}
+ d.co=r.snapSeq|0;
+ try{await db.doc("rooms/"+code).update({["mem."+uid]:{n:myName,at:Date.now()}})}catch(e){}
+ enterCo(code,JSON.stringify(d),r.sky)}
+async function resync(auto){
+ const s=await ref.get();if(!s.exists)throw"This room doesn’t exist anymore.";
+ const r=s.data();let d;try{d=JSON.parse(r.snap)}catch(e){throw"The room’s saved city couldn’t be read."}
+ if(!auto&&!confirm("Replace this co-op city with the room’s latest saved copy? Anything you built in the last few minutes that hasn’t synced is lost."))return;
+ d.co=r.snapSeq|0;try{sessionStorage.setItem("tm_co_rs",String(Date.now()))}catch(e){}
+ enterCo(room,JSON.stringify(d),r.sky)}
+
+/* ---------- live sync ---------- */
+function initBase(){const cs=JSON.stringify(SH());baseStr=cs;base=JSON.parse(cs);mLast=money}
+function detect(){
+ if(!ready||applying||!base)return;
+ const cs=JSON.stringify(SH());
+ if(cs===baseStr){mLast=money;return}
+ const pc=JSON.parse(cs),p=diff(base,pc);
+ base=pc;baseStr=cs;
+ if(isEmpty(p)){mLast=money;return}
+ const d=Math.round((mLast-money)*100)/100;mLast=money;
+ enqueue(p,d)}
+function enqueue(p,d){
+ let parts=chunk(p),big=0;
+ const strs=parts.map(x=>JSON.stringify(x));
+ if(strs.some(s=>s.length>900000)){toast("⚠️ That change was too big to share with your friend.",5000);return}
+ strs.forEach((s,i)=>outbox.push({oid:rid(),p:s,d:i===0?d:0}));
+ saveOut();flush()}
+async function flush(){
+ if(busy||!ref)return;busy=true;
+ try{
+  while(outbox.length){
+   const o=outbox[0];
+   if(o.tried){const qq=await opsRef.where("oid","==",o.oid).limit(1).get();if(!qq.empty){outbox.shift();saveOut();continue}}
+   o.tried=1;saveOut();ownOids.add(o.oid);
+   const seq=await db.runTransaction(async tx=>{
+    const rs=await tx.get(ref);if(!rs.exists)throw new Error("gone");
+    const s=((rs.data().seq)|0)+1;
+    tx.set(opsRef.doc(String(s).padStart(9,"0")),{seq:s,by:uid,n:myName,oid:o.oid,at:Date.now(),p:o.p,d:o.d||0});
+    tx.update(ref,{seq:s});return s});
+   outbox.shift();saveOut();
+   if(!isHost&&o.d)ledger.push({seq,d:o.d});
+  }
+  if(stat.indexOf("Offline")>=0)stat="";
+ }catch(e){
+  if(e&&e.code==="permission-denied")fail(e);
+  else{stat="⚠️ Offline: your changes will sync when you reconnect.";setTimeout(flush,6000)}
+ }finally{busy=false;upd()}}
+function fail(e){
+ if(e&&e.code==="permission-denied"){showRules=true;stat="⚠️ The database rules don’t allow co-op yet.";open()}
+ else stat="⚠️ Can’t reach the room ("+((e&&e.code)||"error")+").";
+ upd()}
+function onOps(snap){
+ const adds=snap.docChanges().filter(c=>c.type==="added").map(c=>c.doc.data()).sort((a,b)=>a.seq-b.seq);
+ if(ready)detect();
+ let n=0,who="";
+ for(const o of adds){
+  if(o.seq<=appliedSeq)continue;
+  if(!ownOids.has(o.oid)){
+   let p=null;try{p=JSON.parse(o.p)}catch(e){}
+   if(p){applying=true;try{applyP(p,ready?base:null)}catch(e){console.error("co-op: couldn’t apply a change",e)}applying=false;n++;who=o.n||"Your friend"}
+   if(o.by!==uid&&o.d){if(isHost)adj(-o.d);else if(o.by!==R.host){ledger.push({seq:o.seq,d:o.d});adj(-o.d)}}
+  }
+  appliedSeq=o.seq;window.TMQ=appliedSeq}
+ if(!ready){ready=true;initBase();toast("🤝 Connected to room "+room,3500)}
+ else baseStr=null;
+ if(n){ui();if(ready&&Date.now()-lastToast>20000){lastToast=Date.now();toast("✏️ "+who+" is building",2200)}}
+ upd()}
+function onRoom(s){
+ if(!s.exists){stat="⚠️ This room was deleted.";upd();return}
+ detect();
+ R=s.data();hostInc=R.inc||0;
+ if(!isHost&&ready&&R.m!=null){
+  ledger=ledger.filter(x=>x.seq>(R.mseq|0));
+  let pend=0;ledger.forEach(x=>pend+=x.d);outbox.forEach(x=>pend+=x.d||0);
+  money=Math.max(0,R.m-pend);mLast=money;ui()}
+ upd()}
+const beat=async()=>{if(!ref||!uid)return;try{await ref.update({["mem."+uid]:{n:myName,at:Date.now()}})}catch(e){}};
+async function hostSync(){
+ if(!isHost||!ready)return;detect();
+ const inc=Math.round(((S&&S.inc)||0)*10)/10,m=Math.floor(money);
+ if(m===lastM&&appliedSeq===lastS&&inc===lastI)return;
+ lastM=m;lastS=appliedSeq;lastI=inc;
+ try{await ref.update({m,mseq:appliedSeq,inc,pop:Math.floor(pop)})}catch(e){lastM=-1}}
+async function compact(){
+ if(!isHost||!ready||appliedSeq-snapAt<25)return;
+ try{save()}catch(e){}
+ const blob=localStorage.getItem(K);if(!blob||blob.length>900000)return;
+ try{await ref.update({snap:blob,sky:localStorage.getItem(K+"_sky")||null,snapSeq:appliedSeq,cn:q$("name").value});snapAt=appliedSeq}catch(e){}}
+async function start(){
+ const c=rdC();if(!c||!c.room)return;
+ room=c.room;ref=db.doc("rooms/"+room);opsRef=ref.collection("ops");upd();
+ let s;try{s=await ref.get()}catch(e){fail(e);return}
+ if(!s.exists){stat="⚠️ This room doesn’t exist anymore. You can leave it from the 🤝 Co-op menu.";upd();return}
+ R=s.data();isHost=R.host===uid;hostInc=R.inc||0;snapAt=R.snapSeq|0;
+ let co=null;try{co=JSON.parse(localStorage.getItem(K)).co}catch(e){}
+ let rs=0;try{rs=+sessionStorage.getItem("tm_co_rs")||0}catch(e){}
+ if((typeof co!=="number"||co>(R.seq|0)||(R.snapSeq|0)-co>300)&&Date.now()-rs>20000&&R.snap){try{await resync(true);return}catch(e){}}
+ appliedSeq=typeof co==="number"?co:0;window.TMQ=appliedSeq;
+ if(!isHost){let h=0;for(const ch of uid)h=(h*31+ch.charCodeAt(0))%900;nu=Math.max(nu,(1+h)*1000000)}
+ try{const o=JSON.parse(localStorage.getItem(OUT));if(o&&o.room===room&&Array.isArray(o.out))outbox=o.out.map(x=>({...x,tried:1}))}catch(e){}
+ opsRef.where("seq",">",appliedSeq).orderBy("seq").onSnapshot(onOps,fail);
+ ref.onSnapshot(onRoom,fail);
+ setInterval(()=>{if(ready&&!((typeof down!=="undefined"&&down)||(typeof dragging!=="undefined"&&dragging)))detect()},500);
+ setInterval(beat,25000);beat();
+ setInterval(hostSync,8000);
+ setInterval(compact,120000);
+ addEventListener("pointerup",()=>setTimeout(detect,150),true);
+ addEventListener("pagehide",()=>{try{detect()}catch(e){}});
+ if(outbox.length)flush()}
+
+/* ---------- rules of the co-op city ---------- */
+const hint=()=>!uid?"Sign in (👤) to build in the co-op city.":"Connecting to your friend’s city…";
+if(INCO&&!VIEW){
+ document.body.classList.add("tmco");
+ const p0=put;put=function(x,y){if(!ready&&T[tool]&&T[tool].k!=="n"){if(Date.now()-putMsg>3500){putMsg=Date.now();toast(hint())}return 1}return p0(x,y)};
+ const t0=tick;
+ tick=function(){if(!ready)return t0();const m0=money,gst=!isHost&&hostOnline();t0();if(gst){money=m0+hostInc;ui()}mLast+=money-m0};
+ tick.n=t0.n||0;
+ const noUndo=()=>toast("Undo is off in co-op so you can’t erase your friend’s work.",3500);
+ doUndo=doRedo=noUndo;
+ const nw=q$("new");if(nw)nw.onclick=e=>{if(e&&e.preventDefault)e.preventDefault();toast("New city is off in co-op. Leave the room first.",3500)};
+}
+window.TMCO={open,state:()=>({ready,room,isHost,appliedSeq,outbox:outbox.length}),SH,diff,applyP,chunk};
+
+/* ---------- boot ---------- */
+(function boot(n){
+ if(!FB()){if(n<40)setTimeout(()=>boot(n+1),250);return}
+ db=firebase.firestore();
+ firebase.auth().onAuthStateChanged(async u=>{
+  uid=u?u.uid:null;
+  if(u){myName="";try{const s=await db.doc("players/"+u.uid).get();if(s.exists)myName=s.data().name}catch(e){}
+   if(!myName){try{myName=JSON.parse(localStorage.getItem("tm_on")).name||""}catch(e){}}
+   if(!myName)myName="Player"}
+  if(INCO&&!VIEW&&uid&&!started){started=true;start()}
+  upd()});
+ if(INCO&&!VIEW)setTimeout(()=>{if(!uid)toast("🤝 Sign in (👤) to keep building the co-op city.",6000)},2500)
+})(0);
 })();
 </script>
 </body></html>
