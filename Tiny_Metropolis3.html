@@ -93,6 +93,27 @@ footer{display:flex;flex-wrap:wrap;gap:10px 22px;padding:10px 14px;background:va
 </style>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/* High-quality graphics: grainy texture detail + sharper filtering. Low quality = the original look (nothing patched). */
+(()=>{let q="hi";try{if(localStorage.getItem("tm_q")==="low")q="low"}catch(e){}window.TMHQ=q==="hi";if(!window.TMHQ||!window.THREE)return;
+const C0=THREE.CanvasTexture,nc=document.createElement("canvas");nc.width=nc.height=64;
+{const x=nc.getContext("2d"),d=x.createImageData(64,64);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255|0;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=16}x.putImageData(d,0,0)}
+THREE.CanvasTexture=function(c,...a){try{if(c&&c.width>=32&&c.width<=512){const x=c.getContext("2d"),p=x.createPattern(nc,"repeat");x.save();x.globalCompositeOperation="source-atop";x.fillStyle=p;x.fillRect(0,0,c.width,c.height);x.restore()}}catch(e){}const t=new C0(c,...a);t.anisotropy=8;return t};
+THREE.CanvasTexture.prototype=C0.prototype})();
+</script>
+<script>
+/* HQ shading for every lit surface: wall ambient occlusion, brighter roofs, soft sky rim light */
+(()=>{if(!window.TMHQ||!window.THREE)return;
+const P=THREE.MeshLambertMaterial.prototype;
+P.onBeforeCompile=function(sh){
+ sh.vertexShader="varying vec3 vWP;\n"+sh.vertexShader.replace("#include <begin_vertex>","#include <begin_vertex>\nvWP=(modelMatrix*vec4(transformed,1.0)).xyz;");
+ sh.fragmentShader="varying vec3 vWP;\n"+sh.fragmentShader.replace("#include <tonemapping_fragment>",`{vec3 fn=normalize(cross(dFdx(vWP),dFdy(vWP)));float wall=1.-smoothstep(.35,.75,abs(fn.y));
+float ao=mix(1.,.6+.4*smoothstep(0.,.6,vWP.y),wall);float top=smoothstep(.75,1.,fn.y);
+float rim=pow(1.-clamp(dot(fn,normalize(cameraPosition-vWP)),0.,1.),3.);
+gl_FragColor.rgb=gl_FragColor.rgb*ao*(1.+.08*top)+vec3(.55,.7,.95)*rim*.06;}
+#include <tonemapping_fragment>`)};
+})();
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -114,14 +135,33 @@ try{const v=sessionStorage.getItem("tm_view");if(v){const o=JSON.parse(v);if(o&&
  Storage.prototype.setItem=function(k,x){if(this===window.sessionStorage)return si.call(this,k,x)};
  Storage.prototype.removeItem=function(k){if(this===window.sessionStorage)return ri.call(this,k)};
  Storage.prototype.clear=function(){if(this===window.sessionStorage)return cl.call(this)}}}}catch(e){window.TMV=null}
-</script></head><body>
+</script><style>
+#bst{position:fixed;top:64px;right:10px;z-index:60;display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
+.bc{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--panel);color:var(--ink);border:2px solid var(--c);box-shadow:0 0 14px var(--c),0 4px 12px rgba(0,0,0,.25);font:700 13px system-ui,sans-serif;animation:bcin .45s cubic-bezier(.2,1.4,.4,1),bcp 1.8s ease-in-out infinite .45s}
+.bc b{font-size:18px;line-height:1}.bc small{opacity:.75;font-weight:600}.bc i{font-style:normal;font-variant-numeric:tabular-nums;background:var(--c);color:#111;padding:2px 8px;border-radius:999px}
+@keyframes bcin{from{transform:translateX(120%) scale(.6);opacity:0}}
+@keyframes bcp{50%{box-shadow:0 0 26px var(--c),0 4px 12px rgba(0,0,0,.25)}}
+#bfx{position:fixed;inset:0;z-index:50;pointer-events:none;overflow:hidden}
+#bfx .bl{position:absolute;inset:0;box-shadow:inset 0 0 90px 10px var(--c);opacity:.0;animation:blp 2.6s ease-in-out infinite;mix-blend-mode:screen}
+@keyframes blp{0%,100%{opacity:.18}50%{opacity:.42}}
+#bfx .bp{position:absolute;font-size:26px;will-change:transform,opacity;animation:bdn var(--d) linear forwards;filter:drop-shadow(0 0 6px var(--c))}
+#bfx .bp.up{animation-name:bup}
+@keyframes bdn{from{transform:translate(0,-60px) rotate(0);opacity:0}10%{opacity:1}to{transform:translate(var(--x),110vh) rotate(var(--r));opacity:.9}}
+@keyframes bup{from{transform:translate(0,0) scale(.6);opacity:0}15%{opacity:1}to{transform:translate(var(--x),-110vh) scale(1.3) rotate(var(--r));opacity:0}}
+#bpop{position:fixed;left:50%;top:32%;z-index:70;pointer-events:none;transform:translate(-50%,-50%);text-align:center;font:800 clamp(26px,6vw,54px) system-ui,sans-serif;color:#fff;text-shadow:0 0 18px var(--c),0 0 40px var(--c),0 3px 0 rgba(0,0,0,.35);animation:bpop 3s ease-out forwards;white-space:nowrap}
+#bpop small{display:block;font-size:.4em;font-weight:700;letter-spacing:.08em;margin-top:6px}
+#bpop:before{content:"";position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px;border-radius:50%;border:5px solid var(--c);animation:bring 1.4s ease-out forwards}
+@keyframes bpop{0%{transform:translate(-50%,-50%) scale(.2);opacity:0}12%{transform:translate(-50%,-50%) scale(1.25);opacity:1}22%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-80%) scale(1);opacity:0}}
+@keyframes bring{to{transform:scale(40);opacity:0}}
+@media (prefers-reduced-motion:reduce){#bfx .bp,#bpop:before{display:none}}
+</style></head><body>
 <header><span id="pen" title="Rename your city">✏️</span><input id="name" maxlength="24" value="My Little City" aria-label="City name" spellcheck="false"><span id="goal"></span><span id="info"></span><span id="tod" title="Time of day"><span id="ti">☀️</span><input id="tsl" type="range" min="0" max="24" step="0.01" value="10" aria-label="Time of day"><b id="clk">10:00</b><button id="tpl" title="Pause / resume the day cycle">⏸</button></span><button id="rot" title="Rotate building (R)">⟳ Rotate (R)</button><button id="nwb" title="Daily news">📰 News<i id="nwd"></i></button><button id="riv" title="Generate a river (replaces the old one). Bulldoze water to remove it.">🌊 Generate river</button><button id="biome" title="Randomly generate biomes (desert, rock, snow, autumn, sand, grass), hills and matching trees. Ctrl+Z undoes it.">🌍 Random terrain</button><button id="menub" title="Main menu">☰ Menu</button><button id="verb" title="Update log"></button><button id="exp"></button><button id="new">↺ New city</button></header>
 <div id="stage"><canvas id="cv"></canvas><div id="binfo"></div><div id="toast"></div></div>
 <footer>
 <div id="hud"><div class="row"><div><small>Money</small><b id="money"></b><em id="inc"></em></div><div><small>Happiness</small><b id="hap"></b></div></div><div id="pop"></div><div id="util" title="Power and water: used / produced"></div><div id="bars"></div></div>
 <div id="side"><div id="tip"></div><label id="colw" hidden style="display:flex;align-items:center;gap:8px;font-weight:600">🎨 Outer color <input type="color" id="pc"> <small style="color:var(--mut);font-weight:400">Click an existing arena to recolor it</small></label><div id="tb"></div></div>
 </footer>
-<div id="adm"><div class="box">
+<div id="bst"></div><div id="bfx"></div><div id="adm"><div class="box">
 <b>🔧 Admin</b>
 <div id="a-lock"><input id="a-code" type="password" placeholder="Passcode" autocomplete="off"> <button id="a-go">Unlock</button></div>
 <div id="a-tools" hidden>
@@ -137,7 +177,23 @@ try{const v=sessionStorage.getItem("tm_view");if(v){const o=JSON.parse(v);if(o&&
 </div></div>
 <script>
 let W=30,H=20;const $=id=>document.getElementById(id);
-let SEN=[null,null,null,null,null],SF=0;const SBON=[.02,.05,.1,.2,.4],senMul=()=>1+SEN.reduce((a,x)=>a+(x?SBON[x.r]:0),0);
+window.BST={};const bm=k=>{const b=BST[k];return b&&b.until>Date.now()?b.m:1};
+const BK={inc:{e:"💸",n:"Income boost",c:"#2fd16e",p:["💸","💰","🪙","💵"],u:0,f:m=>"×"+m},
+ sen:{e:"🏛️",n:"Senator power",c:"#f2b632",p:["🏛️","⭐","📜","👑"],u:1,f:m=>"×"+m},
+ luck:{e:"🍀",n:"Senator luck",c:"#19e0b4",p:["🍀","✨","🎲","🔮"],u:1,f:m=>"best of "+m},
+ hap:{e:"😊",n:"Happiness surge",c:"#ff6fb1",p:["😊","💖","🎈","🌸"],u:1,f:m=>"×"+m},
+ grow:{e:"🏘️",n:"Growth surge",c:"#4aa3ff",p:["🏘️","👨‍👩‍👧","🧳","🏠"],u:1,f:m=>"×"+m},
+ disc:{e:"🏷️",n:"Build sale",c:"#ff5a4d",p:["🏷️","🔨","💥","🧱"],u:0,f:m=>Math.round((1-1/m)*100)+"% off"},
+ rng:{e:"🎰",n:"Lucky streak",c:"#c15cff",p:["🎰","🌟","🎁","🍀"],u:1,f:m=>"×"+m+" luck"}};
+const bfmt=ms=>{const t=Math.max(0,Math.ceil(ms/1e3)),h=t/3600|0,m=(t%3600)/60|0,s=t%60;return(h?h+":"+String(m).padStart(2,"0"):m)+":"+String(s).padStart(2,"0")};
+function bstDraw(){const bs=document.getElementById("bst"),fx=document.getElementById("bfx");if(!bs||!fx)return;bs.replaceChildren();fx.querySelectorAll(".bl").forEach(e=>e.remove());const n=Date.now();
+ for(const k in BST){const b=BST[k],d=BK[k];if(!d||b.until<=n)continue;const c=document.createElement("div");c.className="bc";c.style.setProperty("--c",d.c);c.dataset.k=k;c.innerHTML="<b>"+d.e+"</b><span>"+d.n+" <small>"+d.f(b.m)+"</small></span><i></i>";bs.append(c);const l=document.createElement("div");l.className="bl";l.style.setProperty("--c",d.c);fx.prepend(l)}bstTick()}
+function bstTick(){const n=Date.now();let ch=0;for(const k in BST){const b=BST[k];if(b.until<=n){if(!b.x){b.x=1;ch=1}continue}const e=document.querySelector('#bst .bc[data-k="'+k+'"] i');if(e)e.textContent=bfmt(b.until-n)}if(ch){for(const k in BST)if(BST[k].until<=n)delete BST[k];bstDraw();try{ui()}catch(e){}}}
+function bstFx(){const fx=document.getElementById("bfx");if(!fx||matchMedia("(prefers-reduced-motion:reduce)").matches||document.hidden||fx.querySelectorAll(".bp").length>40)return;const n=Date.now(),a=Object.keys(BST).filter(k=>BST[k].until>n&&BK[k]);if(!a.length)return;const k=a[Math.random()*a.length|0],d=BK[k],e=document.createElement("span");e.className="bp"+(d.u?" up":"");e.textContent=d.p[Math.random()*d.p.length|0];e.style.cssText="left:"+(Math.random()*96)+"%;"+(d.u?"top:100%;":"top:0;")+"--c:"+d.c+";--d:"+(3.5+Math.random()*3)+"s;--x:"+((Math.random()-.5)*160|0)+"px;--r:"+((Math.random()-.5)*260|0)+"deg;font-size:"+(18+Math.random()*22|0)+"px";e.onanimationend=()=>e.remove();fx.append(e)}
+function bstPop(d){const k=BK[d.kind],o=document.getElementById("bpop");if(o)o.remove();const e=document.createElement("div");e.id="bpop";e.style.setProperty("--c",k.c);e.textContent=k.e+" "+k.n.toUpperCase()+" "+k.f(+d.m);const s=document.createElement("small");s.textContent="for "+bfmt(d.until-Date.now())+" · active for everyone";e.append(s);document.body.append(e);setTimeout(()=>e.remove(),3100)}
+function bstSet(d,quiet){const k=BK[d&&d.kind];if(!k)return;const old=BST[d.kind],m=Math.max(1,Math.min(100,+d.m||1)),u=+d.until||0;BST[d.kind]={m,until:u,id:d.id};if(u>Date.now()&&!quiet&&(!old||old.id!==d.id))bstPop({kind:d.kind,m,until:u});bstDraw();try{ui()}catch(e){}}
+setInterval(bstTick,500);setInterval(bstFx,230);
+let SEN=[null,null,null,null,null],SF=0;const SBON=[.02,.05,.1,.2,.4],senMul=()=>1+SEN.reduce((a,x)=>a+(x?SBON[x.r]:0),0)*bm("sen");
 const T={
 none:{n:"No tool",e:"✋",c:0,k:"n"},
 water:{n:"Water",e:"💧",c:5,k:"v"},raise:{n:"Raise land",e:"⛰️",c:20,k:"t"},lower:{n:"Lower land",e:"🕳️",c:0,k:"t"},hwy:{n:"Highway",e:"🚗",c:40,k:"w"},road:{n:"Road",e:"🛣️",c:10,k:"r"},rway:{n:"Runway",e:"🛬",c:25,k:"a",d:"Drag to lay a runway ($25/tile). Make it at least 3 tiles long and straight. With an Airport Terminal built, planes land and take off on it."},tway:{n:"Taxiway",e:"🟨",c:10,k:"a",d:"Taxiway and apron. Buildings touching it count as connected. Join it to the runway."},aterm:{n:"Airport Terminal",e:"🛫",c:6000,k:"c",jobs:60,svc:200,inc:40,t:2,w:2,h:2,d:"Passengers and shops. Needed before planes start flying."},atwr:{n:"Control Tower",e:"🗼",c:1500,k:"c",jobs:10,svc:0,inc:8,t:3,d:"Lets the airport handle more planes at once."},hang:{n:"Hangar",e:"🛩️",c:2500,k:"c",jobs:20,svc:0,inc:15,t:1,w:2,h:2,d:"Plane storage and maintenance."},fuel:{n:"Fuel Depot",e:"⛽",c:1200,k:"c",jobs:6,svc:0,inc:8,t:1,d:"Jet fuel tanks."},dirt:{n:"Dirt Road",e:"🟫",c:4,k:"r",d:"Cheap dirt road. Cars drive on it more slowly, and buildings can connect to it."},path:{n:"Footpath",e:"🚶",c:3,k:"r",d:"Narrow footpath for pedestrians only, no cars. It fits between buildings and trees, and a building touching one still works."},bull:{n:"Bulldoze",e:"🚜",c:0,k:"x"},
@@ -254,7 +310,10 @@ lm4:{n:"Taj Mahal",e:"🕌",c:150000,k:"p",jobs:60,inc:100,fun:800,joy:.05,t:3,b
 lm5:{n:"Petronas Twin Towers",e:"🌆",c:250000,k:"p",jobs:90,inc:160,fun:1200,joy:.06,t:4,bh:4,w:3,h:3,lm:5,d:"Two glittering steel-and-glass towers joined by a sky bridge."},
 lm6:{n:"Taipei 101",e:"🏢",c:400000,k:"p",jobs:110,inc:200,fun:1400,joy:.07,t:4,bh:4,w:2,h:2,lm:6,d:"A stack of eight pagoda-style segments, like a giant bamboo stalk."},
 lm7:{n:"Colosseum",e:"🏛️",c:600000,k:"p",jobs:120,inc:230,fun:1800,joy:.08,t:3,bh:3,w:4,h:4,lm:7,d:"Rome's great stone arena, with rings of arches around a sandy floor."},
-lm8:{n:"Burj Khalifa",e:"🏙️",c:900000,k:"p",jobs:150,inc:300,fun:2200,joy:.1,t:4,bh:3,w:2,h:2,lm:8,d:"The tallest tower on Earth, rising far above your skyline."}});
+lm8:{n:"Burj Khalifa",e:"🏙️",c:900000,k:"p",jobs:150,inc:300,fun:2200,joy:.1,t:4,bh:3,w:2,h:2,lm:8,d:"The tallest tower on Earth, rising far above your skyline."},
+lm9:{n:"Great Pyramids of Giza",e:"🔺",c:20000000,k:"p",jobs:200,inc:600,fun:3000,joy:.12,t:4,bh:4,w:4,h:4,lm:9,d:"Three ancient pyramids and a watchful Sphinx rising from the desert sand."},
+lm10:{n:"Sydney Opera House",e:"🎭",c:60000000,k:"p",jobs:260,inc:1000,fun:4000,joy:.14,t:4,bh:3,w:4,h:4,lm:10,d:"White sail-shaped shells beside the water, glowing at night."},
+lm11:{n:"Sagrada Família",e:"⛪",c:200000000,k:"p",jobs:350,inc:1800,fun:6000,joy:.16,t:4,bh:4,w:4,h:4,lm:11,d:"A forest of tapering stone spires crowned by a glowing star."}});
 Object.assign(T,{
 c10:{n:"7-Eleven",e:"🏪",c:200,k:"c",jobs:4,inc:4,svc:20,t:1,d:"Open all night: slushies, snacks and lottery tickets."},
 c12:{n:"Gas Station",e:"⛽",c:320,k:"c",jobs:3,inc:6,svc:18,t:1,d:"Fuel pumps under a red canopy."},
@@ -346,9 +405,9 @@ concert:{n:"Concert Stage",e:"🎤",c:9000,k:"p",jobs:30,inc:40,fun:350,joy:.03,
 trk:{n:"Race Track",e:"🏁",c:30,k:"a",d:"Drag to lay a race circuit ($30/tile). Tiles join up and curve on their own. Build a loop and race cars will start racing around it. Needs dry, empty land."},
 grand1:{n:"Grandstand",e:"🏟️",c:2500,k:"p",jobs:12,inc:30,fun:400,joy:.01,t:2,w:2,h:1,d:"Covered tiered seating. Build it beside a race track."},
 pit1:{n:"Pit Garage",e:"🔧",c:1800,k:"c",jobs:14,inc:14,svc:0,t:2,w:2,h:1,d:"A row of garage bays and a pit wall. Build it beside a race track."}});
-const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14","mine"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8","lodge","cable","tinn","thotel","tresort"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1","fount","spa","wpark","aqua","dogp","farm","zoo"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8"]]];
+const GR=[["Roads",["none","road","dirt","path","hwy","hwy2","bull","lamp","bg1","bg2","bg3","via1","via2","toll"]],["Airport",["rway","tway","aterm","atwr","hang","fuel"]],["Terrain",["water","raise","lower"]],["Trees",["toak","tpine","tbirch","tpalm","tcherry","tmaple"]],["Housing",["h6","h8","h7","h1","h4","h2","h5","h3","eu1","eu4","eu2","eu5","eu3","eu6","eu10","eu8","eu7","eu9","us1","us4","us2","us5","us3","us6","us10","us7","us8","us9","as1","as4","as2","as5","as3","h9","h10","h11","eu11","eu12","eu13","us11","us12","us13","as6","as7","as8","su1","su2","su3","su4","su5","su6","su7","me1","me2","me3","me4","me5","me6","me7"]],["Industry",["f1","f4","f7","f13","f8","f2","f5","f9","f15","f12","f10","f11","f3","f14","mine"]],["Utilities",["wind","wind2","solar","solar2","gas1","geo1","f6","nuc1"]],["Water",["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"]],["Commerce",["c1","c10","pizza1","bank1","c12","c4","c7","c9","c2","c5","c11","c3","c6","c8","lodge","cable","tinn","thotel","tresort"]],["Government",["gov1","gov2"]],["Law Enforcement",["pol1","pol2","pol3","jail","court1","court2"]],["Fire & Rescue",["fire1","fire2"]],["Health",["med1","hos1"]],["Waterfront",["pier1","dock1","light1"]],["Railway",["rail","stn2","stn1"]],["Motorsport",["trk","grand1","pit1"]],["Parking",["pk1","pk2","pk3"]],["Library",["lib1"]],["Elementary School",["school1"]],["Secondary School",["school2"]],["High School",["school3"]],["University",["uni1"]],["Recreation",["park1","play","court","skate","park2","garden","museum","pool","fair","std","bball","hockey","concert","base","church1","fount","spa","wpark","aqua","dogp","farm","zoo"]],["Landmarks",["lm1","lm2","lm3","lm4","lm5","lm6","lm7","lm8","lm9","lm10","lm11"]]];
 const COL={h:"#cfe4f6",f:"#e3c9a6",c:"#efc9ee"},SLOT=(()=>{try{return Math.min(4,Math.max(1,+localStorage.getItem("tm_slot")||1))}catch(e){return 1}})(),K=SLOT>1?"tinymetro1_s"+SLOT:"tinymetro1";
-let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:t.c;
+let g=Array(W*H).fill(0),hw=Array(W*H).fill(0),rv=Array(W*H).fill(0),el=Array(W*H).fill(0),tl=-1,B={},nu=1,okB={},rot=0,money=2000,pop=0,tool="road",down=0,hov=null,cs=32,dpr=1,won=0,S={},tt,pcol={std:"#c9ced6",bball:"#c9ced6",hockey:"#c9ced6",base:"#c9ced6"},FREE=0,IM=1,HL=0;const cc=t=>FREE||(FW&&t===T.wind)?0:Math.ceil(t.c/bm("disc"));
 let GND=Array(W*H).fill(0),GGEO=null;
 const cv=$("cv");
 const at=(x,y)=>x>=0&&y>=0&&x<W&&y<H?g[y*W+x]:0;
@@ -357,13 +416,13 @@ const isB=v=>typeof v=="number",same=(v,t)=>v&&isB(v)&&B[v]&&B[v].id==t,rc=b=>b.
 const fp=o=>(o.w||1)+"×"+(o.h||1)+" tiles, R to rotate";
 function fits(x,y,w,h){if(x<0||y<0||x+w>W||y+h>H)return 0;for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(g[j*W+i]||hw[j*W+i]||rv[j*W+i]||el[j*W+i]!=el[y*W+x])return 0;return 1}
 
-let DRT={t:0,sev:0},RN={t:0},FES={t:0},ANI=[],ANT=0;
+let DRT={t:0,sev:0},RN={t:0},FES={t:0},RE={t:0,m:1,n:"",e:""},ANI=[],ANT=0;
 function animals(dt){ANT+=dt;ANI.forEach(q=>{const u=q.userData.an,a=u.ph+ANT*u.sp,c=Math.cos(a),n=Math.sin(a),d=u.sp<0?-1:1,w=Math.sin(a*u.g);
  q.position.set(u.cx+c*u.rx,u.y+Math.abs(w)*(u.bob||0),u.cz+n*u.rz);q.rotation.y=Math.atan2(-c*u.rz*d,-n*u.rx*d);if(u.roll)q.rotation.x=w*u.roll;
  q.children.forEach(ch=>{if(ch.userData.lg)ch.rotation.z=w*.55*ch.userData.lg})})}
 function calc(){
  const s={ps:0,tre:0,twr:0,dp:0,dw:0,cap:0,jobs:0,svc:0,pq:0,cl:0,tx:0,pr:0,bad:0,fun:0,joy:0,cop:0,fir:0,hlt:0,edu:0},fs=[],hs=[],ps=[];okB={};
- for(const u in B){const b=B[u],r=rc(b);let a=0;if(T[b.id].k=="l"){okB[u]=1;continue}
+ for(const u in B){const b=B[u];if(!b||!T[b.id])continue;const r=rc(b);let a=0;if(T[b.id].k=="l"){okB[u]=1;continue}
   for(let j=r.y;j<r.y+r.h&&!a;j++)for(let i=r.x;i<r.x+r.w&&!a;i++)if(D4.some(d=>{const q=at(i+d[0],j+d[1]);return wk(q)||q=="tway"}))a=1;
   if(!a){s.bad++;continue}
   okB[u]=1;const t=T[b.id],x=r.x+(r.w-1)/2,y=r.y+(r.h-1)/2,hk=t.hi?1+.1*(el[r.y*W+r.x]|0):1;
@@ -377,9 +436,9 @@ function calc(){
  s.a=s.cap?s.cl/s.cap:1;s.q=s.cap?s.pq/s.cap:1;
  s.r=pop?Math.min(1,s.fun/pop):1;s.pl=pop<30?1:Math.min(1,s.cop/(pop*.35));s.fr=pop<30?1:Math.min(1,s.fir/(pop*.3));s.hl=pop<30?1:Math.min(1,s.hlt/(pop*.25));s.ed=pop<30?1:Math.min(1,s.edu/(pop*.3));
  const sat=(a,d)=>!s.cap?1:d>0?Math.min(1,a/d):a>0?1:0;s.sw=Math.min(s.tre,s.twr);s.pw=sat(s.ps,pop+s.dp);s.tm=.4+Math.min(1.6,(s.att||0)*.2);s.pr+=(s.th||0)*s.tm;s.wsv=1-Math.min(.2,.04*(s.sv||0));s.wt=sat(s.sw,(pop+s.dw)*(1+.6*RVP)*s.wsv);
- s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.08,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,Math.pow(s.hap,1.4)*(FES.t>0?1.06:1)*(self.POLF?POLF.h:1));
+ s.hap=HL?1:Math.min(1,.27*s.j+.22*s.s+.27*s.a+.12*s.q+.12*s.r+Math.min(.08,s.joy))*(.63+.37*s.pw)*(.63+.37*s.wt)*(.8+.2*s.pl)*(.9+.1*s.fr)*(.9+.1*s.hl)*(.92+.08*s.ed)*(1-.15*RVP);s.hap=Math.min(1,Math.pow(s.hap,1.4)*(FES.t>0?1.06:1)*bm("hap")*(self.POLF?POLF.h:1));
  const staff=s.jobs?Math.min(1,pop/s.jobs):0;
- s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul()*(FES.t>0?1.25:1)*(self.POLF?POLF.i:1);
+ s.inc=((s.cap?pop*s.tx/s.cap:0)+s.pr*staff)*(.5+.5*s.hap)*(1+.12*s.ed)*IM*senMul()*(FES.t>0?1.25:1)*(RE.t>0?RE.m:1)*bm("inc")*(self.POLF?POLF.i:1);
  return s}
 
 function ui(){
@@ -391,7 +450,7 @@ function ui(){
  $("pop").textContent="👥 "+Math.floor(pop)+" citizens (room for "+S.cap+") · "+Math.round(pop*S.hap)+" happy";
  {const wb=document.querySelector('.t[data-t="wind"] i');if(wb)wb.textContent=FW?"FREE · 1×1":"$"+T.wind.c+" · 1×1";
   const c=(v,t)=>'<span style="color:var(--'+(v<.98?"bad":"good")+')">'+t+"</span>";
-  $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+Math.round(S.ps))+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP)*S.wsv)+"/"+Math.round(S.sw))+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"")+(DRT.t>0?c(0,"🏜️ Drought "+DRT.t+"s"):"")+(RN.t>0?c(1,"🌧️ Rain "+RN.t+"s"):"")+(FES.t>0?c(1,"🎉 Festival "+FES.t+"s"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
+  $("util").innerHTML=c(S.pw,"⚡ "+Math.round(pop+S.dp)+"/"+Math.round(S.ps))+c(S.wt,"💧 "+Math.round((pop+S.dw)*(1+.6*RVP)*S.wsv)+"/"+Math.round(S.sw))+(rv.includes(1)?c(RVP>.2?0:1,"🌊 "+Math.round((1-RVP)*100)+"%"):"")+(DRT.t>0?c(0,"🏜️ Drought "+DRT.t+"s"):"")+(RN.t>0?c(1,"🌧️ Rain "+RN.t+"s"):"")+(FES.t>0?c(1,"🎉 Festival "+FES.t+"s"):"")+(RE.t>0?c(RE.m>=1?1:0,RE.e+" "+RE.n+" "+RE.t+"s"):"");WM[1].color.set(0x4fa8e0).lerp(WPC,RVP);
   const uf=S.cap&&pop>=1?(S.pw<.98?1:0)|(S.wt<.98?2:0):0;if(uf!==UF){UF=uf;dirty=1}LV=S.pw}
  [S.j,S.s,S.a,S.q,S.r,S.pw,S.wt,S.pl,S.fr,S.hl,S.ed].forEach((v,i)=>$("b"+i).style.width=v*100+"%");
  document.querySelectorAll(".t").forEach(b=>{const o=T[b.dataset.t];b.classList.toggle("no",cc(o)>money||(o.lm&&o.lm>nex))});
@@ -412,7 +471,7 @@ function complaint(){const o=[];
  return o.length?"🗣️ “"+pk(o)+"”":""}
 function tick(){
  const pi=S.pw<1||S.wt<1?Math.min(S.cap,6):0,gr=S.hap>=.45?S.cap:pi;
- if(pop<gr)pop=Math.min(gr,pop+Math.max(1,S.cap*.06));
+ if(pop<gr)pop=Math.min(gr,pop+Math.max(1,S.cap*.06)*bm("grow"));
  else if(S.hap<.3&&pop>pi)pop=Math.max(pi,pop-Math.max(1,pop*.06));
  if(pop>=1&&tick.n%16==8){const c=complaint();if(c)toast(c,4500)}
  {if(DRT.t>0){if(--DRT.t==0)toast("🌧️ The drought is over. Water supplies are back to normal.",4500)}else if(RN.t==0&&pop>=60&&S.sw>0&&Math.random()<.002){DRT.t=70+Math.floor(Math.random()*50);DRT.sev=.35+Math.random()*.2;toast("☀️ Drought! Wells, springs, rain harvesters and treatment plants make less water. Reservoirs, boreholes, desalination and recycling plants keep working.",7000)}
@@ -427,6 +486,21 @@ function tick(){
   for(let i=m;i<MS.length&&pop>=MS[i][0];i++){money+=MS[i][1];try{localStorage.setItem(K+"_ms",i+1)}catch(e){}toast("🏆 Milestone: "+MS[i][0].toLocaleString()+" citizens! Bonus $"+MS[i][1].toLocaleString(),6000)}}
  if(pop>=30&&S.fr<.7&&Math.random()<.04){const l=Math.floor(Math.min(money*.04,800));money-=l;toast("🔥 A building caught fire! Damage: $"+l+". Build a Fire Station.",4000)}else if(S.fir>0&&Math.random()<.02)toast("🚒 Firefighters put out a blaze!",3000);
  if(pop>=30&&S.hl<.7&&Math.random()<.03){pop=Math.max(0,pop-Math.ceil(pop*.03));toast("🤒 A flu outbreak is spreading. Build a Hospital.",4000)}
+
+ {const R=Math.random,rn=(a,b)=>a+Math.floor(R()*(b-a+1));
+  if(RE.t>0){if(--RE.t==0)toast("📊 The "+RE.n.toLowerCase()+" is over. The economy is back to normal.",3500)}
+  else if(pop>=40&&R()<.006){const E=[
+    [1.3,"Tourist boom","🧳","Tourists are flooding in! Income +30% for a while."],
+    [1.5,"Business boom","📈","A business boom! Companies are thriving: income +50%."],
+    [1.2,"Trade fair","🛍️","A trade fair comes to town: income +20%."],
+    [.7,"Recession","📉","A recession hits. Income -30% until it passes."],
+    [.8,"Strike","🪧","Workers are on strike! Income -20% for a bit."]],e=pk(E);
+    RE.m=e[0];RE.n=e[1];RE.e=e[2];RE.t=rn(40,80);toast(e[2]+" "+e[3],6000)}
+  const LK=bm("rng");if(pop>=20&&R()<.004*LK){const v=rn(40,400)+Math.floor(pop*.8);money+=v;toast(pk(["💰 A citizen found buried treasure in the park: +$","🏛️ Government grant approved: +$","🎁 An anonymous donor gave your city $","🪙 Someone won the lottery and donated $","🧾 A surprise tax refund arrived: +$"])+v,4500)}
+  if(pop>=50&&R()<.003/LK){const v=Math.floor(Math.min(money*.03,rn(60,300)));money-=v;toast(pk(["🕳️ Giant pothole! Repairs cost $","🚰 A water main burst. Repairs cost $","🐀 Rats in the town hall! Pest control cost $","⛈️ A storm damaged some roofs: -$","🧾 Audit! You paid a surprise fine of $"])+v,4500)}
+  if(S.cap>pop+4&&S.hap>=.6&&R()<.004*LK){const n=rn(2,6)+Math.floor(pop*.03);pop=Math.min(S.cap,pop+n);toast(pk(["👶 Baby boom! +","🚚 A moving truck rolls in: +","🏡 A big family relocates here: +"])+n+" citizens",4000)}
+  if(pop>=60&&R()<.003*LK){const v=rn(100,500);money+=v;toast(pk(["🌟 A celebrity visited and everybody tipped: +$","🎬 A film crew is shooting in your city: +$","🏅 Your city won a regional award: +$"])+v,4500)}
+  if(pop>=30&&R()<.004)toast(pk(["🛸 Someone swears they saw a UFO over downtown.","🐦 A flock of pigeons took over the main square.","🐕 A stray dog became the town mascot.","🌈 A double rainbow appeared over the city!","🎻 A street musician is drawing a big crowd.","🥐 A new bakery smells amazing. Everyone is smiling.","🦆 Ducks are crossing the road again.","🚧 Roadworks! Traffic is slow today.","📸 A viral photo of your city is going around the internet."]),3500)}
  if(++tick.n%5==0)save()}
 tick.n=0;
 
@@ -443,7 +517,7 @@ function sel(t){tool=t;if(T[t].s)showStyle(T[t].s);$("colw").hidden=!T[t].tint;i
 
 const GRN=[["🌱 Grass","#8dbb68","#97c571"],["🏖️ Sand","#e3cf9a","#ead9a8"],["🏜️ Desert","#cf9a64","#d8a572"],["🍂 Autumn","#b09a52","#bba65e"],["❄️ Snow","#eef3f8","#f8fbfe"],["🪨 Rock","#8a8f94","#949a9f"]];let GI=(()=>{try{return Math.min(GRN.length-1,Math.max(0,+localStorage.getItem("tm_ground")||0))}catch(e){return 0}})();
 let TR=[],RVP=0,WPC=new THREE.Color(0x6f7d35),FW=1,UF=0,LV=1,LVd=-1,SPN=[],BUB,LP=[],FX=[.5,.5],TOD=10,AUTO=1,sdrag=0,NL=-1,night=0,hem,lastMM=-1,nex=0,dirty=1,renderer,scene,cam,ctl,ray,PL,L,hl,rg,noMat,world3,cityG,ghost,ghostFor,last,pend=0,dragging=0;
-const pat=new Map(),proto={},ptrs=new Set(),EXPC=[100000,250000,500000,750000,1000000,1250000,1500000,2000000],XW=10,XH=8,MX=8,D=Math.PI/2;
+const pat=new Map(),proto={},ptrs=new Set(),EXPC=[100000,250000,500000,750000,1000000,1250000,1500000,2000000,500000000,1000000000,5000000000],XW=16,XH=12,MX=11,D=Math.PI/2;
 const wx=x=>x-W/2+.5,wz=y=>y-H/2+.5,mat=o=>new THREE.MeshLambertMaterial(o);
 const bx=(w,h,d,c,x=0,y=0,z=0,tx)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),tx?tmat(tx):mat({color:c}));m.position.set(x,y+h/2,z);return m};
 const cy=(r,h,c,x,y,z,n=10)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.15,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m};
@@ -580,7 +654,7 @@ function spawn(k,list,ft){if(!list.length)return;const i=pk(list),c={k,x:i%W,y:i
 function cars(dt){if(!carG){carG=new THREE.Group();scene.add(carG)}
  dt=Math.min(dt,.1);spT-=dt;
  if(spT<=0){spT=.25;const R=[],Hh=[];g.forEach((v,i)=>{if(rd(v))R.push(i)});hw.forEach((v,i)=>{if(v)Hh.push(i)});
-  if(CR.filter(c=>!c.k).length<Math.min(40,R.length>>1))spawn(0,R);[["police","cop",3],["fire","fir",2],["amb","hlt",2],["sbus","edu",2]].forEach(([t,k,n])=>{const np=Object.keys(B).filter(u=>okB[u]&&T[B[u].id][k]&&!T[B[u].id].ct).length;if(np&&CR.filter(c=>c.m.userData.pc==t).length<np*n)spawn(0,R,t)});if(CR.filter(c=>c.k).length<Math.min(14,Math.ceil(Hh.length/3)))spawn(1,Hh)}
+  if(CR.filter(c=>!c.k).length<Math.min(40,R.length>>1))spawn(0,R);[["police","cop",3],["fire","fir",2],["amb","hlt",2],["sbus","edu",2]].forEach(([t,k,n])=>{const np=Object.keys(B).filter(u=>okB[u]&&T[B[u].id]&&T[B[u].id][k]&&!T[B[u].id].ct).length;if(np&&CR.filter(c=>c.m.userData.pc==t).length<np*n)spawn(0,R,t)});if(CR.filter(c=>c.k).length<Math.min(14,Math.ceil(Hh.length/3)))spawn(1,Hh)}
  for(let n=CR.length-1;n>=0;n--){const c=CR[n];let dead=!nb(c).length,v=c.v;
   if(!dead){if(!c.k&&g[c.y*W+c.x]=="dirt")v*=.6;if(c.k&&TB[c.y*W+c.x])v*=.6;c.wt=0;{const nx2=c.x+DIR[c.d1][0],ny2=c.y+DIR[c.d1][1];
    for(const o of CR)if(o!==c&&o.k==c.k&&o.ln==c.ln){if(o.x==c.x&&o.y==c.y&&o.d1==c.d1&&o.s>c.s&&o.s-c.s<.36)v=Math.min(v,o.wt?0:o.v*.9);else if(o.x==nx2&&o.y==ny2&&o.d0==c.d1&&(1-c.s)+o.s<.36)v=Math.min(v,o.wt?0:o.v*.9)}
@@ -698,7 +772,7 @@ function mkBoat(t){const G=new THREE.Group(),a=(...m)=>G.add(...m),hc=pk([0xf2f4
  else a(bx(.13,.05,.5,0x3b4f66,0,0,0),bx(.12,.012,.48,0x8a5a3a,0,.05,0),bx(.1,.08,.08,0xf2f4f6,0,.06,-.19),bx(.03,.05,.03,0xd9433b,0,.14,-.19),...[-.1,.02,.14].map(z=>bx(.1,.05,.09,pk([0xd9433b,0x3b8fd9,0xf2c230,0x2f8f4e,0xe8742a]),0,.062,z)));
  G.rotation.order="YXZ";G.traverse(q=>q.castShadow=true);return G}
 function boats(dt){if(!boatG){boatG=new THREE.Group();scene.add(boatG)}dt=Math.min(dt,.1);bsT-=dt;const now=performance.now()/1000;
- if(bsT<=0){bsT=2;for(const u in B){const b=B[u],t=T[b.id];if(!t.bt||!okB[u]||BT.filter(o=>o.dk===b).length>=t.bt)continue;
+ if(bsT<=0){bsT=2;for(const u in B){const b=B[u],t=T[b.id];if(!t||!t.bt||!okB[u]||BT.filter(o=>o.dk===b).length>=t.bt)continue;
   const r=rc(b),f=bwt(r.x,r.y,r.w,r.h,b.r);if(!f.length)continue;const[x,y]=pk(f);if(!BWD.some(([a,c])=>bwat(x+a,y+c)))continue;
   const ty=pk(t.bo),d=BWD[b.r&3],cx=r.x+(r.w-1)/2,cy2=r.y+(r.h-1)/2,l=[-d[1],d[0]],rel=(x-cx)*l[0]+(y-cy2)*l[1],
   o={dk:b,u,hx:x,hy:y,fx:x,fy:y,x,y,s:1,a:b.r&3,mode:2,w:1+Math.random()*3,tm:0,ph:Math.random()*6,m:mkBoat(ty),sp:ty=="cargo"?.45:ty=="sail"?.65:.85,lo:0,
@@ -733,12 +807,12 @@ function railTex(x,Z,m){const h=Z/2,U=[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8]],A=U.fi
  S=(w,c,d)=>{x.lineWidth=w*Z;x.strokeStyle=c;x.setLineDash((d||[]).map(v=>v*Z));P();x.stroke()};
  S(.42,"#6d5a46",[.07,.1]);S(.3,"#aeb3ba");S(.2,"#7d6e58");S(.2,"#5a4a3a",[.07,.1])}
 let trG,TN=[],tnT=0;const RCL=[0xd9433b,0x3b8fd9,0x2f8f4e,0xf0a030,0x7a4bd0],isRail=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&(g[y*W+x]=="rail"||isX(g[y*W+x]));
-function stAdj(x,y){return BWD.some(([a,b])=>{const X=x+a,Y=y+b,v=X>=0&&Y>=0&&X<W&&Y<H?g[Y*W+X]:0;return v&&isB(v)&&B[v]&&T[B[v].id].st&&okB[v]})}
+function stAdj(x,y){return BWD.some(([a,b])=>{const X=x+a,Y=y+b,v=X>=0&&Y>=0&&X<W&&Y<H?g[Y*W+X]:0;return v&&isB(v)&&B[v]&&T[B[v].id]&&T[B[v].id].st&&okB[v]})}
 function mkTrain(){const c=pk(RCL),o=[],G=(...a)=>{const q=new THREE.Group();q.add(...a);q.rotation.order="YXZ";q.traverse(z=>z.castShadow=true);o.push(q)};
  G(bx(.13,.015,.3,0x333333),bx(.12,.07,.28,c,0,.015),bx(.1,.05,.1,0xf2f4f6,0,.085,-.07),gl(.03,.02,.02,0xfff3b0,0,.05,.145),bx(.03,.05,.03,0x333333,0,.085,.08));
  for(let i=0;i<3;i++)G(bx(.13,.015,.32,0x333333),bx(.12,.075,.3,0xe8ecf0,0,.015),gl(.125,.03,.24,0xbfe6ff,0,.045),bx(.12,.012,.3,c,0,.09));return o}
 function trains(dt){if(!trG){trG=new THREE.Group();scene.add(trG)}dt=Math.min(dt,.1);tnT-=dt;
- if(tnT<=0){tnT=5;const st=Object.keys(B).filter(u=>T[B[u].id].st&&okB[u]);
+ if(tnT<=0){tnT=5;const st=Object.keys(B).filter(u=>T[B[u].id]&&T[B[u].id].st&&okB[u]);
   if(st.length&&TN.length<Math.min(4,st.length*2)){const b=B[pk(st)],r=rc(b),c=[];
    for(let i=r.x-1;i<=r.x+r.w;i++)for(let j=r.y-1;j<=r.y+r.h;j++)if((i>=r.x&&i<r.x+r.w)!=(j>=r.y&&j<r.y+r.h)&&isRail(i,j))c.push([i,j]);
    if(c.length){const[x,y]=pk(c),n=BWD.filter(([a,d])=>rlk(x,y,[a,d]));if(n.length){const cars=mkTrain();cars.forEach(m=>{m.visible=false;trG.add(m)});TN.push({cars,x,y,fx:x,fy:y,s:1,a:BWD.indexOf(pk(n)),dw:3,ls:1,pts:[[wx(x),wz(y)]]})}}}}
@@ -1261,6 +1335,25 @@ proto.gov1=G(bx(.9,.05,.8,0xd8d2c0),bx(.7,.36,.5,0xefe8d8,0,.05,-.05),...[-.27,-
    const yb=.84,L=Math.hypot(.25,.22),lg=sg=>{const m=bx(.03,L,.03,S,sg*.125,yb-.11-L/2,0);m.rotation.z=sg*Math.atan2(.25,.22);return m};
    P.push(bx(.5,.07,.07,S,0,yb),bx(.5,.04,.072,0,0,yb+.015,0,wt(1,10,"#7f9bb8",GY)),lg(-1),lg(1));
    proto.lm5=G(...P)}
+
+  /* ===== LANDMARK 9: Great Pyramids of Giza (4x4) ===== */
+  {const SD=0xe6cf94,SD2=0xdcc58a,SP=0xd2b878,py=(r,h,x,z,c)=>ro(r,h,c,.03).translateX(x).translateZ(z);
+   proto.lm9=G(pl(0xefdca6),py(.4,.66,-.12,-.14,SD),py(.22,.34,.3,-.22,SD2),py(.15,.22,.3,.08,SD),gs(.02,0xffd27a,-.12,.7,-.14,0xffb040),
+    bx(.22,.07,.1,SP,-.3,.03,.34),bx(.07,.09,.07,0xd8bf84,-.43,.1,.34),bx(.08,.025,.1,SP,-.46,.03,.34),tr(.4,.4,.6),tr(.3,.43,.5))}
+
+  /* ===== LANDMARK 10: Sydney Opera House (4x4) ===== */
+  {const sl=(r,x,z,sc)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,10,0,Math.PI,0,Math.PI/2),mat({color:0xf7f3ea,side:THREE.DoubleSide}));m.scale.set(1,sc,1);m.rotation.x=-.45;m.position.set(x,.1,z);return m},
+   hall=(x0,z,k)=>[sl(.3*k,x0,z,1.5),sl(.25*k,x0+.1*k,z,1.4),sl(.2*k,x0+.2*k,z,1.3),sl(.14*k,x0+.28*k,z,1.2)];
+   proto.lm10=G(pl(0xa9c27d),bx(.98,.012,.24,0x4fb8e8,0,.03,.38),bx(.92,.07,.6,0xd8d2c4,0,.03,-.12),bx(.5,.03,.14,0xc9c2b0,0,.03,.26),
+    ...hall(-.4,-.1,1),...hall(.1,.1,.62),gl(.7,.02,.02,0xffe9a8,-.05,.1,.2,0xffd27a),tr(.42,-.42,.6))}
+
+  /* ===== LANDMARK 11: Sagrada Familia (4x4) ===== */
+  {const ST=0xd2c4a2,ST2=0xc2b390,TP=[0xe8503c,0xf2c230,0x3b8fd9,0x5ac05a],
+   tw=(x,z,h,r,i)=>[tpr(r,r*.45,h,ST,x,.25,z,10),tpr(r*1.1,r*1.1,h*.06,ST2,x,.25+h*.4,z,10),dm(r*.55,TP[i%4],x,.25+h+.02,z,1.2)];
+   proto.lm11=G(pl(0xa9c27d),bx(.86,.2,.46,ST2,0,.03,0),bx(.7,.03,.5,ST,0,.23,0),gl(.5,.1,.02,0x5d6b7a,0,.08,.231,0xffe9a8),
+    ...[-.3,-.1,.1,.3].flatMap((x,i)=>tw(x,.2,.9,.06,i)),...[-.2,0,.2].flatMap((x,i)=>tw(x,-.2,.7,.055,i+1)),
+    ...[[-.15,0],[.15,0],[0,-.05],[0,.1]].flatMap(([x,z],i)=>tw(x,z,1.05,.065,i)),
+    ...tw(0,.02,1.6,.09,0),gs(.045,0xfff2c0,0,1.98,.02,0xffe28a),tr(-.42,.42,.6),tr(.42,.42,.6),tr(-.42,-.4,.6))}
  }
  SDGP();HOUSEP();Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
 
@@ -1277,7 +1370,7 @@ function camKeys(){const n=performance.now(),dt=Math.min((n-(CT||n))/1000,.1);CT
  cam.position.copy(t).add(o)}
 function init3d(){
  renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});renderer.shadowMap.enabled=true;
- scene=new THREE.Scene();cam=new THREE.PerspectiveCamera(42,1,.5,400);cam.position.set(0,22,23);
+ scene=new THREE.Scene();cam=new THREE.PerspectiveCamera(42,1,.5,600);cam.position.set(0,22,23);
  ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.maxPolarAngle=1.3;ctl.minDistance=5;ctl.maxDistance=130;
  ctl.mouseButtons={LEFT:-1,MIDDLE:THREE.MOUSE.PAN,RIGHT:THREE.MOUSE.ROTATE};ctl.touches={ONE:-1,TWO:THREE.TOUCH.DOLLY_PAN};ctl.screenSpacePanning=false;
  addEventListener("keydown",e=>{if(e.key=="Shift")ctl.mouseButtons.LEFT=THREE.MOUSE.ROTATE});
@@ -1311,7 +1404,7 @@ function rebuild(){
   const hh=[[0,-1],[1,0],[0,1],[-1,0]].map(([a,b],k)=>m&(1<<k)?Math.max(el[i],el[(y+b)*W+x+a]):el[i]);
   if(hh.some(v=>v>el[i])){const c=[Math.max(hh[0],hh[3]),Math.max(hh[0],hh[1]),Math.max(hh[2],hh[3]),Math.max(hh[2],hh[1])].map(v=>v-el[i]);
    o.geometry=rgeo(c,0,el[i]);const bd=new THREE.Mesh(rgeo(c,1,el[i]),SD);bd.position.copy(o.position);bd.castShadow=bd.receiveShadow=true;cityG.add(bd)}o.receiveShadow=true;cityG.add(o)});
- arender();trender();groundRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u],r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q);if(q.userData.an)ANI.push(q)});
+ arender();trender();groundRender();wrender();hrender();bgRender();tollRender();for(const u in B){const b=B[u];if(!T[b.id])continue;const r=rc(b),o=mk(b.id,b.w,b.h,b.col,okB[u]?1:0);o.rotation.y=b.r*D;o.traverse(q=>{if(q.userData.spin)SPN.push(q);if(q.userData.an)ANI.push(q)});
   if(!okB[u]){const sp=new THREE.Sprite(noMat),big=b.w==2&&b.h==2;sp.scale.set(.5,.5,1);sp.position.y=(T[b.id].bh||T[b.id].t*.6+.7)+(big?1:0);o.add(sp)}
   else if(UF&&T[b.id].k=="h")[1,2].forEach((m,k)=>{if(UF&m){const sp=new THREE.Sprite(BUB[k]);sp.scale.set(.42,.42,1);sp.position.set(UF==3?(k?.22:-.22):0,T[b.id].t*.6+.8,0);o.add(sp)}})
   o.position.set(wx(r.x)+(r.w-1)/2,E(r.y*W+r.x),wz(r.y)+(r.h-1)/2);cityG.add(o)}
@@ -1409,23 +1502,23 @@ cv.onpointercancel=e=>{ptrs.delete(e.pointerId);pend=dragging=0};
 cv.onpointerleave=()=>{hov=null};
 cv.oncontextmenu=e=>e.preventDefault();
 
-function updExp(){const l=T["lm"+(nex+1)];$("exp").textContent=nex<MX?"⬆ Expand city · $"+EXPC[nex].toLocaleString()+" → unlocks "+l.e+" "+l.n:"City at max size"}
+function updExp(){const l=T["lm"+(nex+1)];$("exp").textContent=nex<MX?"⬆ Expand city (+"+XW+"×"+XH+" land) · $"+EXPC[nex].toLocaleString()+" → unlocks "+l.e+" "+l.n:"City at max size"}
 $("exp").onclick=()=>{
  if(nex>=MX)return toast("Your city is already at maximum size.");
  const cost=EXPC[nex];if(money<cost)return toast("Expanding costs $"+cost.toLocaleString()+". You have $"+Math.floor(money).toLocaleString()+".");
  const nw=W+XW,nh=H+XH,ng=Array(nw*nh).fill(0),n2=Array(nw*nh).fill(0),n3=Array(nw*nh).fill(0),n4=Array(nw*nh).fill(0),n5=Array(nw*nh).fill(0);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){ng[y*nw+x]=g[y*W+x];n2[y*nw+x]=hw[y*W+x];n3[y*nw+x]=rv[y*W+x];n4[y*nw+x]=el[y*W+x];n5[y*nw+x]=GND[y*W+x]|0}
- {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}{const no={};for(const k in OW){const i=+k;no[(i/W|0)*nw+i%W]=OW[k]}OW=no}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;GND=n5;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
+ {const nbs={};for(const k in BS){const i=+k;nbs[(i/W|0)*nw+i%W]=BS[k]}BS=nbs}{const nt={};for(const k in TB){const i=+k;nt[(i/W|0)*nw+i%W]=1}TB=nt}{const no={};for(const k in OW){const i=+k;no[(i/W|0)*nw+i%W]=OW[k]}OW=no}BT.forEach(o=>{if(o.mode==1){o.mode=0;o.dm=null}});money-=cost;nex++;g=ng;hw=n2;rv=n3;el=n4;GND=n5;W=nw;H=nh;world();dirty=1;updExp();ui();save();const lm=T["lm"+nex];toast("City expanded by "+XW+"×"+XH+" tiles! "+lm.e+" "+lm.n+" is now unlocked in Landmarks.",7000)};
 
 const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)},cl=h=>new THREE.Color(h),TC=cl(0),
 RP=(q,u,o)=>{const k=u<q[1][0]?0:1,a=q[k],b=q[k+1],t=(u-a[0])/(b[0]-a[0]);return typeof a[1]=="number"?a[1]+(b[1]-a[1])*t:o.copy(a[1]).lerp(b[1],t)},
-SK={s:[[0,cl(0x7d90cc)],[.45,cl(0xffb890)],[1,cl(0xffffff)]],g:[[0,cl(0x2a3552)],[.45,cl(0x6b5560)],[1,cl(0x7a8a99)]],i:[[0,.72],[.45,.55],[1,.75]],b:[[0,cl(0x0a1228)],[.45,cl(0xe88e68)],[1,cl(0xe88e68)]],a:[[0,1],[.45,.5],[1,0]]};
+SK={s:[[0,cl(0x7d90cc)],[.45,cl(0xffb890)],[1,cl(0xffffff)]],g:[[0,cl(0x2a3552)],[.45,cl(0x6b5560)],[1,cl(0x7a8a99)]],i:[[0,.72],[.45,.65],[1,.75]],b:[[0,cl(0x0a1228)],[.45,cl(0xe88e68)],[1,cl(0xe88e68)]],a:[[0,1],[.45,.5],[1,0]]};
 function sky(dt){
  if(AUTO&&!sdrag)TOD=(TOD+Math.min(dt,.1)*.2)%24;
  const a=(TOD-6)*Math.PI/12,sy=Math.sin(a),cx=Math.cos(a),u=Math.min(1,Math.max(0,(sy+.2)/.6)),sun=sy>=0;
  night=sm(.18,-.12,sy);
- L.position.set((sun?cx:-cx)*16+4,Math.max(Math.abs(sy),.12)*22+1,9);
- L.intensity=sun?.08+.72*sm(0,.45,sy):.08+.35*sm(0,.5,-sy);
+ L.position.set((sun?cx:-cx)*16+4,Math.max(Math.abs(sy),.3)*22+1,9);
+ L.intensity=sun?.8*sm(0,.4,sy):.35*sm(0,.4,-sy);
  sun?L.color.set(0xff9a5a).lerp(TC.set(0xfff6e8),sm(0,.35,sy)):L.color.set(0x7f9cff);
  RP(SK.s,u,hem.color);RP(SK.g,u,hem.groundColor);hem.intensity=RP(SK.i,u);
  const A=RP(SK.a,u),c=RP(SK.b,u,TC);
@@ -1586,7 +1679,7 @@ mil4:{n:"War Memorial",e:"🕊️",c:1200,k:"p",jobs:2,inc:0,fun:40,joy:.004,pri
 mil5:{n:"Parade Ground",e:"🎺",c:6000,k:"p",jobs:10,inc:8,fun:120,joy:.006,pri:5,t:1,w:2,h:2,d:"Ranks of troops march past a reviewing stand under waving flags."}});
 Object.keys(T).forEach(id=>{const o=T[id];if(o.lm&&o.joy)o.pri=Math.round(o.joy*100)});
 dkCATS[6].subs.push(["🎖️ Military",["mil1","mil4","mil5","mil2","mil3"]]);["mil1","mil4","mil5","mil2","mil3"].forEach(id=>dkLOC[id]=[6,dkCATS[6].subs.length-1]);
-{const calc0=calc;calc=function(){const s=calc0();let p=0;for(const u in B)if(okB[u]){const q=T[B[u].id].pri;if(q)p+=q}
+{const calc0=calc;calc=function(){const s=calc0();let p=0;for(const u in B)if(okB[u]&&T[B[u].id]){const q=T[B[u].id].pri;if(q)p+=q}
  s.pri=p;s.pride=.15*(1-Math.exp(-p/20));s.hap=Math.min(1,s.hap*(1+s.pride));s.inc*=1+s.pride*.6;return s};
  const ui0=ui;ui=function(){ui0.apply(this,arguments);if(S.pride>=.005)$("util").insertAdjacentHTML("beforeend",'<span style="color:var(--acc)" title="Pride from military and landmarks: more happiness and income">🎖️ Pride +'+Math.round(S.pride*100)+"%</span>")};
  const sel2=sel;sel=t=>{sel2(t);const o=T[t];if(o&&o.pri)$("info").textContent+=" 🎖️ Boosts city pride (+"+o.pri+"): more happiness and income."}}
@@ -2234,7 +2327,7 @@ LN=["Hawthorn","Okafor","Lindqvist","Moreau","Castillo","Brandt","Nakamura","Ros
 SC=["The Silent Senator","Agent Nobody","Senator ███","The Unseen Vote"],TT=["Fiscal hawk","Master builder","Green champion","Free-trade fan","Silver-tongued orator","Budget wizard"],
 COST=50000,pk=a=>a[Math.random()*a.length|0],mk=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e};
 let pend=-1,last=-1;
-const roll=()=>{let x=Math.random()*100,i=0;for(;i<4&&(x-=RAR[i][1])>=0;i++);return i},price=()=>(SEN.some(Boolean)||SF)&&!FREE?COST:0;
+const roll=()=>{let b=0;for(let n=Math.round(bm("luck")),k=0;k<n;k++){let x=Math.random()*100,i=0;for(;i<4&&(x-=RAR[i][1])>=0;i++);b=Math.max(b,i)}return b},price=()=>(SEN.some(Boolean)||SF)&&!FREE?COST:0;
 function view(){const b=document.getElementById("sn-b");b.replaceChildren();const full=SEN.every(Boolean),pr=price();
  b.append(mk("b","🏛️ City Senate"),mk("small","Senators boost your city’s income. Total bonus: +"+Math.round((senMul()-1)*100)+"%"));b.append(window.lawBtn?window.lawBtn():"",window.scBox?window.scBox():"");
  const row=mk("div",null,"sn-row");
@@ -2361,13 +2454,19 @@ function claim(d){if(window.TMV||!uid||!d||d.to!=uid||doneG.has(d.id)||busyG.has
  d.spin&&Date.now()-d.at<2e4?setTimeout(go,6500):go()}
 const chkG=()=>Object.keys(ev).forEach(k=>{if(k.startsWith("gift_"))claim(ev[k])});
 function onEv(id,d){ev[id]=d;if(id.startsWith("gift_"))claim(d);if(id=="announce"&&S0.a!=d.id&&Date.now()-d.at<36e5){S0.a=d.id;put();banner("📢 "+d.text,30000)}
- if(id=="wheel"&&S0.w!=d.id){S0.w=d.id;put();if(Date.now()-d.at<9e4)wheel(d)}if(id=="giveaway")ga(d)}
+ if(id=="wheel"&&S0.w!=d.id){S0.w=d.id;put();if(Date.now()-d.at<9e4)wheel(d)}if(id=="giveaway")ga(d);if(id.startsWith("boost_"))bstSet(d,Date.now()-(d.at||0)>6e4)}
 // admin panel section
 const sec=mkE("div",null,"gsec");sec.innerHTML='<style>#adm select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}#adm .gsec{max-height:46vh;overflow:auto}</style><b>🌍 Global events</b><input id="g-msg" maxlength="200" placeholder="Announcement"><button id="g-ann">📢 Send announcement</button>'
 +'<b>🎁 Prize</b><select id="g-pk"><option value="m">Prize type: Money</option><option value="s">Prize type: Senators</option></select><input id="g-pa" type="number" min="1" value="5000" placeholder="Money $ (or number of senators, 1-5)"><select id="g-pr"><option value="-1">Senator rarity: random</option><option value="0">Regular</option><option value="1">Epic</option><option value="2">Mythical</option><option value="3">Legendary</option><option value="4">Secret</option></select><small>For senators, the amount is how many seats to give (max 5).</small>'
 +'<b>🎡 Random player wheel</b><select id="g-pool"><option value="all">Pick from: all players</option><option value="ent">Pick from: giveaway entrants</option></select><button id="g-wheel">🎡 Spin wheel for everyone</button>'
 +'<b>🎯 Give to a specific player</b><select id="g-who"></select><div class="qr"><button id="g-ld">🔄 Load players</button><button id="g-gv">🎁 Give prize</button></div>'
 +'<b>🎟️ Giveaway (entry-based)</b><input id="g-gt" placeholder="Giveaway title"><input id="g-ga" type="number" placeholder="Prize $"><div class="qr"><button id="g-gs">🎁 Start</button><button id="g-gd">🎲 Draw winner</button></div><small id="g-st"></small>';g$("a-tools").append(sec);
+
+sec.insertAdjacentHTML("beforeend",'<b>⚡ Boosts (live on everyone’s screen)</b><select id="b-k"><option value="inc">💸 Income boost</option><option value="sen">🏛️ Senator power (senator income bonus)</option><option value="luck">🍀 Senator luck (elections re-roll N times, keep best)</option><option value="hap">😊 Happiness surge</option><option value="grow">🏘️ Growth surge (citizens move in faster)</option><option value="disc">🏷️ Build sale (price ÷ multiplier)</option><option value="rng">🎰 Lucky streak (good random events more often)</option></select><input id="b-m" type="number" min="1" max="100" step="0.5" value="3" placeholder="Multiplier"><input id="b-t" type="number" min="0.5" max="1440" step="0.5" value="5" placeholder="Minutes"><small>Multiplier, then duration in minutes.</small><div class="qr"><button id="b-go">⚡ Start boost</button><button id="b-stop">⏹ Stop this</button></div><button id="b-all">⏹ Stop all boosts</button>');
+{const bsend=async d=>{if(db&&ed){if(await w("events/boost_"+d.kind,d))return 1;return 0}bstSet(d);return 2};
+ g$("b-go").onclick=async()=>{const k=g$("b-k").value,m=Math.max(1,Math.min(100,+g$("b-m").value||2)),mn=Math.max(.5,Math.min(1440,+g$("b-t").value||5)),r=await bsend({id:rid(),kind:k,m:k=="luck"?Math.round(m):m,until:Date.now()+mn*6e4,at:Date.now()});if(r)st(r==1?"Boost is live on every screen!":"Not logged in as Firebase admin, so this boost only applies on this screen.")};
+ g$("b-stop").onclick=async()=>{if(await bsend({id:rid(),kind:g$("b-k").value,m:1,until:0,at:Date.now()}))st("Stopped.")};
+ g$("b-all").onclick=async()=>{let o=1;for(const k of Object.keys(BK))o=o&&await bsend({id:rid(),kind:k,m:1,until:0,at:Date.now()});if(o)st("All boosts stopped.")}}
 const st=t=>g$("g-st").textContent=t,w=async(p,d,u)=>{if(!db||!ed){st("Log in with your admin account first (see README).");return 0}try{await(u?db.doc(p).update(d):db.doc(p).set(d));return 1}catch(e){st("Rejected by the server: "+(e.code||e.message));return 0}};
 const RNm=["Regular","Epic","Mythical","Legendary","Secret"],FNs=["Ada","Boris","Camila","Dmitri","Elena","Felix","Greta","Hugo","Ines","Jonas","Kira","Lars","Mara","Nico","Olga","Pavel","Quinn","Rosa","Sven","Tessa"],LNs=["Hawthorn","Okafor","Lindqvist","Moreau","Castillo","Brandt","Nakamura","Rossi","Kowalski","Delacroix","Whitmore","Adeyemi","Petrov","Alvarez","Sterling","Voss"],TTs=["Fiscal hawk","Master builder","Green champion","Free-trade fan","Silver-tongued orator","Budget wizard"],SCs=["The Silent Senator","Agent Nobody","Senator ███","The Unseen Vote"],pick=a=>a[Math.random()*a.length|0];
 const rollR=()=>{let x=Math.random()*100,i=0;const W=[60,25,10,4];for(;i<4&&(x-=W[i])>=0;i++);return i};
@@ -2430,8 +2529,15 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.42.0",
+const VER="1.49.0",
 LOG=[
+["1.49.0", "Boats, Sister Cities, Goals & 15 new buildings", ["Fixed the black clouds and missing sun: the sky colors were set wrong, so clouds and the sun came out almost black. Clouds are now white with soft shaded undersides, and the sun is a bright disc low in the sky in front of your camera (tilt the camera toward the horizon to see it).","⚡ Low quality now really is lighter (1× pixel density, small hard shadows, simpler sky). ✨ High quality renders at up to 1.5× supersampling with soft 4K shadows, shaded clouds and stars at night.","⛵ Drive boats! Click any boat (with No tool selected) to take the helm like a car: W/S throttle and reverse, A/D steer, Space brake, Esc or ⚓ Anchor to stop. Boats stay on water, leave a wake and roll in turns. Cargo ships are slowest, fishing boats fastest. Boats come from the Wooden Pier, Harbor Dock and the new Marina.","🌐 New Cities button: your 3 save slots now form a network. Build a 🤝 Trade Center in two or more cities and they trade: each partner adds +3% to +10% income to the city you are playing. The panel also shows all your cities, lets you visit them, and gives you an empire rank from Village Mayor to Emperor.","🏅 New Goals button: 48 long-term goals (population, money, buildings, landmarks, expansions, happiness, driving, trade, play time and more) that pay cash when you reach them and count across all your cities. Plus a 🎁 daily gift that grows with your streak up to 7 days.","🗺️ Bigger expansions: every city expansion now adds 16×12 tiles of new land (it used to be 10×8), so your city can grow to 206×152. Cities you already started keep their size and just get the bigger steps from now on.","15 new buildings: ⛵ Marina (more boats), 🤝 Trade Center, 📈 Stock Exchange, 🎟️ Convention Center and 🎰 Casino Resort (Commerce), 🎢 Roller Coaster Park, 🔭 Planetarium, 🎪 Circus Big Top, 🎭 Grand Theater, 🎮 Esports Arena, 🏖️ Boardwalk and 🚀 Spaceport (Recreation), 🧬 Research Hospital (Health), 📡 Emergency Dispatch Center (Police & Law) and 🌞 Fusion Reactor (Power)."], "Nov 25, 2026"],
+["1.48.0", "Three more city expansions", ["Expansions #9, #10 and #11 are here and cost $500,000,000, $1,000,000,000 and $5,000,000,000. Each adds 10×8 more tiles (your city can now grow to 140×108) and unlocks a new landmark.","🔺 Great Pyramids of Giza ($20,000,000), 🎭 Sydney Opera House ($60,000,000) and ⛪ Sagrada Família ($200,000,000) join the Landmarks tab. They are 4×4, can each be built once, and add jobs, fun, income and city pride."], "Nov 25, 2026"],
+["1.47.0", "Six new fun buildings", ["New in the Recreation tab: ⛳ Golf Course (3×3, $12,000) with fairways, bunkers, a pond, a flag and a clubhouse; 🏌️ Mini Golf ($1,800) with a windmill; 🎡 Ferris Wheel (2×2, $8,000) that slowly turns and lights up at night; ⛸️ Ice Rink (2×2, $5,000); 🎳 Bowling Alley ($2,600) with a glowing pin sign; and 📽️ Drive-In Cinema (2×2, $4,200) with a glowing screen.","They all add fun, jobs and income, and the golf course also counts as green space.","The 🏮 Night Market now uses the remodeled lantern-stall model."], "Nov 23, 2026"],
+["1.46.0", "Real sky & cinematic mode", ["The black background is now a real sky: a blue gradient, a sun, drifting clouds, orange sunsets and stars at night that follow the time of day, and it also fills the space around your city.","New 🎬 Cinematic button in the top bar hides the interface, adds film bars and slowly orbits and zooms around your city. Press Esc or the ✕ button to exit.","Fixed the startup error (Invalid or unexpected token) that stopped the main menu and update log from loading."], "Nov 23, 2026"],
+["1.45.0", "Remodeled Shop, Night Market & Water Park", ["🏪 Shop is a two-storey corner store with a glass storefront, striped awning, door, rooftop unit, planter and a glowing sign at night.","🏮 The Market (Farmers Market) is now a night market: six colorful stalls with fruit, strings of glowing lanterns and a lit red entrance gate.","🛝 Water Park has a deck, lagoon pool, lazy river with a palm island, a tower with three twisting slides, loungers and umbrellas.","Fixed a possible startup error in the animated water."], "Nov 23, 2026"],
+["1.44.0", "Better buildings & living water", ["In ✨ High quality, every building, road and terrain tile now has soft ambient shading at the base of walls, brighter roofs and a faint sky-blue rim light, so buildings look solid and detailed instead of flat.","Water is animated: rivers and lakes now ripple and catch sparkling sun glints. Low quality keeps the original flat water and buildings."], "Nov 23, 2026"],
+["1.43.0", "High quality graphics & cleaner UI", ["New ✨ High quality mode (on by default): sharper rendering up to 2× pixel density, soft 4K shadows, textured detail and filtering on every ground, road and building texture, and a soft vignette.","Press the top-bar quality button to switch to ⚡ Low quality, which is the original look and runs lighter on slow devices. Switching reloads the page after saving your city.","Cleaner dark UI: a deep navy theme with a frosted top bar and bottom dock, pill buttons, rounded tiles and smoother hover effects, so the city colors stand out instead of a bright white screen."], "Nov 23, 2026"],
 ["1.42.0", "Build a city with a friend", ["New 🤝 Co-op button in the top bar and main menu. One player creates a room and gets a 6-letter code; the friend types it under Join a friend. You both build in the same city at the same time and see each other\u2019s roads, buildings, terrain, trees, lamps, tolls, one-way streets and skytrain change within a second.","Money is shared: the host\u2019s city pays out income and everyone spends from the same wallet. A \u201cX is building\u201d note shows when your friend changes something, and the button shows who is online.","The co-op city lives in its own slot, so your own cities in slots 1\u20133 are never touched. Leave any time and come back later with the same code; the city is kept in the room.","Undo, redo and New city are turned off in co-op so nobody can erase the other\u2019s work. Expanding the city, Random terrain and Generate river are shared too.","Needs both players to be signed in, and a one-time Firestore rules update for the rooms collection (the Co-op window shows the exact rules if they\u2019re missing). Senate, laws, news and your leaderboard score stay per player."], "Nov 22, 2026"],
 ["1.41.0", "Drive any car", ["Click any car with the ✋ No tool (or the 👁 look tool) to take the wheel. The car leaves the traffic and you drive it yourself; the camera follows.","Drive with W/S (or ↑/↓) to speed up and brake, A/D (or ←/→) to steer, Space for the handbrake. Esc or the 🅿️ Park button puts the car back into traffic. On phones and tablets, on-screen arrow buttons appear.","You can drive on roads and highways. Cars stop at the edge of the road, and buses, school buses, police cars, fire trucks and ambulances are slower or faster in their own way."], "Nov 12, 2026"],
 ["1.40.0", "Bigger, better malls", ["New 🛍️ Malls tab in Commerce with the original Mall plus four new ones: 🛍️ Grand Mall (3×3, $6,500), 🛒 Outlet Village (3×3, $5,200), 💎 Luxury Galleria (3×3, $14,000) and 🎡 Mega Mall (4×4, $26,000).","Grand Mall has a glass barrel-vault atrium, a drop-off canopy, a car park full of cars and a pylon sign. Outlet Village is an open-air plaza of pastel shops with a fountain, fairy lights and a clock tower.","Luxury Galleria has gold trim, a glass dome, copper-green wing domes, a columned entrance and twin fountains. Mega Mall is a cross-shaped hall with a glass dome, four anchor stores, big car parks and a ferris wheel. All of them glow at night.","Bigger malls earn more, employ more people and cover a wider area with shopping. Click one to see its stats."], "Nov 12, 2026"],
@@ -3179,12 +3285,80 @@ addEventListener("blur",()=>{for(const k in kd)kd[k]=0});
 const act=new Set();let sx=0,sy=0,stt=0,multi=0;
 cv.addEventListener("pointerdown",e=>{act.add(e.pointerId);if(act.size>1)multi=1;else{multi=0;sx=e.clientX;sy=e.clientY;stt=performance.now()}});
 cv.addEventListener("pointercancel",e=>{act.delete(e.pointerId)});
-cv.addEventListener("pointerup",e=>{act.delete(e.pointerId);if(act.size||multi||dv||e.button||e.shiftKey)return;
+cv.addEventListener("pointerup",e=>{act.delete(e.pointerId);if(act.size||multi||dv||window.TMBD||e.button||e.shiftKey)return;
  if(Math.hypot(e.clientX-sx,e.clientY-sy)>8||performance.now()-stt>600)return;
  if(!(tool=="none"||(T[tool]&&T[tool].k=="n")))return;
  const c=dvFind(e.clientX,e.clientY);if(c)start(c)});
-sel=function(t){sel0.apply(this,arguments);if(t=="none"||(T[t]&&T[t].k=="n")){const i=document.getElementById("info");if(i&&!/drive it/.test(i.textContent))i.textContent+=" Tip: click a car to drive it!"}};
+sel=function(t){sel0.apply(this,arguments);if(t=="none"||(T[t]&&T[t].k=="n")){const i=document.getElementById("info");if(i&&!/drive it/.test(i.textContent))i.textContent+=" Tip: click a car or boat to drive it!"}};
 })();
+</script>
+<script>
+/* ---- Drive boats: click a boat to take the helm (same controls as cars) ---- */
+(()=>{try{
+const st=document.getElementById("stage"),hud=document.getElementById("dv-h"),pad=document.getElementById("dv-p");if(!st||!hud||!pad)return;
+const dvT=hud.querySelector("#dv-t"),xb=hud.querySelector("#dv-x"),hint=hud.querySelector("small"),h0=hint.innerHTML,x0=xb.textContent;
+const boats0=boats,camKeys0=camKeys,
+ KM={KeyW:"f",ArrowUp:"f",KeyS:"b",ArrowDown:"b",KeyA:"l",ArrowLeft:"l",KeyD:"r",ArrowRight:"r",Space:"h"};
+let bd=null,lt=performance.now(),shown="";const kd={f:0,b:0,l:0,r:0,h:0};
+pad.querySelectorAll("button").forEach(b=>{const k=b.dataset.k,on=()=>{kd[k]=1},off=()=>{kd[k]=0};b.addEventListener("pointerdown",on);["pointerup","pointerleave","pointercancel"].forEach(t=>b.addEventListener(t,off))});
+xb.addEventListener("click",()=>stop());
+const tileOf=(x,z)=>[Math.floor(x+W/2),Math.floor(z+H/2)],
+ wok=(x,z)=>{const t=tileOf(x,z);return bwat(t[0],t[1])},
+ wok4=r=>(x,z)=>[[r,r],[r,-r],[-r,r],[-r,-r]].every(([a,b])=>wok(x+a,z+b)),
+ dirOf=a=>{let b=0,bv=-9;for(let d=0;d<4;d++){const v=BWD[d][0]*Math.sin(a)+BWD[d][1]*Math.cos(a);if(v>bv){bv=v;b=d}}return b},
+ NM=sp=>sp<.5?["Cargo ship",1.9,.13]:sp<.7?["Sailboat",2.3,.09]:["Fishing boat",2.7,.09],
+ find=(cx,cy)=>{const r=cv.getBoundingClientRect(),v=new THREE.Vector3();let best=null,bs=40*40;
+  BT.forEach(o=>{if(!o.m||!o.m.visible)return;v.set(o.m.position.x,o.m.position.y+.05,o.m.position.z);v.project(cam);if(v.z>1||v.z<-1)return;const sx=r.left+(v.x+1)/2*r.width,sy=r.top+(1-v.y)/2*r.height,d=(sx-cx)*(sx-cx)+(sy-cy)*(sy-cy);if(d<bs){bs=d;best=o}});return best};
+function mkWake(){const g=new THREE.Group(),mt=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false});
+ [-1,1].forEach(s=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(.045,.6).rotateX(-Math.PI/2),mt);p.position.set(s*.1,.012,-.42);p.rotation.y=s*.26;p.renderOrder=4;g.add(p)});g.userData.mt=mt;return g}
+function start(o){const i=BT.indexOf(o);if(i<0)return;BT.splice(i,1);for(const k in CK)CK[k]=0;
+ const[nm,vm,rad]=NM(o.sp),wk=mkWake();o.m.add(wk);
+ bd={o,m:o.m,px:o.m.position.x,pz:o.m.position.z,a:o.h,v:o.s<1?o.sp*.8:0,vm,nm,rad,roll:0,wk,z:40};
+ lt=performance.now();shown="";window.TMBD=1;hint.innerHTML="W/S throttle &amp; reverse · A/D steer · Space brake · Esc anchor";xb.textContent="⚓ Anchor";hud.classList.add("on");pad.classList.add("on");
+ toast("⛵ You’re at the helm! W/S throttle and reverse, A/D steer, Esc to anchor.",4500)}
+function release(){window.TMBD=0;hud.classList.remove("on");pad.classList.remove("on");hint.innerHTML=h0;xb.textContent=x0;for(const k in kd)kd[k]=0}
+function stop(){if(!bd)return;const d=bd;bd=null;release();d.m.remove(d.wk);d.wk.traverse(q=>{if(q.geometry)q.geometry.dispose()});
+ const[x,y]=tileOf(d.px,d.pz),o=d.o;
+ if(!bwat(x,y)||!boatG||d.m.parent!==boatG||B[o.u]!==o.dk||!okB[o.u]){if(d.m.parent)d.m.parent.remove(d.m);return}
+ const a=dirOf(d.a),dx=BWD[a][0],dy=BWD[a][1],t=(d.px-wx(x))*dx+(d.pz-wz(y))*dy;
+ o.x=x;o.y=y;o.fx=x;o.fy=y;o.s=1;
+ if(t>=0&&bwat(x+dx,y+dy)){o.x=x+dx;o.y=y+dy;o.s=Math.min(1,t)}else if(t<0&&bwat(x-dx,y-dy)){o.fx=x-dx;o.fy=y-dy;o.s=Math.max(0,1+t)}
+ o.a=a;o.h=d.a;o.mode=0;o.tm=8+Math.random()*10;o.dm=null;o.lo=0;o.w=0;BT.push(o)}
+function drive(){const d=bd,n=performance.now(),dt=Math.min(.05,Math.max(0,(n-lt)/1e3));lt=n;
+ if(!boatG||d.m.parent!==boatG){bd=null;release();return}
+ const A=d.vm*.55;
+ if(kd.f)d.v+=(d.v<0?2.5:A)*dt;else if(kd.b)d.v-=(d.v>0?A*1.6:A*.6)*dt;
+ if(kd.h)d.v-=Math.sign(d.v)*Math.min(Math.abs(d.v),1.8*dt);
+ if(!kd.f&&!kd.b)d.v-=d.v*Math.min(1,.45*dt);
+ d.v=Math.max(-.45*d.vm,Math.min(d.vm,d.v));
+ const sg=(kd.l?1:0)-(kd.r?1:0),tf=Math.max(.3,Math.min(1,Math.abs(d.v)/.7))*(d.v<-.05?-1:1);
+ d.a+=sg*1.7*dt*tf;
+ const nx=d.px+Math.sin(d.a)*d.v*dt,nz=d.pz+Math.cos(d.a)*d.v*dt,o4=wok4(d.rad),ok=o4(d.px,d.pz)?o4:wok;
+ if(ok(nx,nz)){d.px=nx;d.pz=nz}else if(ok(nx,d.pz)){d.px=nx;d.v*=.6}else if(ok(d.px,nz)){d.pz=nz;d.v*=.6}else d.v*=-.3;
+ const t=n/1000,sp=Math.min(1,Math.abs(d.v)/d.vm),o=d.o;
+ d.roll+=(-sg*sp*.2-d.roll)*Math.min(1,dt*5);
+ d.m.position.set(d.px,.04+Math.sin(t*2+o.ph)*.006,d.pz);
+ d.m.rotation.set(-.05*sp*Math.sign(d.v)+Math.sin(t*1.3+o.ph)*.015,d.a,d.roll+Math.sin(t*1.6+o.ph)*.03);
+ d.wk.userData.mt.opacity=d.v>.08?Math.min(.6,sp*.8):0;d.wk.scale.z=.4+sp*1.1;
+ const tx=d.nm+" · "+Math.round(Math.abs(d.v)*12)+" knots";if(tx!==shown){shown=tx;if(dvT)dvT.textContent="⛵ "+tx}}
+boats=function(dt){boats0(dt);if(bd)try{drive()}catch(e){console.error(e);stop()}};
+camKeys=function(){if(!bd){camKeys0();return}
+ CV[0]=CV[1]=0;const t=ctl.target,o=cam.position.clone().sub(t);
+ if(bd.z>0){bd.z--;const l=o.length();o.setLength(l+(9-l)*.08)}
+ t.x+=(bd.px-t.x)*.18;t.z+=(bd.pz-t.z)*.18;t.y=0;cam.position.copy(t).add(o)};
+addEventListener("keydown",e=>{if(!bd)return;const tg=e.target&&e.target.tagName;if(tg=="INPUT"||tg=="TEXTAREA"||e.ctrlKey||e.metaKey||e.altKey)return;
+ if(e.code=="Escape"){stop();e.stopImmediatePropagation();return}
+ const k=KM[e.code];if(!k)return;kd[k]=1;e.preventDefault();e.stopImmediatePropagation()},true);
+addEventListener("keyup",e=>{const k=KM[e.code];if(!k)return;kd[k]=0;if(bd)e.stopImmediatePropagation()},true);
+addEventListener("blur",()=>{for(const k in kd)kd[k]=0});
+const act=new Set();let sx=0,sy=0,stt=0,multi=0;
+cv.addEventListener("pointerdown",e=>{act.add(e.pointerId);if(act.size>1)multi=1;else{multi=0;sx=e.clientX;sy=e.clientY;stt=performance.now()}});
+cv.addEventListener("pointercancel",e=>{act.delete(e.pointerId)});
+cv.addEventListener("pointerup",e=>{act.delete(e.pointerId);if(act.size||multi||bd||e.button||e.shiftKey||hud.classList.contains("on"))return;
+ if(Math.hypot(e.clientX-sx,e.clientY-sy)>8||performance.now()-stt>600)return;
+ if(!(tool=="none"||(T[tool]&&T[tool].k=="n")))return;
+ const o=find(e.clientX,e.clientY);if(o)start(o)});
+}catch(e){console.warn("boat driving skipped",e)}})();
 </script>
 <style>
 #co-m{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:40;padding:12px;box-sizing:border-box}
@@ -3512,5 +3686,359 @@ window.TMCO={open,state:()=>({ready,room,isHost,appliedSeq,outbox:outbox.length}
  if(INCO&&!VIEW)setTimeout(()=>{if(!uid)toast("🤝 Sign in (👤) to keep building the co-op city.",6000)},2500)
 })(0);
 })();
+</script>
+<style>
+:root{--bg:#141b27;--panel:#1c2534;--ink:#e8eef7;--mut:#93a3b8;--line:#2c3a4f;--acc:#5b9bff;--good:#3ecf8e;--warn:#f0b43c;--bad:#ff6b63;color-scheme:dark}
+header{background:rgba(20,27,39,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);box-shadow:0 2px 16px rgba(0,0,0,.35);gap:6px 10px}
+header button{border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;font-weight:600;transition:transform .15s,border-color .15s,box-shadow .15s}
+header button:hover{border-color:var(--acc);transform:translateY(-1px);box-shadow:0 4px 12px rgba(91,155,255,.25)}
+header input{border-radius:10px;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+footer{background:rgba(20,27,39,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line);box-shadow:0 -4px 18px rgba(0,0,0,.35)}
+#hud{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.t{border-radius:12px;background:var(--panel);transition:transform .12s,box-shadow .12s}.t:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.dk-panel,.dk-c,.co-box,.mm-b{border-radius:14px}#toast{border-radius:12px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+canvas{box-shadow:0 0 0 2px var(--line),0 10px 30px rgba(0,0,0,.45)}
+body.hq #cv{filter:saturate(1.12) contrast(1.05)}
+body.hq #stage{position:relative}body.hq #stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 62%,rgba(5,10,25,.28))}
+</style>
+<script>
+(()=>{const hq=!!window.TMHQ;document.body.classList.toggle("hq",hq);
+const hd=document.querySelector("header"),b=document.createElement("button");b.id="q-b";b.textContent=hq?"✨ High quality":"⚡ Low quality";b.title="Switch graphics quality (reloads the page; your city is saved first)";
+b.onclick=()=>{try{save()}catch(e){}try{localStorage.setItem("tm_q",hq?"low":"hi")}catch(e){}location.reload()};if(hd)hd.append(b);
+const sp=renderer.setPixelRatio.bind(renderer),coarse=matchMedia("(pointer:coarse)").matches;
+const redo=()=>{if(L.shadow.map){L.shadow.map.dispose();L.shadow.map=null}scene.traverse(o=>{if(o.material)[].concat(o.material).forEach(m=>m.needsUpdate=true)});fit()};
+if(!hq){try{/* LOW: 1x pixels, small hard-edged shadows, simple sky */
+renderer.setPixelRatio=v=>sp(1);renderer.shadowMap.type=THREE.BasicShadowMap;L.shadow.mapSize.set(1024,1024);L.shadow.bias=-.001;redo()}catch(e){console.error(e)}return}
+try{/* HIGH: supersampled pixels, soft 4K shadows */
+renderer.setPixelRatio=v=>sp(Math.min(Math.max(v,1)*1.5,coarse?2:2.5));renderer.shadowMap.type=THREE.PCFSoftShadowMap;L.shadow.mapSize.set(4096,4096);L.shadow.bias=-.0004;L.shadow.normalBias=.02;L.shadow.radius=3;redo()}catch(e){console.error(e)}})();
+</script>
+<script>
+/* HQ water: animated ripples and sun glints on the river and lakes */
+(()=>{try{if(!window.TMHQ||typeof WM==="undefined")return;
+const U={value:0},base=THREE.MeshLambertMaterial.prototype.onBeforeCompile;
+[WM[0],WM[1]].filter(Boolean).forEach(m=>{m.onBeforeCompile=function(sh){base.call(this,sh);sh.uniforms.uT=U;
+ sh.fragmentShader=sh.fragmentShader.replace(/void main\(\)\s*\{/,"uniform float uT;\nvoid main(){").replace("#include <tonemapping_fragment>",`{vec2 p=vWP.xz;float t=uT,w=sin(p.x*4.+t*1.4)+sin(p.y*5.3-t*1.1)+sin((p.x+p.y)*7.+t*2.2)*.6+sin((p.x-p.y)*9.-t*1.7)*.4;
+gl_FragColor.rgb+=vec3(.05,.1,.14)*w*.14+vec3(.8,.92,1.)*smoothstep(1.55,2.3,w)*.38;}
+#include <tonemapping_fragment>`)};m.needsUpdate=true});
+(function f(t){U.value=t/1000;requestAnimationFrame(f)})(0)}catch(e){console.warn("HQ water skipped",e)}})();
+</script>
+<script>
+/* Remodels: Shop, Farmers/Night Market and Water Park */
+(()=>{try{
+const sm=g=>{g.traverse(q=>{if(q.isMesh)q.castShadow=q.receiveShadow=true});return g},G=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
+ bm=(w,h,d,mt,x,y,z)=>{const m=bx(w,h,d,0,x,y,z);m.material=mt;return m};
+const stripe=[];for(let i=0;i<6;i++){const a=bx(.1,.02,.17,i%2?0xf6f6f6:0xd9433b,-.25+i*.1,.19,.33);a.rotation.x=.45;stripe.push(a)}
+proto.c1=sm(G(bx(.72,.2,.6,0xf3ece0,0,0,-.03),bx(.72,.2,.6,0xe6dccb,0,.2,-.03),bx(.77,.04,.65,0xc9bba8,0,.4,-.03),
+ bm(.62,.14,.02,GW,0,.03,.275),bx(.1,.16,.03,0x5a4030,-.24,.02,.28),bm(.14,.09,.02,GW,-.2,.24,.275),bm(.14,.09,.02,GW,.2,.24,.275),
+ bm(.46,.07,.02,gm(0xffe08a,0xffb040),0,.34,.285),...stripe,bx(.12,.07,.1,0x9aa0a8,.22,.44,-.12),cy(.05,.05,0x7a5a3c,.31,0,.36,8),cy(.07,.07,0x3f8f4e,.31,.05,.36,8)));
+const cols=[0xd9433b,0xf0a030,0x2f8f4e,0x3b8fd9,0x9b59d0,0xe05fa0],fr=[0xd9433b,0xf2c230,0x6fbf4a],lan=gm(0xffd27a,0xffb347),it=[bx(.98,.03,.98,0x3b3b44)];
+for(let r=0;r<2;r++)for(let c=0;c<3;c++){const x=-.3+c*.3,z=-.2+r*.4;it.push(bx(.22,.09,.16,0x6b4a35,x,.03,z),bx(.27,.025,.22,cols[r*3+c],x,.22,z),bx(.015,.17,.015,0x4a3a2c,x-.11,.05,z+.09),bx(.015,.17,.015,0x4a3a2c,x+.11,.05,z+.09),bx(.05,.04,.05,fr[(r+c)%3],x-.04,.12,z),bx(.05,.04,.05,fr[(r+c+1)%3],x+.04,.12,z))}
+for(let i=0;i<7;i++)it.push(bm(.035,.045,.035,lan,-.36+i*.12,.3,0));
+it.push(bx(.03,.36,.03,0x7a2a22,-.22,.03,.46),bx(.03,.36,.03,0x7a2a22,.22,.03,.46),bm(.5,.08,.03,gm(0xd9433b,0xff4a3a),0,.34,.46));
+proto.market=sm(G(...it));
+const wt=mat({color:0x4fc3f0,transparent:true,opacity:.92}),tb=(pts,c)=>new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p))),28,.035,8),mat({color:c}));
+const lz=new THREE.Mesh(new THREE.TorusGeometry(.2,.05,8,24).rotateX(Math.PI/2),wt);lz.position.set(.2,.05,-.15);
+const um=(x,z,c)=>G(cy(.008,.14,0x888888,x,.03,z,6),(()=>{const k=new THREE.Mesh(new THREE.ConeGeometry(.07,.04,8),mat({color:c}));k.position.set(x,.19,z);return k})());
+proto.wpark=sm(G(bx(.98,.03,.98,0xe9dfc6),bm(.52,.045,.36,wt,-.22,.03,.26),lz,cy(.07,.04,0xe9dfc6,.2,.03,-.15),cy(.012,.16,0x7a5a3c,.2,.06,-.15,6),ro(.07,.05,0x3f9f4e,.2),
+ bx(.16,.46,.16,0xf4f4f4,-.34,.03,-.34),bx(.21,.03,.21,0xd9433b,-.34,.49,-.34),
+ tb([[-.34,.5,-.3],[-.22,.42,-.1],[-.12,.3,.08],[-.2,.15,.18],[-.22,.07,.26]],0xd9433b),tb([[-.3,.46,-.36],[-.1,.36,-.2],[-.02,.22,0],[-.3,.12,.16],[-.34,.07,.2]],0xf2c230),
+ tb([[-.38,.44,-.3],[-.46,.3,-.1],[-.5,.16,.1],[-.38,.08,.24],[-.3,.07,.3]],0x3b8fd9),
+ bx(.1,.025,.04,0xffffff,.3,.03,.3),bx(.1,.025,.04,0xffffff,.1,.03,.38),um(.34,.34,0xd9433b),um(.1,.3,0xf2c230),bx(.1,.12,.1,0x8a6a4a,.38,.03,.05)));
+dirty=1}catch(e){console.warn("remodel skipped",e)}})();
+</script>
+<style>
+#cine-bars,#cine-x{display:none}
+body.cine header,body.cine footer,body.cine #binfo,body.cine #toast,body.cine #vbn,body.cine #info{display:none!important}
+body.cine #stage{min-height:100vh;cursor:none}body.cine canvas{box-shadow:none;border-radius:0}
+body.cine #cine-bars{display:block;position:fixed;inset:0;pointer-events:none;z-index:25}
+#cine-bars::before,#cine-bars::after{content:"";position:absolute;left:0;right:0;height:11vh;background:#000;transition:transform 1.2s ease}
+#cine-bars::before{top:0;animation:cb1 1.2s ease}#cine-bars::after{bottom:0;animation:cb2 1.2s ease}
+@keyframes cb1{from{transform:translateY(-100%)}}@keyframes cb2{from{transform:translateY(100%)}}
+body.cine #cine-x{display:block;position:fixed;top:14px;right:14px;z-index:26;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;border-radius:999px;padding:6px 14px;font:600 13px system-ui;cursor:pointer;opacity:.0;transition:opacity .4s}
+body.cine:hover #cine-x{opacity:.85}
+</style>
+<div id="cine-bars"></div><button id="cine-x">✕ Exit cinematic (Esc)</button>
+<script>
+/* Real sky dome (gradient, sun, drifting clouds, stars at night) + cinematic camera mode */
+(()=>{try{
+const R=Math.min((cam.far||1000)*.8,900),C=h=>new THREE.Color(h),
+U={uTop:{value:C(0x2f7be0)},uHor:{value:C(0xbfe3ff)},uGnd:{value:C(0xa9cfe6)},uSunDir:{value:new THREE.Vector3(0,1,0)},uSunCol:{value:C(0xfff0c8)},uCloud:{value:C(0xffffff)},uT:{value:0},uNight:{value:0},uQ:{value:window.TMHQ?5:2}};
+const dome=new THREE.Mesh(new THREE.SphereGeometry(R,32,16),new THREE.ShaderMaterial({uniforms:U,side:THREE.BackSide,depthWrite:false,depthTest:false,fog:false,
+vertexShader:"varying vec3 vD;void main(){vD=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
+fragmentShader:`varying vec3 vD;uniform vec3 uTop,uHor,uGnd,uSunDir,uSunCol,uCloud;uniform float uT,uNight,uQ;
+float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h2(i),h2(i+vec2(1,0)),f.x),mix(h2(i+vec2(0,1)),h2(i+vec2(1,1)),f.x),f.y);}
+float fbm(vec2 p){float a=.5,s=0.;for(int i=0;i<5;i++){if(float(i)>=uQ)break;s+=a*vn(p);p*=2.03;a*=.5;}return s;}
+void main(){vec3 d=normalize(vD);float y=d.y;
+vec3 c=y>0.?mix(uHor,uTop,pow(clamp(y,0.,1.),.55)):mix(uHor,uGnd,1.-smoothstep(-.5,0.,y));
+float sd=max(dot(d,uSunDir),0.);c+=uSunCol*(smoothstep(.9990,.9996,sd)*2.5+pow(sd,60.)*.45+pow(sd,6.)*.22)*(1.-uNight);
+vec2 cp=d.xz/(abs(y)+.35)*1.6+vec2(uT*.015,uT*.006);float cl=smoothstep(.48,.8,fbm(cp))*(.35+.65*smoothstep(-.4,.3,y));
+vec3 cc=uCloud;if(uQ>3.){float sh=fbm(cp+uSunDir.xz*.12);cc*=.72+.28*smoothstep(.35,.75,sh);}c=mix(c,cc*(1.-.6*uNight)+uHor*.25*uNight,cl*.85);
+float st=uQ>3.?step(.9965,h2(floor(d.xz/(abs(y)+.2)*260.)))*uNight*step(0.,y):0.;c+=vec3(st);
+gl_FragColor=vec4(c,1.0);}`}));
+dome.renderOrder=-1000;dome.frustumCulled=false;scene.add(dome);
+const P={day:[C(0x2f7be0),C(0xbfe3ff),C(0xa9cfe6)],dusk:[C(0x4a4f9c),C(0xff9a62),C(0xd98a6a)],night:[C(0x050b1e),C(0x16213f),C(0x0b1226)]},ss=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
+const k=["uTop","uHor","uGnd"],FD=new THREE.Vector3();
+function frame(t){const tod=typeof TOD==="number"?TOD:10,th=(tod-6)/12*Math.PI,e=Math.sin(th),day=ss(-.12,.22,e),dusk=(1-ss(0,.45,Math.abs(e)))*ss(-.35,-.05,e+.0);
+ k.forEach((n,i)=>{U[n].value.copy(P.night[i]).lerp(P.day[i],day).lerp(P.dusk[i],dusk*.8)});
+ {cam.getWorldDirection(FD);const hl=Math.hypot(FD.x,FD.z)||1,ca=Math.atan2(FD.x/hl,FD.z/hl)-.55*Math.cos(th),ea=e>0?.1+.42*e:e*.9;U.uSunDir.value.set(Math.sin(ca)*Math.cos(ea),Math.sin(ea),Math.cos(ca)*Math.cos(ea)).normalize()}U.uSunCol.value.setRGB(1,.94-.3*dusk,.78-.4*dusk);U.uNight.value=1-day;U.uT.value=t/1000;
+ U.uCloud.value.setRGB(1,1-.25*dusk,1-.4*dusk);dome.position.copy(cam.position);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+/* cinematic mode */
+let on=false,base=0,prevTool="road";
+const body=document.body,hd=document.querySelector("header"),b=document.createElement("button");b.id="cine-b";b.textContent="🎬 Cinematic";b.title="Hide the interface and fly slowly around your city";
+function loop(){if(!on)return;const t=performance.now()/1000,off=cam.position.clone().sub(ctl.target);if(!base)base=off.length();off.setLength(base*(1+.16*Math.sin(t*.11)));cam.position.copy(ctl.target).add(off);requestAnimationFrame(loop)}
+function set(v){if(v===on)return;on=v;body.classList.toggle("cine",v);
+ if(v){prevTool=tool;try{sel("none")}catch(e){}ctl.autoRotate=true;ctl.autoRotateSpeed=.7;base=0;requestAnimationFrame(loop)}
+ else{ctl.autoRotate=false;try{sel(prevTool&&T[prevTool]?prevTool:"road")}catch(e){}}
+ setTimeout(()=>window.dispatchEvent(new Event("resize")),60)}
+b.onclick=()=>set(true);if(hd)hd.append(b);document.getElementById("cine-x").onclick=()=>set(false);
+addEventListener("keydown",e=>{if(on&&e.key==="Escape"){e.stopImmediatePropagation();set(false)}},true);
+}catch(e){console.warn("sky/cinematic skipped",e)}})();
+</script>
+<script>
+/* New fun buildings (Recreation tab) + the Night Market gets its remodel */
+(()=>{try{
+const sm=g=>{g.traverse(q=>{if(q.isMesh)q.castShadow=q.receiveShadow=true});return g},G=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
+ bm=(w,h,d,mt,x,y,z)=>{const m=bx(w,h,d,0,x,y,z);m.material=mt;return m},tr=(x,z,k=.14)=>G(cy(.015,.1,0x6b4a35,x,0,z,6),ro(.07,k,0x2f7f43,.08).translateX(x).translateZ(z)),
+ gl=gm(0xfff2c0,0xffd27a),GR=(a,r)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.02,18),mat({color:a}));return m};
+Object.assign(T,{
+golf:{n:"Golf Course",e:"⛳",c:12000,k:"p",jobs:20,inc:28,fun:300,grn:1,joy:.02,t:2,w:3,h:3,d:"Fairways, bunkers, a pond, a putting green with a flag and a little clubhouse."},
+minigolf:{n:"Mini Golf",e:"🏌️",c:1800,k:"p",jobs:4,inc:6,fun:110,joy:.008,t:1,d:"A windmill, a curvy green and a lit-up hole. Cheap family fun."},
+ferris:{n:"Ferris Wheel",e:"🎡",c:8000,k:"p",jobs:14,inc:30,fun:260,joy:.015,pri:2,t:2,w:2,h:2,d:"A slowly turning wheel with colorful gondolas and glowing lights at night."},
+rink:{n:"Ice Rink",e:"⛸️",c:5000,k:"p",jobs:10,inc:14,fun:180,joy:.01,t:2,w:2,h:2,d:"An open-air rink with boards, stands, a warm-up hut and floodlights."},
+bowling:{n:"Bowling Alley",e:"🎳",c:2600,k:"p",jobs:8,inc:12,fun:120,joy:.008,t:1,d:"A red hall with a giant glowing bowling pin sign."},
+drivein:{n:"Drive-In Cinema",e:"📽️",c:4200,k:"p",jobs:8,inc:16,fun:160,joy:.01,t:1,w:2,h:2,d:"A big glowing screen, rows of parked cars and a snack hut."}});
+const ids=["golf","minigolf","ferris","rink","bowling","drivein"];
+proto.golf=sm(G(bx(.98,.02,.98,0x5fae4a),bx(.3,.025,.9,0x7ccf5a,-.25,.02,0),bx(.28,.025,.5,0x7ccf5a,.15,.02,-.05),(()=>{const m=GR(0xeadcae,.08);m.position.set(.25,.03,.2);return m})(),(()=>{const m=GR(0x4fb8e8,.14);m.position.set(.3,.03,-.28);return m})(),(()=>{const m=GR(0x8fe06a,.11);m.position.set(-.25,.035,-.36);return m})(),
+ cy(.004,.12,0xeeeeee,-.25,.045,-.36,5),bx(.05,.03,.005,0xd9433b,-.23,.13,-.36),bx(.06,.02,.06,0x3f7f3a,-.25,.02,.4),tr(.42,.42),tr(.44,-.05),tr(-.44,.1,.18),tr(-.1,-.44),bx(.22,.1,.15,0xf3ece0,.3,.02,.38),ro(.17,.08,0xb5523b,.12).translateX(.3).translateZ(.38),bm(.1,.05,.01,GW,.3,.04,.46)));
+const wm=(()=>{const g=G(bx(.2,.03,.02,0xd9433b,0,0,0),bx(.02,.03,.2,0xd9433b,0,0,0));g.position.set(-.25,.3,-.1);return g})();
+proto.minigolf=sm(G(bx(.92,.03,.92,0x4aa84a),bx(.7,.02,.14,0x2f8f3f,0,.03,.22),bx(.14,.02,.5,0x2f8f3f,.28,.03,-.1),bx(.18,.2,.18,0xf4f4f4,-.25,.03,-.2),ro(.14,.1,0xd9433b,.23).translateX(-.25).translateZ(-.2),wm,cy(.004,.1,0xeeeeee,.28,.05,-.34,5),bx(.04,.025,.005,0xf2c230,.3,.12,-.34),bm(.06,.05,.06,gl,-.38,.03,.4)));
+const wheel=new THREE.Group();wheel.position.y=.5;wheel.userData.fw=1;
+wheel.add(new THREE.Mesh(new THREE.TorusGeometry(.32,.014,6,36),gl));
+for(let i=0;i<8;i++){const a=i*Math.PI/8,sp=bx(.64,.012,.012,0xeeeeee,0,0,0);sp.rotation.z=a;wheel.add(sp)}
+for(let i=0;i<10;i++){const a=i*Math.PI/5,gd=bx(.07,.06,.06,[0xd9433b,0xf2c230,0x3b8fd9,0x2f8f4e,0xe05fa0][i%5],Math.cos(a)*.32,0,Math.sin(a)*.32);gd.position.y=Math.sin(a)*.32-.03;gd.position.x=Math.cos(a)*.32;gd.position.z=0;wheel.add(gd)}
+proto.ferris=sm(G(bx(.92,.03,.92,0x6b6f78),bx(.05,.5,.05,0xbfc5cc,-.2,.03,.08),bx(.05,.5,.05,0xbfc5cc,.2,.03,.08),bx(.05,.5,.05,0xbfc5cc,-.2,.03,-.08),bx(.05,.5,.05,0xbfc5cc,.2,.03,-.08),wheel,bx(.2,.08,.12,0xf0a030,.3,.03,.38),tr(-.4,.4,.12)));
+proto.rink=sm(G(bx(.96,.03,.96,0xcfd6de),bx(.72,.025,.46,0xcfeeff,0,.03,-.08),bx(.76,.05,.02,0xffffff,0,.03,-.33),bx(.76,.05,.02,0xffffff,0,.03,.17),bx(.02,.05,.5,0xffffff,-.37,.03,-.08),bx(.02,.05,.5,0xffffff,.37,.03,-.08),bx(.8,.1,.12,0x9aa7b5,0,.03,.38),bx(.2,.12,.14,0x3b8fd9,.35,.03,.2).translateX(.08),bx(.015,.3,.015,0x888888,-.44,.03,-.4),bx(.015,.3,.015,0x888888,.44,.03,-.4),bm(.06,.03,.06,gl,-.44,.32,-.4),bm(.06,.03,.06,gl,.44,.32,-.4)));
+proto.bowling=sm(G(bx(.8,.22,.6,0xd9433b),bx(.84,.03,.64,0x8a2a22,0,.22,0),bm(.3,.12,.02,GW,0,.03,.31),cy(.06,.14,0xffffff,0,.25,0,10),cy(.035,.08,0xffffff,0,.37,0),cy(.062,.02,0xd9433b,0,.33,0),bm(.1,.1,.02,gm(0xffe08a,0xffb040),.28,.1,.31)));
+const car=(x,z,c)=>bx(.1,.04,.05,c,x,.03,z),cars=[];for(let r=0;r<2;r++)for(let c=0;c<4;c++)if((r+c)%3)cars.push(car(-.3+c*.2,.0+r*.22,[0xd9433b,0x3b8fd9,0xf2c230,0x2f8f4e][(r+c)%4]));
+proto.drivein=sm(G(bx(.96,.02,.96,0x3a3a42),bx(.74,.4,.025,0x222222,0,.02,-.4),bm(.66,.32,.02,gm(0xbfe6ff,0x6fb8ff),0,.06,-.385),bx(.03,.2,.03,0x555555,-.2,.02,-.36),bx(.03,.2,.03,0x555555,.2,.02,-.36),...cars,bx(.16,.09,.12,0xf0a030,.36,.02,.36),bm(.1,.04,.01,gl,.36,.05,.43)));
+proto.nmk=proto.market;
+ids.forEach(id=>{dkG.Recreation.push(id);dkLOC[id]=[8,0];const a=dkCATS[8]&&dkCATS[8].subs[0][1];if(a&&!a.includes(id))a.push(id)});
+const tb=document.getElementById("tb");if(tb){tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
+const WL=[],rb=rebuild;rebuild=function(){rb.apply(this,arguments);WL.length=0;if(cityG)cityG.traverse(q=>{if(q.userData&&q.userData.fw)WL.push(q)})};
+let lt=performance.now();(function f(t){const dt=Math.min(.1,(t-lt)/1000);lt=t;WL.forEach(q=>q.rotation.z-=dt*.25);requestAnimationFrame(f)})(lt);
+dirty=1;ui()}catch(e){console.warn("new buildings skipped",e)}})();
+</script>
+<script>
+/* New buildings: Marina, Trade Center, Stock Exchange, Convention Center, Casino, Roller Coaster, Planetarium, Circus, Theater, Esports Arena, Boardwalk, Spaceport, Research Hospital, Dispatch Center, Fusion Reactor */
+(()=>{try{
+const G=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
+ sm=g=>{g.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}});return g},
+ S=(r,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,12,8),mat({color:c}));m.position.set(x,y,z);return m},
+ dome=(r,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,10,0,Math.PI*2,0,Math.PI/2),mat({color:c}));m.position.set(x,y,z);return m},
+ cone=(rt,rb,h,c,x,y,z,n=14)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,n),mat({color:c}));m.position.set(x,y+h/2,z);return m},
+ tor=(r,t,c,x,y,z,rx,ry,glow)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(r,t,8,32),glow?gm(c,c):mat({color:c}));m.position.set(x,y,z);m.rotation.set(rx||0,ry||0,0);return m},
+ pad=(c,k=.96)=>bx(k,.03,k,c),
+ tree=(x,z,k=1)=>G(cy(.015*k,.1*k,0x6b4a35,x,.03,z,6),S(.07*k,0x3fa04a,x,.17*k+.03,z)),
+ palm=(x,z)=>G(cy(.014,.22,0x8a6a3a,x,.03,z,6),S(.07,0x3fa04a,x,.28,z)),
+ flag=(x,z,c)=>G(cy(.006,.3,0xdddddd,x,.03,z,5),bx(.1,.06,.006,c,x+.05,.27,z)),
+ boat=(x,z,c)=>G(bx(.09,.035,.26,c,x,.02,z),bx(.008,.2,.1,0xffffff,x,.055,z-.02),cy(.004,.24,0x777777,x,.055,z,5));
+
+/* ---------- models ---------- */
+const P=proto;
+P.marina=sm(G(bx(.96,.03,.5,0xcfc3a8,0,0,-.25),bx(.5,.24,.3,0xf4f1ea,-.2,.03,-.28),bx(.56,.04,.34,0x2f6fa8,-.2,.27,-.28),gl(.16,.09,.02,0xffe9a0,-.2,.1,-.125),
+ bx(.16,.12,.14,0xd9433b,.3,.03,-.3),cy(.006,.4,0xdddddd,.42,.03,-.42,5),bx(.1,.06,.006,0x3b8fd9,.47,.33,-.42),
+ bx(.9,.03,.08,0x9a7248,0,.05,.06),...[-.3,0,.3].map(x=>bx(.07,.03,.8,0x9a7248,x,.05,.5)),
+ ...[-.3,0,.3].flatMap(x=>[.15,.55,.88].map(z=>cy(.016,.12,0x5a4630,x,-.03,z,6))),
+ gs(.022,0xffe080,-.3,.2,.9),gs(.022,0xffe080,0,.2,.9),gs(.022,0xffe080,.3,.2,.9),
+ boat(-.15,.55,0xf2f4f6),boat(.15,.55,0xd9433b),boat(-.15,.8,0x3b8fd9),tree(.38,.0,1.2)));
+P.tradectr=sm(G(bx(.96,.1,.96,0xb9c0c8),bx(.5,1.3,.5,0,-.08,.1,-.08,wt(12,4,"#3a6a9a","#bfe6ff")),bx(.34,.85,.34,0,.22,.1,.12,wt(8,3,"#4a7aaa","#ffeaa6")),
+ bx(.56,.05,.56,0xd4a62a,-.08,1.4,-.08),gs(.11,0x4fc3f7,-.08,1.55,-.08,0x2090d0),tor(.15,.012,0xd4a62a,-.08,1.55,-.08,Math.PI/2.4,0),
+ gl(.5,.06,.02,0xffd27a,0,.2,.37),flag(-.38,.42,0xd9433b),flag(-.26,.42,0x3b8fd9),flag(-.14,.42,0xf2c230),flag(-.02,.42,0x2f8f4e)));
+P.stockex=sm(G(bx(.96,.04,.96,0xd8d4c8),bx(.92,.06,.5,0xe8e4d8,0,.04,.2),...[-.38,-.23,-.08,.08,.23,.38].map(x=>cy(.035,.4,0xf2efe6,x,.1,.38,12)),
+ bx(.94,.06,.2,0xe8e4d8,0,.5,.38),ro(.68,.16,0xcfc9b8,.56).translateZ(.38).translateX(0),bx(.9,.4,.3,0xe8e4d8,0,.1,.12),
+ bx(.4,1.1,.4,0,0,.1,-.28,wt(10,3,"#5a6f86","#ffeaa6")),bx(.44,.05,.44,0x3a4652,0,1.2,-.28),
+ gl(.5,.05,.02,0x3fe08a,-.12,.45,.54),gl(.2,.05,.02,0xff4a3a,.24,.45,.54),cy(.006,.2,0x888888,0,1.25,-.28,5)));
+P.convctr=sm(G(bx(.98,.03,.98,0xcfd4d9),bx(.96,.28,.7,0xdfe5ea,0,.03,-.1),(()=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.33,.33,.94,18),mat({color:0x9fc4e0}));m.rotation.z=Math.PI/2;m.position.set(0,.31,-.1);return m})(),
+ gl(.5,.2,.02,0x7ad0ff,0,.06,.26),bx(.6,.04,.18,0x3a4652,0,.28,.32),gl(.42,.05,.02,0xffd27a,0,.36,.255),
+ flag(-.4,.42,0xd9433b),flag(-.28,.42,0x3b8fd9),flag(.28,.42,0xf2c230),flag(.4,.42,0x2f8f4e),tree(-.45,-.45),tree(.45,-.45)));
+P.casino=sm(G(bx(.96,.03,.96,0x3a3a42),bx(.9,.14,.5,0xf4e6c0,0,.03,.2),bx(.3,.9,.3,0,-.22,.1,-.2,wt(10,3,"#a8832a","#ffeaa6")),bx(.3,.7,.3,0,.2,.1,-.1,wt(8,3,"#8a2a3a","#ffd27a")),
+ bx(.34,.04,.34,0xd4a62a,-.22,1.0,-.2),bx(.34,.04,.34,0xd4a62a,.2,.8,-.1),gl(.86,.025,.025,0xff3b9a,0,.17,.46),gl(.5,.1,.04,0xff3b9a,0,.17,.47,0xff2080),
+ gs(.025,0xffe080,-.3,.2,.46),gs(.025,0xffe080,.3,.2,.46),bx(.1,.1,.1,0xffffff,.36,.03,.38),bx(.1,.1,.1,0xd9433b,-.36,.03,.38),cy(.08,.05,0x4fc3f7,0,.03,.4,16),tree(.45,-.4),tree(-.45,.4)));
+(()=>{const pts=[[-.4,.08,.4],[0,.08,.44],[.3,.14,.38],[.44,.36,.2],[.44,.58,-.1],[.3,.66,-.34],[0,.5,-.42],[-.3,.34,-.34],[-.44,.2,-.1],[-.4,.1,.15]].map(p=>new THREE.Vector3(...p)),
+ cv0=new THREE.CatmullRomCurve3(pts,true),tube=new THREE.Mesh(new THREE.TubeGeometry(cv0,90,.014,6,true),mat({color:0xd9433b})),sup=[];
+ for(let i=0;i<22;i++){const p=cv0.getPoint(i/22);if(p.y>.06)sup.push(cy(.007,p.y-.03,0xcfd4d9,p.x,.03,p.z,5))}
+ const car=[.24,.265,.29].map(t=>{const p=cv0.getPoint(t);return bx(.07,.035,.05,0xf2c230,p.x,p.y+.012,p.z)});
+ P.coaster=sm(G(pad(0x7ccf5a,.98),bx(.9,.01,.12,0xd9c9a0,0,.03,.44),tube,...sup,...car,tor(.14,.012,0xf0a030,.0,.2,.0,0,0),cy(.008,.18,0xcfd4d9,-.14,.03,0,5),cy(.008,.18,0xcfd4d9,.14,.03,0,5),
+  bx(.2,.1,.12,0xd9433b,-.3,.03,.3),gl(.14,.04,.02,0xffe08a,-.3,.1,.365),flag(-.45,.45,0xf2c230),tree(.4,.42),tree(-.42,-.42),tree(.1,.22)))})();
+P.planet=sm(G(pad(0xdfe3e8),cy(.32,.16,0xe9edf2,0,.03,0,24),dome(.3,0xf4f6f8,0,.19,0),tor(.3,.012,0x3b6fd9,0,.19,0,Math.PI/2,0),
+ (()=>{const t=cy(.025,.2,0x555b63,.1,.42,0,8);t.rotation.z=-.9;return t})(),bx(.22,.12,.14,0xcfd6de,0,.03,.36),gl(.1,.08,.02,0x7ad0ff,0,.04,.435),
+ cy(.006,.3,0xaaaaaa,-.38,.03,.3,5),S(.05,0xf2a030,-.38,.36,.3),cy(.006,.2,0xaaaaaa,-.28,.03,.4,5),S(.035,0x4fc3f7,-.28,.26,.4),gs(.02,0xfff2a0,.38,.15,-.3),tree(.4,.38)));
+P.circus=sm(G(pad(0xe0cf9a),...[0,1,2,3,4,5].map(i=>{const rb=.4-i*.058;return cone(rb-.058,rb,.085,i%2?0xf6f6f6:0xd9433b,0,.03+i*.085,0,14)}),
+ cy(.01,.2,0xcccccc,0,.55,0,5),bx(.12,.07,.006,0xf2c230,.06,.7,0),gl(.16,.14,.02,0xffd27a,0,.04,.37),bx(.18,.03,.12,0xd9433b,0,.18,.42),
+ cone(.07,.12,.1,0xf6f6f6,.38,.03,.3),cone(0,.07,.09,0xd9433b,.38,.13,.3),cone(.07,.12,.1,0xf6f6f6,-.38,.03,.34),cone(0,.07,.09,0x3b8fd9,-.38,.13,.34),gs(.022,0xffe080,-.1,.2,.42),gs(.022,0xffe080,.1,.2,.42)));
+P.theater=sm(G(bx(.98,.03,.98,0xd8d0c0),bx(.8,.4,.5,0xb5523b,0,.03,.0),bx(.52,.7,.34,0x8f3f2f,0,.03,-.3),bx(.86,.04,.56,0x5a2a22,0,.43,.0),bx(.56,.04,.38,0x5a2a22,0,.73,-.3),
+ bx(.6,.04,.22,0xffd27a,0,.31,.4),gl(.5,.1,.03,0xffd27a,0,.18,.27,0xffb040),...[-.24,-.08,.08,.24].map(x=>cy(.025,.28,0xf4efe6,x,.03,.46,10)),bx(.62,.03,.12,0xcfc7b6,0,.03,.56),gl(.12,.12,.02,0xffe9a0,0,.04,.256)));
+P.esports=sm(G(bx(.98,.03,.98,0x2a3140),bx(.9,.3,.8,0x222a36,0,.03,0),bx(.7,.12,.6,0x2c3646,0,.33,0),gl(.6,.18,.02,0x7a4bff,0,.08,.41,0x6a3df0),gl(.92,.02,.02,0x00e5ff,0,.34,.41,0x00c0e0),gl(.02,.3,.02,0xff3b9a,-.44,.03,.41,0xff2080),gl(.02,.3,.02,0xff3b9a,.44,.03,.41,0xff2080),
+ gl(.5,.04,.02,0xff3b9a,0,.5,.3,0xff2080),bx(.12,.5,.12,0x2c3646,-.38,.03,-.38),bx(.12,.5,.12,0x2c3646,.38,.03,-.38),gs(.03,0x00e5ff,-.38,.56,-.38),gs(.03,0xff3b9a,.38,.56,-.38)));
+P.boardwalk=sm(G(pad(0xe9d9a8),bx(.94,.03,.3,0xb08050,0,.03,.15),bx(.94,.05,.02,0x8a5a38,0,.06,.31),...[-.4,-.2,0,.2,.4].map(x=>cy(.008,.1,0x8a5a38,x,.06,.31,5)),
+ palm(-.34,-.3),palm(.36,-.34),cy(.008,.24,0x888888,-.05,.03,-.2,5),cone(0,.14,.07,0xd9433b,-.05,.25,-.2),bx(.16,.04,.06,0x6b4a2a,.2,.06,-.05),gs(.02,0xffe080,.44,.2,.3),gs(.02,0xffe080,-.44,.2,.3)));
+P.spaceport=sm(G(pad(0xb8bec6,.98),cy(.24,.04,0x7a8088,.15,.03,.12,24),cy(.07,.6,0xf6f6f6,.15,.07,.12,14),cone(0,.07,.18,0xd9433b,.15,.67,.12,14),
+ ...[0,1,2].map(i=>{const a=i*Math.PI*2/3,m=bx(.02,.16,.1,0xd9433b,.15+Math.cos(a)*.08,.07,.12+Math.sin(a)*.08);m.rotation.y=-a;return m}),
+ bx(.05,.85,.05,0xd9433b,-.03,.03,.12),bx(.16,.025,.025,0xd9433b,.04,.55,.12),bx(.16,.025,.025,0xd9433b,.04,.3,.12),bx(.16,.025,.025,0xd9433b,.04,.75,.12),gs(.055,0xffa030,.15,.06,.12,0xff6a10),
+ bx(.4,.14,.26,0xdfe5ea,-.25,.03,-.32),dome(.06,0xffffff,-.3,.17,-.32),cy(.006,.12,0x888888,-.1,.17,-.32,5),bx(.3,.2,.3,0x8a96a3,.32,.03,-.32),gl(.2,.14,.02,0xffe9a0,.32,.03,-.165),
+ S(.07,0xf4f4f4,-.4,.1,.35),S(.07,0xf4f4f4,-.26,.1,.38),gs(.02,0xff3b2f,.15,.97,.12,0xff2010)));
+P.rhosp=sm(G(pad(0xe9edf1),bx(.9,.4,.5,0xf4f6f8,0,.03,.1),bx(.36,.8,.36,0,-.22,.03,-.22,wt(9,3,"#cfe4f6","#bfe6ff")),bx(.9,.04,.54,0xb9c4cf,0,.43,.1),
+ gl(.14,.04,.02,0xff3b3b,.0,.3,.355,0xff2020),gl(.04,.14,.02,0xff3b3b,.0,.25,.355,0xff2020),dome(.14,0x9fd6f0,.3,.47,.1),bx(.2,.01,.2,0x3a4048,.2,.84,-.22),gl(.08,.012,.02,0xffffff,.2,.85,-.22),
+ bx(.2,.12,.16,0xe8eef3,.3,.03,-.4),tree(-.42,.42),tree(.42,.44)));
+P.dispatch=sm(G(pad(0x6f7a88),bx(.8,.3,.6,0x3a4a66,0,.03,.05),bx(.84,.04,.64,0x2a364c,0,.33,.05),cy(.02,.7,0xcccccc,-.25,.37,-.1,6),dome(.08,0xffffff,-.25,1.0,-.1),
+ gl(.18,.2,.02,0x4a9ae0,-.25,.04,.36,0x2a7ad0),gl(.18,.2,.02,0xd9433b,0,.04,.36,0xff3020),gl(.18,.2,.02,0xffffff,.25,.04,.36,0xdddddd),gs(.035,0xff3020,.3,.42,-.1,0xff2010),gs(.035,0x2a7ad0,.2,.42,-.1,0x2a7ad0),gl(.4,.04,.02,0x7ad0ff,.0,.28,.355,0x20a0ff)));
+P.fusion=sm(G(pad(0xb9bfc6,.98),bx(.9,.3,.9,0xcfd4d9,0,.03,0),...[[-.2,-.2],[.2,-.2],[-.2,.2],[.2,.2]].map(([x,z])=>cy(.03,.25,0x8a929b,x,.33,z,8)),
+ tor(.27,.075,0x4fc3f7,0,.62,0,Math.PI/2,0,true),tor(.34,.03,0x9aa3ad,0,.62,0,Math.PI/2,0),
+ ...[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4,m=bx(.05,.2,.12,0x9aa3ad,Math.cos(a)*.27,.52,Math.sin(a)*.27);m.rotation.y=-a;return m}),
+ gs(.1,0xb5f0ff,0,.62,0,0x6fd0ff),cy(.08,.4,0xe3e6e9,-.38,.03,-.38,12),cy(.08,.3,0xe3e6e9,-.38,.03,-.18,12),bx(.3,.15,.2,0xdfe5ea,.3,.03,.38),gl(.1,.1,.02,0x7ad0ff,.3,.04,.485,0x20a0ff)));
+
+/* ---------- definitions ---------- */
+const NEW={
+marina:{n:"Marina",e:"⛵",c:9000,k:"c",jobs:18,inc:26,svc:30,bt:5,bo:["sail","sail","fish","sail"],tour:1,t:2,w:2,h:2,d:"A yacht club with long jetties full of moored boats. Lots of boats sail the connected water, and you can drive them."},
+tradectr:{n:"Trade Center",e:"🤝",c:15000,k:"c",jobs:40,inc:30,svc:30,t:3,w:2,h:2,d:"A glass tower with a golden globe. Build one in two of your save slots and those cities trade: open 🌐 Cities to see the income bonus."},
+stockex:{n:"Stock Exchange",e:"📈",c:60000,k:"c",jobs:120,inc:210,svc:60,joy:.004,t:3,w:2,h:2,d:"Marble columns, a live ticker and a trading tower. One of the best earners in the game."},
+convctr:{n:"Convention Center",e:"🎟️",c:45000,k:"c",jobs:100,inc:80,svc:80,tour:1,t:3,w:3,h:3,d:"A huge curved glass hall that fills your hotels with visitors."},
+casino:{n:"Casino Resort",e:"🎰",c:40000,k:"c",jobs:80,inc:130,svc:30,tour:1,t:3,w:2,h:2,d:"Gold twin towers and flashing neon. Tourists spend big here."},
+coaster:{n:"Roller Coaster Park",e:"🎢",c:28000,k:"p",jobs:70,inc:70,fun:650,joy:.03,big:1,t:3,w:3,h:3,d:"Hills, a loop and a train racing around the track. Counts triple as a tourist attraction."},
+planet:{n:"Planetarium",e:"🔭",c:7500,k:"p",jobs:20,inc:22,fun:260,joy:.012,t:2,w:2,h:2,d:"A white dome with a telescope and a little solar system out front."},
+circus:{n:"Circus Big Top",e:"🎪",c:3500,k:"p",jobs:12,inc:16,fun:190,joy:.008,t:2,w:2,h:2,d:"A red and white striped tent with two side tents."},
+theater:{n:"Grand Theater",e:"🎭",c:6000,k:"p",jobs:25,inc:24,fun:240,joy:.012,t:2,w:2,h:2,d:"Red brick, a glowing marquee and a tall stage tower."},
+esports:{n:"Esports Arena",e:"🎮",c:12000,k:"p",jobs:30,inc:48,fun:320,joy:.015,t:2,w:2,h:2,d:"Neon lights and a giant screen. Packed with fans on match day."},
+boardwalk:{n:"Boardwalk",e:"🏖️",c:700,k:"p",jobs:2,inc:4,fun:60,grn:.3,joy:.002,t:1,d:"Planks, palms, a beach umbrella and lamps. Cheap fun by the water."},
+spaceport:{n:"Spaceport",e:"🚀",c:3000000,k:"p",jobs:200,inc:700,fun:1800,joy:.08,big:1,t:4,w:3,h:3,d:"A rocket on its launch pad, a gantry, control center and hangar. The ultimate late-game attraction."},
+rhosp:{n:"Research Hospital",e:"🧬",c:24000,k:"c",jobs:120,inc:12,svc:0,hlt:1600,edu:400,t:3,w:2,h:2,d:"A teaching hospital with a lab dome and rooftop helipad. Big health boost plus some education."},
+dispatch:{n:"Emergency Dispatch Center",e:"📡",c:22000,k:"c",jobs:70,inc:0,svc:0,cop:900,fir:600,hlt:400,t:3,w:2,h:2,d:"One command center for police, fire and ambulances. Boosts all three."},
+fusion:{n:"Fusion Reactor",e:"🌞",c:420000,k:"u",jobs:160,inc:120,pwr:5000,t:4,w:3,h:3,d:"A glowing plasma ring held by magnets. Huge clean power for a giant city."}};
+const WHERE={marina:["Transport",2],tradectr:["Commerce",0],stockex:["Commerce",0],convctr:["Commerce",0],casino:["Commerce",0],rhosp:["Health & Education",0],dispatch:["Public Safety",0],fusion:["Utilities",0],
+ coaster:["Recreation",0],planet:["Recreation",0],circus:["Recreation",0],theater:["Recreation",0],esports:["Recreation",0],boardwalk:["Recreation",0],spaceport:["Recreation",0]};
+Object.keys(NEW).forEach(id=>{if(T[id])console.warn("building id taken",id);else T[id]=NEW[id]});
+Object.keys(WHERE).forEach(id=>{const[cn,si]=WHERE[id],ci=dkCATS.findIndex(c=>c.n==cn);if(ci<0)return;const a=dkCATS[ci].subs[si][1];if(!a.includes(id))a.push(id);dkLOC[id]=[ci,si]});
+const tb=document.getElementById("tb");if(tb){tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
+dirty=1;ui()}catch(e){console.warn("new buildings skipped",e)}})();
+</script>
+<style>
+#tm2-m{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:41;padding:12px;box-sizing:border-box}#tm2-m.on{display:flex}
+.tm2-box{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;width:min(94vw,520px);max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.tm2-box b{font:700 19px Fredoka,system-ui,sans-serif}.tm2-box small,.tm2-box p{color:var(--mut);margin:0;font-size:13px;line-height:1.4}
+.tm2-box button{font:inherit;font-weight:600;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer}
+.tm2-box button:disabled{opacity:.5;cursor:default}.tm2-box button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tm2-tabs{display:flex;gap:6px}.tm2-tabs button.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.tm2-card{display:flex;flex-direction:column;gap:5px;border:2px solid var(--line);border-radius:10px;padding:8px 10px}.tm2-card.on{border-color:var(--acc)}
+.tm2-row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.tm2-bar{height:8px;border-radius:6px;background:var(--bg);border:1px solid var(--line);overflow:hidden}.tm2-bar>i{display:block;height:100%;background:var(--acc)}.tm2-card.ok .tm2-bar>i{background:var(--good)}
+.tm2-ok{color:var(--good);font-weight:600}.tm2-no{color:var(--mut)}
+</style>
+<div id="tm2-m"><div class="tm2-box" id="tm2-box"></div></div>
+<script>
+/* Sister Cities (your save slots trade with each other) + Goals (achievements, daily gift, empire rank) */
+(()=>{try{
+if(window.TMV)return;
+const LS=localStorage,SKEY=n=>n==1?"tinymetro1":"tinymetro1_s"+n,
+ slotData=n=>{try{const d=JSON.parse(LS.getItem(SKEY(n)));return d&&d.g&&d.g.some(Boolean)?d:null}catch(e){return null}},
+ hasTC=bs=>Object.values(bs||{}).some(b=>b&&b.id=="tradectr"),
+ liveTC=()=>Object.keys(B).some(u=>B[u].id=="tradectr"&&okB[u]),
+ fmt=n=>Math.floor(n).toLocaleString(),
+ el=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e},
+ jget=(k,d)=>{try{return JSON.parse(LS.getItem(k))||d}catch(e){return d}},jset=(k,v)=>{try{LS.setItem(k,JSON.stringify(v))}catch(e){}};
+
+/* ===== trade between slots ===== */
+let LC=null,LT=0;
+function links(force){const n=performance.now();if(!force&&LC&&n-LT<8000)return LC;LT=n;const o=[];
+ if(SLOT<=3&&liveTC())[1,2,3].forEach(k=>{if(k==SLOT)return;const d=slotData(k);if(d&&hasTC(d.B)&&(d.p||0)>=20)o.push({n:k,name:d.n||"City "+k,pop:Math.floor(d.p||0),b:.03+Math.min(.07,(d.p||0)/10000)})});
+ LC=o;return o}
+const bonus=()=>Math.min(.3,links().reduce((a,l)=>a+l.b,0));
+const calc0=calc;calc=function(){const s=calc0.apply(this,arguments),b=bonus();if(b>0)s.inc*=1+b;s.trade=b;return s};
+let lastKey=null;setInterval(()=>{const l=links(),k=l.map(x=>x.n).join();if(lastKey!==null&&k!==lastKey&&l.length)toast("🤝 Trade link! Your sister cities add +"+Math.round(bonus()*100)+"% income here.",5000);lastKey=k},10000);
+setTimeout(()=>{lastKey=links().map(x=>x.n).join()},4000);
+
+/* ===== empire rank ===== */
+const RANKS=[[0,"Village Mayor"],[100,"Town Mayor"],[500,"City Mayor"],[2500,"Governor"],[10000,"Premier"],[50000,"President"],[200000,"Emperor"]];
+const empire=()=>{let t=SLOT<=3?Math.floor(pop):0;[1,2,3].forEach(k=>{if(k!=SLOT){const d=slotData(k);if(d)t+=Math.floor(d.p||0)}});return t};
+const rank=t=>{let i=0;RANKS.forEach((r,j)=>{if(t>=r[0])i=j});return i};
+
+/* ===== goals ===== */
+const AK="tm_ach_v1",PK="tm_ach_play",FK="tm_ach_flags",DK="tm_daily";
+let done=jget(AK,{}),play=+LS.getItem(PK)||0,flags=jget(FK,{});
+const bl=()=>Object.values(B),hasN=n=>bl().some(b=>T[b.id]&&T[b.id].n==n),cntN=a=>a.filter(hasN).length,
+ roads=()=>g.reduce((a,v)=>a+(v&&rd(v)?1:0),0),sky=()=>window.TMSKY?Object.keys(window.TMSKY.get()).length:0,
+ lms=()=>bl().filter(b=>T[b.id]&&T[b.id].lm).length;
+const A=[
+["pop1","👥","Small Town","Reach 100 citizens",100,1000,()=>pop],["pop2","🏘️","Growing Town","Reach 500 citizens",500,5000,()=>pop],["pop3","🏙️","City","Reach 1,000 citizens",1000,15000,()=>pop],
+["pop4","🌆","Big City","Reach 2,500 citizens",2500,40000,()=>pop],["pop5","🌇","Metropolis","Reach 5,000 citizens",5000,100000,()=>pop],["pop6","🌃","Megacity","Reach 10,000 citizens",10000,300000,()=>pop],
+["pop7","🌍","Global Capital","Reach 25,000 citizens",25000,1000000,()=>pop],["pop8","🏆","Tiny Metropolis","Reach 50,000 citizens",50000,3000000,()=>pop],
+["m1","💵","Pocket Change","Have $100,000",1e5,5000,()=>money],["m2","💰","Millionaire","Have $1,000,000",1e6,40000,()=>money],["m3","🤑","Tycoon","Have $10,000,000",1e7,300000,()=>money],
+["m4","🏦","Mogul","Have $100,000,000",1e8,2000000,()=>money],["m5","💎","Billionaire","Have $1,000,000,000",1e9,15000000,()=>money],
+["b1","🏗️","Builder","Own 25 buildings",25,2000,()=>bl().length],["b2","🧱","Developer","Own 100 buildings",100,10000,()=>bl().length],["b3","🏢","Planner","Own 250 buildings",250,40000,()=>bl().length],["b4","🌐","Master Planner","Own 500 buildings",500,150000,()=>bl().length],
+["lm1","🗼","Landmark Hunter","Build a world landmark",1,20000,lms],["lm2","🗽","Sightseer","Build 3 landmarks",3,100000,lms],["lm3","🌟","Wonder Collector","Build 6 landmarks",6,500000,lms],
+["ex1","🗺️","Expansionist","Expand your city once",1,10000,()=>nex],["ex2","🧭","Land Baron","Expand your city 4 times",4,100000,()=>nex],["ex3","🌏","Continental","Expand your city 8 times",8,1000000,()=>nex],["ex4","🪐","Full Map","Expand your city 11 times",11,5000000,()=>nex],
+["hap1","😊","Thriving","90%+ happiness with 500+ citizens",90,25000,()=>pop>=500?Math.round(S.hap*100):0],["hap2","🌈","Paradise","97%+ happiness with 2,000+ citizens",97,100000,()=>pop>=2000?Math.round(S.hap*100):0],
+["tree1","🌳","Green Thumb","Plant 50 trees",50,5000,()=>TR.length],["tree2","🌲","Forest","Plant 200 trees",200,25000,()=>TR.length],
+["road1","🛣️","Road Network","Lay 100 road tiles",100,3000,roads],["road2","🚦","Traffic Planner","Lay 400 road tiles",400,20000,roads],["sky1","🚈","Skytrain Pioneer","Lay 10 skytrain track tiles",10,8000,sky],
+["drv1","🚗","Joyride","Drive a car",1,2000,()=>flags.car?1:0],["drv2","⛵","Captain","Sail a boat",1,3000,()=>flags.boat?1:0],
+["zoo","🦁","Zookeeper","Build the City Zoo",1,20000,()=>hasN("City Zoo")?1:0],["stad","🏟️","Sports Capital","Build all 4 stadium types",4,100000,()=>cntN(["Football Stadium","Basketball Arena","Hockey Arena","Baseball Stadium"])],
+["air","✈️","Jetsetter","Build an Airport Terminal",1,15000,()=>hasN("Airport Terminal")?1:0],["mar","⚓","Harbor Master","Build a Marina or Harbor Dock",1,8000,()=>hasN("Marina")||hasN("Harbor Dock")?1:0],
+["coas","🎢","Thrill Seeker","Build a Roller Coaster Park",1,30000,()=>hasN("Roller Coaster Park")?1:0],["cas","🎰","High Roller","Build a Casino Resort",1,60000,()=>hasN("Casino Resort")?1:0],
+["stk","📈","Wall Street","Build a Stock Exchange",1,150000,()=>hasN("Stock Exchange")?1:0],["fus","🌞","Star Power","Build a Fusion Reactor",1,300000,()=>hasN("Fusion Reactor")?1:0],["spc","🚀","To the Stars","Build a Spaceport",1,500000,()=>hasN("Spaceport")?1:0],
+["tr1","🤝","Sister City","Trade with another one of your cities",1,25000,()=>links().length],["tr2","🌍","World Trade","Trade with both of your other cities",2,100000,()=>links().length],
+["emp","👑","Empire","5,000 citizens across all your cities",5000,200000,empire],
+["pl1","⏱️","Regular","Play for 1 hour",60,5000,()=>play],["pl2","📅","Dedicated","Play for 10 hours",600,60000,()=>play],["pl3","🏅","Veteran Mayor","Play for 50 hours",3000,400000,()=>play]];
+const canPay=()=>SLOT<=3;
+function claim(a){if(done[a[0]])return;done[a[0]]=1;jset(AK,done);money+=a[5];toast("🏅 Goal reached: "+a[2]+"! +$"+fmt(a[5]),6000);try{ui()}catch(e){}}
+function checkGoals(){if(!canPay()||!B)return;for(const a of A){if(done[a[0]])continue;let v=0;try{v=a[6]()}catch(e){}if(v>=a[4])claim(a)}}
+setInterval(()=>{try{checkGoals()}catch(e){}},4000);
+setInterval(()=>{if(document.hidden)return;play+=1/6;try{LS.setItem(PK,play.toFixed(2))}catch(e){}},10000);
+const dvt=document.getElementById("dv-t");if(dvt)new MutationObserver(()=>{const t=dvt.textContent;if(t.includes("🚗")&&!flags.car){flags.car=1;jset(FK,flags)}if(t.includes("⛵")&&!flags.boat){flags.boat=1;jset(FK,flags)}}).observe(dvt,{childList:true,characterData:true,subtree:true});
+
+/* ===== daily gift ===== */
+const day=t=>new Date(t).toLocaleDateString("en-CA"),dd=()=>jget(DK,{d:"",s:0}),
+ dailyReady=()=>canPay()&&dd().d!==day(Date.now()),
+ dailyAmt=s=>Math.round((1500+Math.min(pop,20000)*3)*(1+.15*(Math.min(s,7)-1)));
+function claimDaily(){const o=dd(),t=day(Date.now());if(o.d===t||!canPay())return;const s=o.d===day(Date.now()-864e5)?o.s+1:1,amt=dailyAmt(s);jset(DK,{d:t,s});money+=amt;toast("🎁 Daily gift: +$"+fmt(amt)+" (day "+s+" in a row)",5000);try{ui()}catch(e){}refreshBtn()}
+
+/* ===== panel ===== */
+const hd=document.querySelector("header"),bc=el("button","🌐 Cities"),bg=el("button","🏅 Goals");bc.id="tm2-bc";bg.id="tm2-bg";bc.title="Your cities trade with each other";bg.title="Goals, daily gift and your empire rank";
+if(hd)hd.append(bc,bg);
+const refreshBtn=()=>{bg.textContent="🏅 Goals"+(dailyReady()?" 🎁":"")};refreshBtn();setInterval(refreshBtn,15000);
+const m=document.getElementById("tm2-m"),box=document.getElementById("tm2-box");let tab="c";
+const close=()=>m.classList.remove("on");
+m.addEventListener("pointerdown",e=>{if(e.target===m)close()});
+addEventListener("keydown",e=>{if(m.classList.contains("on")&&e.key=="Escape"){close();e.stopImmediatePropagation()}},true);
+const open=t=>{tab=t;LT=0;render();m.classList.add("on")};bc.onclick=()=>open("c");bg.onclick=()=>open("g");
+function head(){const r=el("div",null,"tm2-row"),t=el("div",null,"tm2-tabs"),a=el("button","🌐 Sister Cities"),b=el("button","🏅 Goals"),x=el("button","✕");
+ a.className=tab=="c"?"on":"";b.className=tab=="g"?"on":"";a.onclick=()=>{tab="c";render()};b.onclick=()=>{tab="g";render()};x.onclick=close;t.append(a,b);r.append(t,x);
+ const e=empire(),k=rank(e),c=el("div",null,"tm2-card"),nx=RANKS[k+1];
+ c.append(el("b","👑 "+RANKS[k][1]),el("small","🌍 "+fmt(e)+" citizens across your cities"+(nx?" · next rank at "+fmt(nx[0]):" · top rank!")));
+ return[r,c]}
+function citiesTab(){const out=head(),nm=document.getElementById("name").value||"My city";
+ out.push(el("p","Each save slot is its own city. Build a 🤝 Trade Center (Commerce tab) in two or more of your cities and they trade: every partner city adds +3% to +10% income to the city you're playing, depending on how big it is."));
+ if(SLOT>3)out.push(el("p","You're in a co-op city. Trading works between your own cities in slots 1 to 3."));
+ const mine=liveTC(),ls=links();
+ [1,2,3].forEach(n=>{const on=n==SLOT,d=on?{n:nm,p:pop,m:money,B}:slotData(n),c=el("div",null,"tm2-card"+(on?" on":""));
+  c.append(el("b","Slot "+n+(on?" · playing":"")));
+  if(!d){c.append(el("small","Empty. Start a city here, then build a Trade Center in it."))}
+  else{const tc=on?mine:hasTC(d.B),l=ls.find(x=>x.n==n);
+   c.append(el("small",(d.n||"My city")+" · 👥 "+fmt(d.p||0)+" · $"+fmt(d.m||0)));
+   const s=el("small",tc?"🤝 Trade Center built":"No Trade Center yet");s.className=tc?"tm2-ok":"tm2-no";c.append(s);
+   if(!on&&SLOT<=3){const t=el("small",l?"✅ Trading: +"+(l.b*100).toFixed(1)+"% income in this city":!mine&&tc?"Build a Trade Center in this city to start trading":mine&&!tc?"Build a Trade Center in this city to start trading":"Build a Trade Center in both cities");t.className=l?"tm2-ok":"tm2-no";c.append(t);
+    if(l&&(d.p||0)<20){}}}
+  const bt=el("button",on?"Current":d?"▶ Visit":"✨ Start new city");bt.disabled=on;bt.onclick=()=>{try{save()}catch(e){}try{LS.setItem("tm_slot",n)}catch(e){}location.reload()};c.append(bt);out.push(c)});
+ const b=bonus();out.push(el("p","Trade bonus in this city: +"+Math.round(b*100)+"% income"+(b>0?" ("+ls.length+" link"+(ls.length>1?"s":"")+")":"")+". Partner cities update whenever you last played them."));return out}
+function goalsTab(){const out=head(),o=dd(),ready=dailyReady(),n=A.filter(a=>done[a[0]]).length;
+ const dc=el("div",null,"tm2-card"),nextS=ready?(o.d===day(Date.now()-864e5)?o.s+1:1):o.s;
+ dc.append(el("b","🎁 Daily gift"),el("small",ready?"Ready! Day "+nextS+" in a row: +$"+fmt(dailyAmt(nextS))+" (bigger every day, up to 7)":"Claimed today. Come back tomorrow to keep your "+o.s+"-day streak."));
+ const db=el("button",ready?"Claim gift":"Claimed ✓","pri");db.disabled=!ready;db.onclick=()=>{claimDaily();render()};dc.append(db);out.push(dc);
+ const h=Math.floor(play/60),mi=Math.floor(play%60);out.push(el("small","🏅 "+n+" / "+A.length+" goals · ⏱️ "+h+"h "+mi+"m played"+(canPay()?"":" · goals pay out in slots 1 to 3")));
+ const rows=A.map(a=>{let v=0;try{v=a[6]()}catch(e){}return{a,v,p:Math.min(1,v/a[4]),d:!!done[a[0]]}}).sort((x,y)=>x.d-y.d||y.p-x.p);
+ rows.forEach(r=>{const c=el("div",null,"tm2-card"+(r.d?" ok":"")),t=el("div",null,"tm2-row");t.append(el("b",r.a[1]+" "+r.a[2]),el("small",r.d?"✓ done":"+$"+fmt(r.a[5])));c.append(t,el("small",r.a[3]));
+  if(!r.d){const bar=el("div",null,"tm2-bar"),i=el("i");i.style.width=(r.p*100)+"%";bar.append(i);c.append(bar,el("small",fmt(Math.min(r.v,r.a[4]))+" / "+fmt(r.a[4])))}out.push(c)});return out}
+function render(){box.replaceChildren(...(tab=="c"?citiesTab():goalsTab()))}
+}catch(e){console.warn("cities/goals skipped",e)}})();
 </script>
 </body></html>
