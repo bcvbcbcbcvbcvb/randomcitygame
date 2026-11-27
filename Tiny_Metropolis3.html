@@ -1603,7 +1603,7 @@ $("tb").onclick=e=>{
  if(k){const c=+k.dataset.c,l=dkLOC[tool];if(dkCur.o&&dkCur.c==c)dkCur.o=0;else dkCur={c,s:l&&l[0]==c?l[1]:0,o:1};dkDock();return}
  const s=e.target.closest("#dks .chip");if(s){dkCur.s=+s.dataset.s;dkDock();return}
  const b=e.target.closest(".t");if(b)sel(b.dataset.t==tool&&tool!="none"?"none":b.dataset.t)};
-const dkSel=sel;sel=t=>{dkSel(t);const l=dkLOC[t];if(t!="none"&&l&&!(dkCur.o&&dkCATS[dkCur.c].subs[dkCur.s][1].includes(t))){dkCur={c:l[0],s:l[1],o:1};dkDock()}};
+const dkSel=sel;sel=t=>{dkSel(t);const l=dkLOC[t];if(t!="none"&&t!="bull"&&l&&!(dkCur.o&&dkCATS[dkCur.c].subs[dkCur.s][1].includes(t))){dkCur={c:l[0],s:l[1],o:1};dkDock()}};
 dkDock();
 if(window.ResizeObserver)new ResizeObserver(()=>{try{fit()}catch(e){}}).observe($("stage"));
 $("bars").innerHTML=["Jobs","Shops","Clean air","Homes","Fun","Power","Water","Safety","Fire","Health","Schools"].map((n,i)=>`<div>${n}<i><u id="b${i}"></u></i></div>`).join("");
@@ -1772,9 +1772,9 @@ lux1:{n:"Gold Coast Penthouses",e:"👑",c:15000000,k:"h",cap:60,tax:4.2,q:1,t:4
 lux2:{n:"Sky Palace",e:"🏰",c:80000000,k:"h",cap:150,tax:11,q:1,t:4,w:2,h:2,s:"eu",d:"A palatial tower with two wings and a golden dome."},
 lux3:{n:"Vertical Village",e:"🌳",c:250000000,k:"h",cap:320,tax:25,q:1,t:4,w:2,h:2,s:"mo",d:"Stacked garden terraces: a whole neighbourhood in the sky."},
 lux4:{n:"Megablock Alpha",e:"🏗️",c:700000000,k:"h",cap:650,tax:54,q:.95,t:4,w:3,h:3,s:"us",d:"Four corner towers, sky bridges and a giant central spire."},
-lux5:{n:"Orbital Spire",e:"🛰️",c:1500000000,k:"h",cap:1100,tax:95,q:1,t:4,w:3,h:3,s:"mo",d:"A needle-thin supertall with gold rings and a glowing pearl."},
-lux6:{n:"Hive Arcology",e:"🐝",c:3500000000,k:"h",cap:2000,tax:180,q:1,t:4,w:3,h:3,s:"mo",d:"Seven linked towers on a green podium. A small country in one block."},
-lux7:{n:"Skyhaven City",e:"🌇",c:8000000000,k:"h",cap:3500,tax:330,q:1,t:4,w:3,h:3,s:"mo",d:"A ring of towers around a colossal core. The ultimate endgame home."}});
+lux5:{n:"Orbital Spire",e:"🛰️",c:15000000000,k:"h",cap:1100,tax:95,q:1,t:4,w:3,h:3,s:"mo",d:"A needle-thin supertall with gold rings and a glowing pearl."},
+lux6:{n:"Hive Arcology",e:"🐝",c:35000000000,k:"h",cap:2000,tax:180,q:1,t:4,w:3,h:3,s:"mo",d:"Seven linked towers on a green podium. A small country in one block."},
+lux7:{n:"Skyhaven City",e:"🌇",c:80000000000,k:"h",cap:3500,tax:330,q:1,t:4,w:3,h:3,s:"mo",d:"A ring of towers around a colossal core. The ultimate endgame home."}});
 ST.lux=["lux1","lux2","lux3","lux4","lux5","lux6","lux7"];
 dkCATS[1].subs.push(["💎 Luxury & Mega",ST.lux]);ST.lux.forEach(id=>dkLOC[id]=[1,dkCATS[1].subs.length-1]);
 Object.assign(T,{
@@ -1817,6 +1817,11 @@ function HXDATA(){return [
 ["fy7","Pastel Terraces","🍬",620,24,1.2,.9,2,2,1,"Four narrow homes in candy colours.",0]]}
 (()=>{const SM={sb1:"us",sb2:"us",sb3:"cl",sb4:"us",sb5:"us",sb6:"us",sb7:"cl",sb8:"cl",sb9:"us",sb10:"us",ru1:"us",ru2:"mo",ru3:"eu",ru4:"us",ru5:"us",ru6:"eu",ru7:"eu",ru8:"eu",fy1:"cl",fy2:"cl",fy3:"eu",fy4:"eu",fy5:"eu",fy6:"cl",fy7:"me"},ix={cl:0,eu:1,us:2,as:3,su:4,me:5,mo:6,tr:7};
  HXDATA().forEach(r=>{const st=SM[r[0]],o={n:r[1],e:r[2],c:r[3],k:"h",cap:r[4],tax:r[5],q:r[6],t:r[7],s:st,d:r[10]};if(r[8]){o.w=r[8];o.h=r[9]}T[r[0]]=o;ST[st].push(r[0]);dkLOC[r[0]]=[1,ix[st]]})})();
+T.wmega={n:"Grand Water Works",e:"💦",c:100000,k:"u",dr:1,jobs:60,tre:5000,twr:5000,t:3,w:3,h:3,sdg:[6],d:"A giant all-in-one water plant: it treats and delivers 5,000 water on its own. Drought-proof."};
+dkG.Water.push("wmega");dkLOC.wmega=[dkCATS.findIndex(c=>c.n=="Utilities"),1];
+T.autob={n:"Auto Builder",e:"🤖",c:3000000000,k:"u",jobs:25,t:3,w:2,h:2,d:"A robot construction yard. If power or water runs short, it builds power plants and water works inside the area you choose with the 🧭 Auto-build area tool. Everything it buys costs double. Needs a road."};
+T.autoz={n:"Auto-build area",e:"🧭",c:0,k:"x",lbl:"drag a box",d:"Drag a box on the map. Auto Builders only build inside it."};
+dkG.Utilities.push("autob","autoz");{const ci=dkCATS.findIndex(c=>c.n=="Utilities");dkLOC.autob=[ci,0];dkLOC.autoz=[ci,0]}
 /* existing buildings also count toward goals */
 (()=>{const M={2:["f13"],3:["med1","hos1","pool","skate","court","park1","play","park2","garden"],4:["lib1","school1","school2","school3","uni1"],5:["school1","school2","school3","uni1"],
 6:["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"],7:["wind","wind2","solar","solar2","geo1","dam","nuc1"],8:["c6","bank1","c8"],
@@ -2020,6 +2025,8 @@ fy4:()=>G(pad(0xe8f2f8),S(.34,0xeaf6ff,-.18,.03,-.05,.8),S(.24,0xdfeefa,.26,.03,
 fy5:()=>G(pad(0x9bd488),cy(.2,.5,0xf0e6d0,0,.03,0,10),ro(.3,.2,0xc9433b,.53),bx(.1,.15,.02,0x5a3a2a,0,.03,.2),bx(.04,.55,.02,0xb08a5a,0,.45,.26),bx(.55,.04,.02,0xb08a5a,0,.7,.26),S(.04,0x6a4a2a,0,.72,.26)),
 fy6:()=>G(pad(0x7fbf6a),cy(.1,.55,0x6a4a2a,0,.03,0,7),S(.38,0x3f9b4a,0,.8,0,.8),bx(.3,.2,.3,0xb98a5a,0,.45,0),ro(.25,.14,0x8a3a2a,.65),gl(.07,.08,.02,0xffd27a,0,.5,.155),bx(.04,.45,.02,0x8a6a3a,.14,.03,.2)),
 fy7:()=>G(pad(0xf2e8e8),...[0xf7b6c8,0xb6e0f7,0xfff2a8,0xc8f0c0].flatMap((c,i)=>[bx(.22,.55+.08*(i%2),.5,c,-.36+i*.24,.03),ro(.2,.14,0xd9a0c8,.58+.08*(i%2)).translateX(-.36+i*.24),bx(.07,.12,.02,0x8a5a6a,-.36+i*.24,.03,.255)]))};
+P.wmega=G(pad(0xb8c0c8),bx(.9,.04,.9,0x9aa3ab,0,.03),cy(.17,.5,0xdfe6ec,-.26,.07,-.22,16),cy(.18,.04,0x4a6a88,-.26,.57,-.22,16),cy(.17,.5,0xdfe6ec,.26,.07,-.22,16),cy(.18,.04,0x4a6a88,.26,.57,-.22,16),bx(.44,.03,.24,0x6b7a88,-.25,.07,.3),bx(.44,.03,.24,0x6b7a88,.25,.07,.3),gl(.4,.02,.2,0x4fc3f7,-.25,.1,.3),gl(.4,.02,.2,0x4fc3f7,.25,.1,.3),bx(.4,.26,.24,0xe8eef3,0,.07,-.02),bx(.44,.03,.28,0x3b8fd9,0,.33,-.02),gl(.3,.06,.02,0xffe9a8,0,.2,.105),bx(.56,.05,.05,0x3b8fd9,0,.2,-.4),cy(.03,.5,0xaab2ba,0,.07,-.4,6),S(.12,0x4fa8e0,0,.64,-.4),gs(.03,0xff3b2f,0,.82,-.4,0xff3b2f));
+P.autob=G(pad(0xb8c0c8),bx(.86,.34,.7,0xe6ecf1,0,.03,.05),bx(.9,.04,.74,0x3b78b8,0,.37,.05),bx(.86,.05,.02,0xf2c230,0,.12,.405),gl(.5,.08,.02,0xffe9a8,0,.22,.405),cy(.04,.9,0x8a929a,-.3,.37,-.2,6),bx(.8,.05,.06,0xf2c230,-.02,1.22,-.2),cy(.01,.3,0x444a52,.32,.92,-.2,4),bx(.1,.08,.1,0x3b8fd9,.32,.84,-.2),bx(.12,.12,.12,0x4fa8e0,.3,.03,-.3),bx(.12,.12,.12,0xf2c230,.42,.03,-.3),gs(.04,0xffd27a,-.3,1.3,-.2,0xffb040));
 HXDATA().forEach(r=>{P[r[0]]=r[11]?g(...r[11]):C[r[0]]()})}
 
 /* 3D models for the new items (called at the end of protos()) */
@@ -2654,8 +2661,12 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.51.1",
+const VER="1.52.0",
 LOG=[
+["1.52.0","Auto Builders",["New 🤖 Auto Builder in the Utilities tab ($3B, 2×2, needs a road) and a 🧭 Auto-build area tool. Drag a box on the map; when your city runs short of power or water, every connected Auto Builder buys and builds the cheapest plant that covers the gap inside that box. Everything it buys costs double the usual price."]],
+["1.51.4","Grand Water Works",["New 💦 Grand Water Works in the Water tab ($100,000, 3×3): treats and delivers 5,000 water on its own, and is drought-proof."]],
+["1.51.3","Pricier endgame towers",["Orbital Spire now costs $15B, Hive Arcology $35B and Skyhaven City $80B (10× more)."]],
+["1.51.2","Bulldoze stays put",["Picking Bulldoze from its button or the B key no longer jumps the build dock to the Roads tab. The dock stays on whatever you were browsing."]],
 ["1.51.1","Cheapest first",["Every list in the build dock is now sorted from cheapest to most expensive."]],
 ["1.51.0","25 new homes",["25 new homes added to the existing Housing tabs: Ranch House, Colonial, Duplex, Brick Townhouses and Suburban Mansion (American), Cape Cod Cottage, Garden Apartments, Mushroom House, Gingerbread House and Treehouse (Classic), Alpine Chalet, Lakeside Lodge, Wizard Tower and Windmill House (European), A-Frame Cabin (Modern), Pastel Terraces (Mediterranean) and more."]],
 ["1.50.0", "Fixes, bulldoze button & battery saver", ["Fixed the map not showing: a saved building with an unknown type crashed the city calculation and stopped the map from drawing. Unknown buildings are now skipped instead.","Much lower power use: the game now draws at up to 60 fps while you move or click and drops to 30 fps when idle. It no longer redraws at 120 fps on high-refresh screens, which saves a lot of battery on laptops.","High quality mode is lighter: pixel density is capped at 2x and shadow maps are 2048 instead of 4096, with almost no visible difference. Low quality is still the lightest option.","The build bar at the bottom no longer jumps or flickers when you switch categories or hover over buildings: it keeps one steady height now.","New 🚜 Bulldoze button sits at the start of the bottom category bar at all times, so you no longer have to open Roads to find it. Press B to toggle it too."], "Nov 26, 2026"],
@@ -4218,5 +4229,53 @@ function render(){bx.replaceChildren();bx.append(h("b","⏪ Echo Timelines","fon
 b.onclick=()=>{render();M.style.display="flex"};
 addEventListener("keydown",e=>{if(M.style.display=="flex"&&e.key=="Escape"){M.style.display="none";e.stopImmediatePropagation()}},true);
 }catch(e){console.warn("timelines skipped",e)}})();
+</script>
+<script>
+/* Auto Builders: build power & water inside a chosen area when the city runs short, at double price */
+(()=>{try{
+if(window.TMV)return;
+const ZK="tm_autoz_"+K,Z={x:0,y:0,w:0,h:0};
+try{Object.assign(Z,JSON.parse(localStorage.getItem(ZK)||"{}"))}catch(e){}
+const saveZ=()=>{try{localStorage.setItem(ZK,JSON.stringify(Z))}catch(e){}};
+const hasB=()=>{for(const u in B)if(B[u]&&B[u].id=="autob")return 1;return 0};
+const zm=new THREE.Group(),fill=new THREE.Mesh(new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0x2fd1a6,transparent:true,opacity:.22,depthWrite:false})),
+ edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2)),new THREE.LineBasicMaterial({color:0x2fd1a6}));
+zm.add(fill,edge);zm.visible=false;
+const upd=()=>{if(typeof scene=="undefined"||!scene)return;if(!zm.parent)scene.add(zm);
+ const show=Z.w>0&&(tool=="autoz"||hasB());zm.visible=!!show;if(!show)return;
+ let mx=0;for(let j=Z.y;j<Z.y+Z.h;j++)for(let i=Z.x;i<Z.x+Z.w;i++)mx=Math.max(mx,el[j*W+i]|0);
+ zm.position.set(wx(Z.x)+(Z.w-1)/2,mx*(typeof EH=="number"?EH:.3)+.09,wz(Z.y)+(Z.h-1)/2);zm.scale.set(Z.w,1,Z.h)};
+setInterval(()=>{try{upd()}catch(e){}},300);
+let A=null;
+document.addEventListener("pointerdown",()=>{A=null},true);
+document.addEventListener("pointerup",()=>{if(A&&tool=="autoz"){A=null;saveZ();toast("🧭 Auto-build area set: "+Z.w+"×"+Z.h+" tiles")}},true);
+const put0=put;put=function(x,y){if(tool=="autoz"){if(!A)A=[x,y];Z.x=Math.min(A[0],x);Z.y=Math.min(A[1],y);Z.w=Math.abs(A[0]-x)+1;Z.h=Math.abs(A[1]-y)+1;upd();return 1}return put0.apply(this,arguments)};
+const s0=sel;sel=t=>{s0(t);if(t=="autoz")$("info").textContent="Auto-build area: drag a box on the map. Auto Builders only build inside it, when your city runs short of power or water, and everything they buy costs double."};
+const PW=["wind","solar","wind2","solar2","geo1","nuc1"],WT=["spring","fog","rain","bore","wmega"];
+const amt=(id,k)=>{const t=T[id];return k=="p"?t.pwr||0:Math.min(t.tre||0,t.twr||0)};
+const adj=(x,y,w,h)=>{for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)if(D4.some(d=>{const q=at(i+d[0],j+d[1]);return wk(q)||q=="tway"}))return 1;return 0};
+const spot=id=>{const t=T[id],w=t.w||1,h=t.h||1;for(const r of(w==h?[0]:[0,1])){const ew=r&1?h:w,eh=r&1?w:h;
+ for(let y=Z.y;y+eh<=Math.min(H,Z.y+Z.h);y++)for(let x=Z.x;x+ew<=Math.min(W,Z.x+Z.w);x++)if(fits(x,y,ew,eh)&&adj(x,y,ew,eh))return[x,y,r]}return 0};
+const buy=(list,k,need)=>{const c=list.filter(id=>T[id]&&amt(id,k)>0&&money>=2*cc(T[id]));
+ const fit=c.filter(id=>amt(id,k)>=need).sort((a,b)=>cc(T[a])-cc(T[b])),big=c.filter(id=>amt(id,k)<need).sort((a,b)=>amt(b,k)-amt(a,k));
+ for(const id of fit.concat(big)){const p=spot(id);if(!p)continue;const t=T[id],price=2*cc(t),u=nu++;
+  money-=price;B[u]={id,x:p[0],y:p[1],r:p[2],w:t.w||1,h:t.h||1};
+  const ew=p[2]&1?(t.h||1):(t.w||1),eh=p[2]&1?(t.w||1):(t.h||1);
+  for(let j=p[1];j<p[1]+eh;j++)for(let i=p[0];i<p[0]+ew;i++)g[j*W+i]=u;
+  dirty=1;toast("🤖 Auto Builder built a "+t.n+" for $"+price.toLocaleString()+" (double price)");try{save()}catch(e){}return 1}return 0};
+let hint=0;
+setInterval(()=>{try{
+ if(document.hidden||typeof pop=="undefined")return;
+ let n=0,s=calc();for(const u in B)if(B[u]&&B[u].id=="autob"&&okB[u])n++;
+ if(!n)return;
+ if(!Z.w){if(!hint){hint=1;toast("🤖 Auto Builder needs an area: pick 🧭 Auto-build area in Utilities and drag a box.")}return}
+ if(!s.cap||pop<1)return;
+ for(let k=0;k<Math.min(n,3);k++){
+  s=calc();const pn=pop+s.dp-s.ps,wn=(pop+s.dw)*(1+.6*RVP)*s.wsv-s.sw;let did=0;
+  if(pn>.5)did|=buy(PW,"p",pn);
+  if(wn>.5)did|=buy(WT,"w",wn);
+  if(!did)break}
+}catch(e){}},4000);
+}catch(e){console.error(e)}})();
 </script>
 </body></html>
