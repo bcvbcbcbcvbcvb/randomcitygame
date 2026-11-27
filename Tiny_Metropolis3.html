@@ -90,7 +90,29 @@ footer{display:flex;flex-wrap:wrap;gap:10px 22px;padding:10px 14px;background:va
 #hap{font-size:36px!important}
 #info{flex:1 1 220px;max-width:min(100%,440px);font-size:12px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:help}
 @media (max-width:640px){#hud{width:100%}}
+
+/* v1.50 dock stability: fixed-height panel (tallest tab sets it), no re-trigger animation, no hover-lift clipping/scrollbar flicker */
+.dk-panel{animation:none!important;display:grid;grid-template-columns:minmax(0,1fr)}
+.dk-panel[hidden]{display:none}
+.dk-subs{grid-row:1;grid-column:1;overflow-y:hidden}
+#dks[hidden]{display:flex!important;visibility:hidden}
+.dk-items{grid-row:2;grid-column:1;min-width:0;overflow-y:hidden;flex-wrap:nowrap!important;padding-top:6px!important;align-items:flex-start}
+.dk-items[hidden]{display:flex!important;visibility:hidden;pointer-events:none}
+.dk-items .t:hover{transform:none!important;box-shadow:none!important}
+.dk-items .t{transition:none!important}
+.dk-cats{overflow-y:hidden}
+#bullb{flex:none;position:sticky;left:0;z-index:2;flex-direction:row;gap:6px;align-items:center;justify-content:center;font-weight:700;font-size:12px;padding:6px 12px;min-width:0;margin-right:2px;white-space:nowrap}
+#bullb span{font-size:20px;line-height:1}
 </style>
+<script>
+/* Power saver: one shared frame scheduler. 60fps while you interact, 30fps when idle, nothing while the tab is hidden. */
+(()=>{const raf=window.requestAnimationFrame.bind(window),caf=window.cancelAnimationFrame.bind(window);let q=new Map,id=0,pend=0,last=0,act=0;
+const bump=()=>{act=performance.now()};["pointerdown","pointermove","wheel","keydown","touchstart","touchmove"].forEach(e=>addEventListener(e,bump,{passive:true,capture:true}));
+function pump(t){pend=0;if(!q.size)return;const n=performance.now(),iv=n-act<2000?15:33;if(n-last<iv-2){pend=1;raf(pump);return}last=n;const c=[...q.values()];q.clear();c.forEach(f=>{try{f(t)}catch(e){console.error(e)}})}
+window.requestAnimationFrame=f=>{const i=++id;q.set(i,f);if(!pend){pend=1;raf(pump)}return i};
+window.cancelAnimationFrame=i=>{if(q.has(i))q.delete(i);else caf(i)};
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
@@ -1355,7 +1377,7 @@ proto.gov1=G(bx(.9,.05,.8,0xd8d2c0),bx(.7,.36,.5,0xefe8d8,0,.05,-.05),...[-.27,-
     ...[[-.15,0],[.15,0],[0,-.05],[0,.1]].flatMap(([x,z],i)=>tw(x,z,1.05,.065,i)),
     ...tw(0,.02,1.6,.09,0),gs(.045,0xfff2c0,0,1.98,.02,0xffe28a),tr(-.42,.42,.6),tr(.42,.42,.6),tr(-.42,-.4,.6))}
  }
- SDGP();HOUSEP();Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
+ SDGP();HOUSEP();HOUSEQ();Object.values(proto).forEach(o=>o.traverse(q=>{if(q.isMesh){q.castShadow=!q.userData.ns;q.receiveShadow=true}}))}
 
 const CK={},CV=[0,0];let CT=0;
 function camKeys(){const n=performance.now(),dt=Math.min((n-(CT||n))/1000,.1);CT=n;
@@ -1369,7 +1391,7 @@ function camKeys(){const n=performance.now(),dt=Math.min((n-(CT||n))/1000,.1);CT
  t.x=Math.max(-W/2,Math.min(W/2,t.x));t.z=Math.max(-H/2,Math.min(H/2,t.z));t.y=0;
  cam.position.copy(t).add(o)}
 function init3d(){
- renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});renderer.shadowMap.enabled=true;
+ renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:"default"});renderer.shadowMap.enabled=true;
  scene=new THREE.Scene();cam=new THREE.PerspectiveCamera(42,1,.5,600);cam.position.set(0,22,23);
  ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.maxPolarAngle=1.3;ctl.minDistance=5;ctl.maxDistance=130;
  ctl.mouseButtons={LEFT:-1,MIDDLE:THREE.MOUSE.PAN,RIGHT:THREE.MOUSE.ROTATE};ctl.touches={ONE:-1,TWO:THREE.TOUCH.DOLLY_PAN};ctl.screenSpacePanning=false;
@@ -1463,6 +1485,7 @@ function binfoDraw(){
   else{en=(t.k=="f"?1:.5)*(t.jobs||0);wa=.3*(t.jobs||0)*wm}}
  const row=(a,v)=>'<div class="br"><span>'+a+'</span><b>'+v+'</b></div>';
  let h='<button class="bx" aria-label="Close">×</button><div class="bt">'+(t.e||"")+" "+t.n+"</div>"+
+  (t.k=="h"?row("🏠 Houses up to",Math.round(t.cap).toLocaleString()+" people")+row("👥 Living here now",binfoNum(en)):"")+
   row("⚡ Energy used",binfoNum(en))+row("💧 Water used",binfoNum(wa));
  if(t.k=="u"){
   if(t.pwr)h+=row("⚡ Energy made",binfoNum(t.pwr*(1+.1*L)));
@@ -1565,9 +1588,10 @@ const dkCATS=[
 {e:"🌲",n:"Terrain & Trees",subs:[["⛰️ Terrain",dkG.Terrain],["🌳 Trees",dkG.Trees]]}
 ];
 const dkLOC={};dkCATS.forEach((c,ci)=>c.subs.forEach((s,si)=>s[1].forEach(id=>dkLOC[id]=dkLOC[id]||[ci,si])));
-const dkCost=id=>{const o=T[id];return o.lbl?o.lbl:o.k=="n"?"just look":o.k=="x"?"refund":"$"+o.c+("hfcpu".includes(o.k)?" · "+(o.w||1)+"×"+(o.h||1):"")};
+function dkOrd(a){return a.map((id,i)=>[id,i]).sort((p,q)=>((T[p[0]]&&T[p[0]].c)||0)-((T[q[0]]&&T[q[0]].c)||0)||p[1]-q[1]).map(p=>p[0])}
+const dkCost=id=>{const o=T[id];return o.lbl?o.lbl:o.k=="n"?"just look":o.k=="x"?"refund":"$"+(c=>c>=1e9?+(c/1e9).toFixed(2)+"B":c>=1e6?+(c/1e6).toFixed(1)+"M":c)(o.c)+("hfcpu".includes(o.k)?" · "+(o.w||1)+"×"+(o.h||1):"")};
 const dkTile=id=>`<button class="t" data-t="${id}"${T[id].lm?` data-lm="${T[id].lm}"`:""} title="${T[id].n}"><span>${T[id].e}</span><b>${T[id].n}</b><i>${dkCost(id)}</i></button>`;
-$("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+$("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${dkOrd(s[1]).map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
 let dkCur={c:0,s:0,o:1};
 function dkDock(){const c=dkCATS[dkCur.c];
  $("dkp").hidden=!dkCur.o;$("dks").hidden=c.subs.length<2;
@@ -1742,6 +1766,57 @@ sk16:{n:"Pearl Spire",e:"🔮",c:5600,k:"h",cap:64,tax:2.2,q:1,t:4,pri:2,s:"as",
 sk17:{n:"Neon Megablock",e:"🌃",c:4400,k:"h",cap:88,tax:2.2,q:.9,t:4,s:"as",d:"A packed high-rise buzzing with neon signs, rooftop tanks and aerials."},
 sk18:{n:"Sakura Sky Terraces",e:"🌸",c:4600,k:"h",cap:66,tax:1.9,q:1,t:4,s:"as",sdg:[11,13,15],d:"Tiered terraces with cherry blossoms on every level and a pagoda roof."}});
 ["sk13","sk14","sk15","sk16","sk17","sk18"].forEach(id=>{ST.as.push(id);dkLOC[id]=[1,3]});
+/* ===== Luxury & Mega housing: endgame money sinks that hold huge crowds (and need huge power/water) ===== */
+Object.assign(T,{
+lux1:{n:"Gold Coast Penthouses",e:"👑",c:15000000,k:"h",cap:60,tax:4.2,q:1,t:4,s:"us",d:"Gold-trimmed penthouse tower for the very rich."},
+lux2:{n:"Sky Palace",e:"🏰",c:80000000,k:"h",cap:150,tax:11,q:1,t:4,w:2,h:2,s:"eu",d:"A palatial tower with two wings and a golden dome."},
+lux3:{n:"Vertical Village",e:"🌳",c:250000000,k:"h",cap:320,tax:25,q:1,t:4,w:2,h:2,s:"mo",d:"Stacked garden terraces: a whole neighbourhood in the sky."},
+lux4:{n:"Megablock Alpha",e:"🏗️",c:700000000,k:"h",cap:650,tax:54,q:.95,t:4,w:3,h:3,s:"us",d:"Four corner towers, sky bridges and a giant central spire."},
+lux5:{n:"Orbital Spire",e:"🛰️",c:1500000000,k:"h",cap:1100,tax:95,q:1,t:4,w:3,h:3,s:"mo",d:"A needle-thin supertall with gold rings and a glowing pearl."},
+lux6:{n:"Hive Arcology",e:"🐝",c:3500000000,k:"h",cap:2000,tax:180,q:1,t:4,w:3,h:3,s:"mo",d:"Seven linked towers on a green podium. A small country in one block."},
+lux7:{n:"Skyhaven City",e:"🌇",c:8000000000,k:"h",cap:3500,tax:330,q:1,t:4,w:3,h:3,s:"mo",d:"A ring of towers around a colossal core. The ultimate endgame home."}});
+ST.lux=["lux1","lux2","lux3","lux4","lux5","lux6","lux7"];
+dkCATS[1].subs.push(["💎 Luxury & Mega",ST.lux]);ST.lux.forEach(id=>dkLOC[id]=[1,dkCATS[1].subs.length-1]);
+Object.assign(T,{
+pm1:{n:"Diamond Residences",e:"💎",c:60000000,k:"h",cap:60,tax:5.4,q:1,t:4,s:"cl",d:"A glass tower capped with a glowing crystal."},
+pm2:{n:"Royal Palace",e:"👑",c:400000000,k:"h",cap:120,tax:11,q:1,t:4,w:2,h:2,s:"eu",d:"A royal palace with a gold dome and four turrets."},
+pm3:{n:"Billionaires' Row Tower",e:"🥂",c:150000000,k:"h",cap:45,tax:4.5,q:1,t:4,s:"us",d:"An ultra-slim tower with gold bands. Very exclusive."},
+pm4:{n:"Golden Pagoda Palace",e:"🏯",c:500000000,k:"h",cap:130,tax:12,q:1,t:4,w:2,h:2,s:"as",d:"Four gold-roofed tiers of red lacquer and a golden spire."},
+pm5:{n:"Soviet Megablock",e:"⭐",c:250000000,k:"h",cap:220,tax:14,q:.75,t:4,w:2,h:2,s:"su",d:"A huge U-shaped concrete block around a courtyard, with a red star."},
+pm6:{n:"Sultan's Palace",e:"🕌",c:450000000,k:"h",cap:110,tax:10,q:1,t:4,w:2,h:2,s:"me",d:"A great green dome ringed by four minarets."},
+pm7:{n:"Cloud Villas",e:"☁️",c:350000000,k:"h",cap:90,tax:8.5,q:1,t:4,w:2,h:2,s:"mo",d:"Cantilevered white villas with glass walls and a sky pool."},
+pm8:{n:"Overwater Resort",e:"🏝️",c:300000000,k:"h",cap:80,tax:7.5,q:1,t:4,w:2,h:2,s:"tr",d:"Thatched bungalows around a lagoon and a white tower."}});
+{const ix={cl:0,eu:1,us:2,as:3,su:4,me:5,mo:6,tr:7};[["cl","pm1"],["eu","pm2"],["us","pm3"],["as","pm4"],["su","pm5"],["me","pm6"],["mo","pm7"],["tr","pm8"]].forEach(([k,id])=>{ST[k].push(id);dkLOC[id]=[1,ix[k]]})}
+
+/* ===== 25 more homes: Suburban, Rustic & Whimsical ===== */
+function HXDATA(){return [
+["sb1","Ranch House","🏡",210,5,.55,.8,1,0,0,"A long single-storey home with an attached garage and a solar roof.",[.6,.5,1,0xe8d8b8,0x8a4a3a,"s","gs"]],
+["sb2","Colonial","🏠",280,6,.7,.85,1,0,0,"A two-storey home with a porch, a chimney and a shady tree.",[.7,.5,2,0xf4efe4,0x3a4652,"s","cpt"]],
+["sb3","Cape Cod Cottage","🐚",240,5,.6,.85,1,0,0,"A pale-blue cottage with a garage and a porch.",[.62,.5,2,0xcfe0ea,0x5a6a7a,"g","cpg"]],
+["sb4","Split-Level","🏘️",300,7,.75,.85,1,0,0,"A two-level family home with a chimney and a garage.",[.8,.5,2,0xd9c9a8,0x6b4a3a,"s","cg"]],
+["sb5","Duplex","👫",380,10,.9,.8,1,0,0,"Two homes under one roof, each with its own balcony.",[.86,.5,2,0xe9dcc8,0x7a4a3a,"s","cbt"]],
+["sb6","Brick Townhouses","🧱",520,20,1.1,.85,2,2,1,"Three-storey brick townhouses with a flat roof and balconies.",[.98,.5,3,0xb9654a,0x3a3f4a,"f","b"]],
+["sb7","Garden Apartments","🌷",700,28,1.3,.85,2,0,0,"Low-rise flats around a garden, with a hipped roof.",[.9,.6,3,0xe4d8bc,0x8a5a4a,"h","bt"]],
+["sb8","Craftsman Bungalow","🛖",260,6,.7,.9,1,0,0,"A green bungalow with a front gable, a porch and a chimney.",[.62,.5,1,0x7a9a7a,0x5a4a3a,"g","pc"]],
+["sb9","Suburban Mansion","🏛️",1300,18,2.2,1,2,2,2,"A grand pale mansion with a big porch, a chimney and a hipped roof.",[.9,.6,3,0xf2ecdf,0x3a3a44,"h","cpt"]],
+["sb10","Condo Mid-rise","🏢",1100,40,1.7,.9,3,0,0,"A six-storey condo block with balconies and a solar roof.",[.7,.5,6,0xdfe4ea,0x6b7a88,"f","bs"]],
+["ru1","Log Cabin","🪵",150,4,.5,.75,1,0,0,"A timber cabin with a chimney, a porch and a pine tree.",[.6,.5,1,0x9a6a3a,0x4a3a2a,"g","cpt"]],
+["ru2","A-Frame Cabin","⛺",230,4,.65,.9,1,0,0,"A steep triangular roof that reaches the ground, with a big glowing window.",[.6,.5,0,0x9a6a3a,0x3a4a3a,"g","t"]],
+["ru3","Alpine Chalet","🏔️",360,7,.85,.95,1,0,0,"A wooden chalet with a balcony, a porch and a deep roof.",[.7,.5,2,0xd9b98a,0x6b3a2a,"g","bp"]],
+["ru4","Farmhouse","🌾",280,7,.7,.85,1,0,0,"A white farmhouse with a red roof, a porch and a chimney.",[.7,.5,2,0xf4f0e6,0x9a3a3a,"g","cpt"]],
+["ru5","Barn Loft","🐄",340,10,.8,.85,1,0,0,"A red barn turned into a roomy home.",[.8,.6,2,0xb8453a,0x5a4a4a,"g",""]],
+["ru6","Lakeside Lodge","🏞️",900,22,1.4,.95,2,2,1,"A long timber lodge with a chimney and a wide porch.",[.98,.55,2,0x8a5a3a,0x3a4a3a,"s","cpt"]],
+["ru7","Mountain Estate","🏔️",2000,40,2.4,1,2,2,2,"A big timber estate with a garage, porch and chimney.",[.9,.6,3,0x7a5a3a,0x3a3f3a,"s","cptg"]],
+["ru8","Timber Tower","🌲",1000,36,1.5,.95,3,0,0,"A five-storey wooden tower with balconies.",[.6,.5,5,0xa07a4a,0x3a4a3a,"g","b"]],
+["fy1","Mushroom House","🍄",150,3,.6,.9,1,0,0,"A red spotted cap on a cosy stem. Very small. Very cute.",0],
+["fy2","Gingerbread House","🍪",260,5,.8,.9,1,0,0,"Frosting roof, candy canes and gumdrops. Smells amazing.",0],
+["fy3","Wizard Tower","🧙",600,14,1.1,.95,2,0,0,"A tall purple tower with a starry pointed hat.",0],
+["fy4","Igloo Village","❄️",180,6,.5,.8,1,0,0,"Two snowy domes joined by a tunnel.",0],
+["fy5","Windmill House","🌬️",420,8,.9,.95,1,0,0,"A round cottage with a red cap and four sails.",0],
+["fy6","Treehouse","🌳",320,5,.75,1,1,0,0,"A cabin up in a huge green tree.",0],
+["fy7","Pastel Terraces","🍬",620,24,1.2,.9,2,2,1,"Four narrow homes in candy colours.",0]]}
+(()=>{const SM={sb1:"us",sb2:"us",sb3:"cl",sb4:"us",sb5:"us",sb6:"us",sb7:"cl",sb8:"cl",sb9:"us",sb10:"us",ru1:"us",ru2:"mo",ru3:"eu",ru4:"us",ru5:"us",ru6:"eu",ru7:"eu",ru8:"eu",fy1:"cl",fy2:"cl",fy3:"eu",fy4:"eu",fy5:"eu",fy6:"cl",fy7:"me"},ix={cl:0,eu:1,us:2,as:3,su:4,me:5,mo:6,tr:7};
+ HXDATA().forEach(r=>{const st=SM[r[0]],o={n:r[1],e:r[2],c:r[3],k:"h",cap:r[4],tax:r[5],q:r[6],t:r[7],s:st,d:r[10]};if(r[8]){o.w=r[8];o.h=r[9]}T[r[0]]=o;ST[st].push(r[0]);dkLOC[r[0]]=[1,ix[st]]})})();
 /* existing buildings also count toward goals */
 (()=>{const M={2:["f13"],3:["med1","hos1","pool","skate","court","park1","play","park2","garden"],4:["lib1","school1","school2","school3","uni1"],5:["school1","school2","school3","uni1"],
 6:["well","spring","fog","rain","bore","wtow","pump","wtre","filt","intake","wtow2","wtre2","aque","resv","recy","desal","ro","dam","meter"],7:["wind","wind2","solar","solar2","geo1","dam","nuc1"],8:["c6","bank1","c8"],
@@ -1756,7 +1831,7 @@ sk18:{n:"Sakura Sky Terraces",e:"🌸",c:4600,k:"h",cap:66,tax:1.9,q:1,t:4,s:"as
  ["🌿 Nature",["sdg_wild","sdg_wet","sdg_nurs","sdg_marine","tmang","tbamb","tmead"]],
  ["🏙️ Cities & Institutions",["sdg_cowork","sdg_lab","sdg_fiber","sdg_bus","sdg_bike","sdg_legal","sdg_open","sdg_ngo","sdg_summit"]]]};
  dkCATS.push(cat);const ci=dkCATS.length-1;cat.subs.forEach((s,si)=>s[1].forEach(id=>{dkLOC[id]=[ci,si]}));
- $("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+ $("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${dkOrd(s[1]).map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
  dkDock()}
 function HOUSEP(){
 const P=proto,G=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
@@ -1827,6 +1902,23 @@ sky("sk8",bx(.62,.1,.62,0x2f8f8a),bx(.56,.8,.56,0,0,.1,0,Wt(4,3,"#f4efe6","#bfe6
 sky("sk9",bx(.8,.14,.5,0xd9c49a),...[-.2,.2].flatMap(x=>[bx(.24,1.7,.24,0,x,.14,0,Wt(10,2,"#e0b890")),bx(.28,.04,.28,0xf0e0c0,x,.9),S(.14,0x2f8f6a,x,1.84,0),gs(.03,0xd4a62a,x,2.04,0)]),bx(.2,.08,.12,0xf0e0c0,0,1.0));
 sky("sk10",bx(.7,.15,.7,0x4a5260),bx(.5,2.6,.5,0,0,.15,0,Wt(22,5,"#3f6a8f","#bfe6ff")),bx(.54,.08,.54,0xd4a62a,0,2.75),gl(.3,.3,.3,0x7ad0ff,0,2.83,0,0x20a0ff),...ant(.5,3.13));
 sky("sk11",pad(0x8a8a90),bx(.9,.2,.5,0x5d6772,0,.03,0),bx(.3,1.8,.3,0,-.25,.23,-.1,Wt(14,3,"#3f6a8f","#bfe6ff")),bx(.3,1.5,.3,0,.25,.23,.1,Wt(12,3,"#3f6a8f","#bfe6ff")),bx(.34,.05,.34,0xd4a62a,-.25,2.03,-.1),bx(.34,.05,.34,0xd4a62a,.25,1.73,.1),gs(.03,0xff3b2f,-.25,2.2,-.1,0xff2010))}
+{const Wt=(r,c,b="#8a9bb0",w="#ffeaa6")=>wt(r,c,b,w),ant=(h,y)=>[cy(.012,h,0xaaaaaa,0,y,0,6),gs(.03,0xff3b2f,0,y+h+.03,0,0xff2010)],GD=0xd4a62a;
+sky("lux1",bx(.7,.1,.7,GD),bx(.5,1.6,.5,0,0,.1,0,Wt(12,4,"#2a2f3a")),...[.5,.9,1.3].map(y=>bx(.6,.04,.6,GD,0,y+.1)),bx(.54,.06,.54,GD,0,1.7),gl(.3,.1,.3,0x7ad0ff,0,1.76,0,0x20a0ff),...ant(.3,1.86));
+sky("lux2",bx(.96,.2,.96,0xe2d4bb),bx(.5,1.9,.5,0,0,.2,0,Wt(16,4,"#d8cdb0")),bx(.3,1.2,.3,0,-.3,.2,.3,Wt(9,3,"#d8cdb0")),bx(.3,1.2,.3,0,.3,.2,.3,Wt(9,3,"#d8cdb0")),R(.4,.3,0x2f6f5a,2.1),S(.16,GD,0,2.5,0),...ant(.4,2.6));
+sky("lux3",bx(.96,.3,.96,0,0,0,0,Wt(3,6,"#6f8f78")),...[0,1,2,3,4].flatMap(i=>{const y=.3+i*.34,w=.8-i*.1;return[bx(w,.34,w,0,0,y,0,Wt(2,5,"#8aa0b0")),bx(w+.1,.04,w+.1,0x6fbf5a,0,y+.34),S(.06,0x3f9b4a,w/2-.05,y+.42,w/2-.05),S(.06,0x3f9b4a,-w/2+.05,y+.42,-w/2+.05)]}),...ant(.3,2.1));
+sky("lux4",bx(.96,.4,.96,0x5d6772),...[[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]].map(([x,z])=>bx(.3,1.5,.3,0,x,.4,z,Wt(12,3,"#3f6a8f","#bfe6ff"))),bx(.9,.06,.16,0xcfd4d9,0,1.1,-.3),bx(.9,.06,.16,0xcfd4d9,0,1.1,.3),bx(.3,2.1,.3,0,0,.4,0,Wt(18,3,"#2f3a48")),bx(.34,.06,.34,GD,0,2.5),...ant(.5,2.56));
+sky("lux5",bx(.9,.15,.9,0x3a4652),cy(.3,.5,0x5d6772,0,.15,0,10),bx(.3,2.6,.3,0,0,.65,0,Wt(22,4,"#2f3a48","#bfe6ff")),...[1,1.6,2.2].map(y=>cy(.34,.05,GD,0,y,0,16)),gs(.2,0xbfe6ff,0,3.45,0,0x20a0ff),...ant(.4,3.6));
+sky("lux6",bx(.98,.3,.98,0,0,0,0,Wt(3,6,"#6f8f78")),bx(.98,.04,.98,0x6fbf5a,0,.3),...[[0,0,2.2],[-.3,-.28,1.5],[.3,-.28,1.7],[-.3,.28,1.3],[.3,.28,1.6],[0,.4,1.1],[0,-.4,1.2]].map(([x,z,h])=>bx(.24,h,.24,0,x,.34,z,Wt(Math.round(h*7),3,"#6a8aa0"))),bx(.6,.05,.06,0xcfd4d9,0,1,-.28),bx(.06,.05,.6,0xcfd4d9,.3,1.2,0),...ant(.4,2.54));
+sky("lux7",cy(.48,.3,0x5d6772,0,0,0,24),...[0,1,2,3,4,5].map(i=>{const a=i*Math.PI/3;return bx(.2,1.4+(i%2)*.5,.2,0,Math.cos(a)*.34,.3,Math.sin(a)*.34,Wt(12,3,"#3f6a8f","#bfe6ff"))}),cy(.45,.04,GD,0,1,0,24),bx(.3,3,.3,0,0,.3,0,Wt(24,3,"#2f3a48","#ffe2a0")),bx(.36,.08,.36,GD,0,3.3),gs(.12,0xffd27a,0,3.55,0,0xffb040),...ant(.4,3.65))}
+{const Wt=(r,c,b="#8a9bb0",w="#ffeaa6")=>wt(r,c,b,w),ant=(h,y)=>[cy(.012,h,0xaaaaaa,0,y,0,6),gs(.03,0xff3b2f,0,y+h+.03,0,0xff2010)],GD=0xd4a62a,CR="#e8dcc0";
+sky("pm1",bx(.7,.1,.7,0x5d6772),bx(.46,1.3,.46,0,0,.1,0,Wt(10,4,"#6a8aa0","#bfe6ff")),R(.42,.7,0x9fd8ff,1.4),gs(.06,0xe8fbff,0,2.15,0,0x7ad0ff));
+sky("pm2",bx(.96,.15,.96,0xcfc4a8),bx(.9,.5,.36,0,0,.15,-.3,Wt(3,8,CR)),bx(.3,.5,.6,0,-.3,.15,.1,Wt(3,3,CR)),bx(.3,.5,.6,0,.3,.15,.1,Wt(3,3,CR)),bx(.34,.55,.34,0,0,.15,-.3,Wt(3,3,"#f0e6c8")),S(.2,GD,0,.72,-.3),...[[-.4,.38],[.4,.38]].flatMap(([x,z])=>[cy(.07,.65,0xe8dcc0,x,.15,z,8),R(.1,.2,0x2f6f5a,.8,x,z)]),gs(.03,GD,0,.95,-.3));
+sky("pm3",bx(.5,.1,.5,0x3a4652),bx(.2,3.6,.2,0,0,.1,0,Wt(30,2,"#2f3a48")),...[1,2,3].map(y=>bx(.24,.04,.24,GD,0,y)),bx(.24,.1,.24,GD,0,3.7),gl(.2,.15,.2,0x7ad0ff,0,3.8,0,0x20a0ff),...ant(.5,3.95));
+sky("pm4",bx(.96,.1,.96,0x6a4a3a),...[0,1,2,3].flatMap(i=>{const y=.1+i*.34,w=.7-.14*i;return[bx(w,.28,w,0,0,y,0,Wt(2,4,"#c8362d","#ffeaa6")),bx(w+.2,.04,w+.2,GD,0,y+.28),R((w+.2)*.7,.12,0xb8362d,y+.32)]}),cy(.02,.4,GD,0,1.55,0,6),gs(.04,0xffd27a,0,2,0,0xffb040));
+sky("pm5",bx(.96,.1,.96,0x6a6a70),bx(.9,1.1,.3,0,0,.1,-.33,Wt(10,10,"#9a9a98")),bx(.3,1.1,.6,0,-.33,.1,.12,Wt(10,5,"#9a9a98")),bx(.3,1.1,.6,0,.33,.1,.12,Wt(10,5,"#9a9a98")),bx(.24,1.9,.24,0,0,.1,-.33,Wt(16,2,"#8a8a88")),cy(.02,.2,0xaaaaaa,0,2,-.33,5),gs(.06,0xd9433b,0,2.25,-.33,0xff2010));
+sky("pm6",bx(.96,.15,.96,0xd9c49a),bx(.7,.5,.7,0,0,.15,0,Wt(3,6,"#f0e0c0")),S(.3,0x2f8f6a,0,.65,0),gs(.04,GD,0,.98,0),...[[-.4,-.4],[.4,-.4],[-.4,.4],[.4,.4]].flatMap(([x,z])=>[cy(.06,1.1,0xf0e0c0,x,.15,z,8),S(.09,0x2f8f6a,x,1.3,z),gs(.02,GD,x,1.42,z)]));
+sky("pm7",bx(.96,.06,.96,0x9bd488),...[[.7,.5,-.1,-.15],[.6,.5,.1,.1],[.5,.4,-.05,-.1]].flatMap(([w,d,x,z],i)=>[bx(w,.18,d,0xf2efe8,x,.06+i*.3,z),bx(w+.04,.04,d+.04,0x3a4652,x,.24+i*.3,z),gl(w*.85,.1,.02,0xbfe6ff,x,.1+i*.3,z+d/2,0xffe2a0)]),gl(.4,.02,.3,0x4fc3f7,.2,.06,.36,0x2090c0),S(.08,0x4fb35a,.4,.15,.4),S(.08,0x4fb35a,-.4,.15,-.4));
+sky("pm8",bx(.98,.03,.98,0x40c8d8),bx(.3,.9,.3,0,0,.03,0,Wt(6,3,"#f4efe6","#bfe6ff")),R(.28,.2,0xe8c06a,.93),...[[-.32,-.32],[.32,-.32],[-.32,.32],[.32,.32]].flatMap(([x,z])=>[bx(.2,.1,.2,0xc9a46a,x,.04,z),R(.18,.12,0xe8c06a,.14,x,z)]),palm(0,.44,.8),palm(.44,0,.8))}
 const flag=(x,z,c=0xd9433b)=>G(cy(.012,.5,0x888888,x,.03,z,5),gl(.14,.09,.01,c,x+.07,.42,z,c));
 P.mil1=G(pad(0x7a8a5a),bx(.8,.2,.3,0x6b7a50,0,.03,-.22),bx(.84,.03,.34,0x4a5240,0,.23,-.22),bx(.8,.2,.3,0x6b7a50,0,.03,.22),bx(.84,.03,.34,0x4a5240,0,.23,.22),W(.5,0,.08,-.065),gl(.5,.14,.02,0xbfe6ff,0,.08,.375,0xffc47a),flag(0,0));
 P.mil2=G(pad(0xc9bfa0),bx(.8,.22,.34,0xcfc4a8,0,.03,-.2),bx(.3,.42,.34,0xcfc4a8,0,.03,.12),bx(.86,.03,.38,0x6b5a46,0,.25,-.2),bx(.36,.03,.4,0x6b5a46,0,.45,.12),R(.2,.16,0xd4a62a,.48,0,.12),...[-.3,-.1,.1,.3].map(x=>cy(.025,.2,0xf2f2ee,x,.03,.0,6)),flag(.38,.3),flag(-.38,.3,0x3b78b8));
@@ -1897,6 +1989,39 @@ P.mall5=G(pad(0x62626a),...lot(.32,.32,.28,.26,2,0),...lot(.32,-.32,.28,.26,2,2)
 }
 P.tr6=G(pad(0xf0e2b0),gl(.4,.02,.3,0x4fc3f7,0,.03,.08),...[[-.3,-.3],[.3,-.3],[-.3,.32],[.3,.32]].flatMap(([x,z])=>[bx(.26,.16,.24,0xfdf8ee,x,.03,z),R(.22,.14,0xc9a34a,.19,x,z)]),palm(0,-.36,.9));
 P.tr7=G(bx(.62,.9,.5,0,0,0,0,wt(5,3,"#f4efe6","#bfe6ff")),bx(.52,.6,.42,0,0,.94,0,wt(3,3,"#f4efe6","#bfe6ff")),bx(.42,.5,.34,0,0,1.58,0,wt(3,2,"#f4efe6","#bfe6ff")),bx(.66,.04,.54,0x2f8f8a,0,.9),bx(.56,.04,.46,0x2f8f8a,0,1.54),bx(.46,.04,.38,0x2f8f8a,0,2.08),S(.08,0x4fb35a,0,2.16,0),palm(.34,.3,.9))}
+
+function HOUSEQ(){
+const P=proto,G=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
+S=(r,c,x,y,z,sy=1)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,10,7),mat({color:c}));m.position.set(x,y,z);m.scale.y=sy;return m},
+pad=c=>bx(.96,.03,.96,c),
+gab=(w,d,h,c,y)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(1,1,d,3).rotateX(-Math.PI/2),mat({color:c}));m.scale.set(w/1.732,h/1.5,1);m.position.y=y+h/3;return m},
+hx=n=>"#"+n.toString(16).padStart(6,"0"),
+g=(w,d,f,wc,rc,rt,o)=>{const gr=o.includes("g"),W=gr?Math.min(w,.6):w,x0=gr?-.14:0,fh=f>4?.2:.3,H=f*fh,y=.03+H,rw=W+.06,rd=d+.06,rh=f?(rt=="f"?.03:rt=="h"?.2:.24):.7,a=[pad(0x7fbf6a)];
+ if(f){a.push(bx(W,H,d,0,x0,.03,0,wt(f,Math.max(2,Math.round(W*4)),hx(wc),"#ffeaa6")),bx(.1,.15,.02,0x5a3a2a,x0,.03,d/2+.005))}
+ else a.push(gl(.18,.22,.02,0xffd27a,x0,.18,d/2-.05),bx(.1,.15,.02,0x5a3a2a,x0,.03,d/2-.04));
+ let r;
+ if(rt=="f")r=bx(rw,.04,rd,rc,x0,y);
+ else if(rt=="h"){r=ro(rd*.72,rh,rc,y);r.scale.x=rw/rd;r.position.x=x0}
+ else if(rt=="s"){r=gab(rd,rw,rh,rc,y);r.rotation.y=Math.PI/2;r.position.x=x0}
+ else{r=gab(rw,rd,rh,rc,y);r.position.x=x0}
+ a.push(r);
+ if(o.includes("c"))a.push(bx(.07,.28,.07,0x9a5a4a,x0+W*.28,y-.02,-d*.15));
+ if(o.includes("p"))a.push(bx(W*.7,.03,.12,0xb08a5a,x0,.03,d/2+.06),bx(W*.74,.025,.16,rc,x0,.23,d/2+.07),cy(.012,.17,0xf2efe8,x0-W*.33,.03,d/2+.12,5),cy(.012,.17,0xf2efe8,x0+W*.33,.03,d/2+.12,5));
+ if(o.includes("t"))a.push(S(.1,0x3f9b4a,.4,.2,-.32),cy(.015,.14,0x6a4a2a,.4,.03,-.32,5));
+ if(gr)a.push(bx(.3,.2,d*.8,wc,.33,.03,0),bx(.34,.03,d*.85,rc,.33,.23,0),bx(.24,.14,.02,0xf2efe8,.33,.03,d*.4+.005));
+ if(o.includes("b"))a.push(bx(W*.7,.02,.1,0xcfd4d9,x0,.03+fh,d/2+.05),bx(W*.7,.07,.01,0x9aa3ab,x0,.05+fh,d/2+.1));
+ if(o.includes("s")){if(rt=="s"){const m=bx(W*.6,.012,rd*.3,0x1f3a6a);m.position.set(x0,y+rh*.5+.01,rd/4);m.rotation.x=Math.atan2(rh,rd/2);a.push(m)}else a.push(bx(W*.5,.02,d*.5,0x1f3a6a,x0,y+.04,0))}
+ return G(...a)},
+C={
+fy1:()=>G(pad(0x8fcf7a),cy(.15,.3,0xf5efe0,0,.03,0,10),S(.4,0xd9433b,0,.34,0,.55),S(.05,0xffffff,.12,.52,.2),S(.05,0xffffff,-.18,.46,.1),S(.04,0xffffff,.02,.6,-.15),bx(.08,.12,.02,0x8a5a3a,0,.03,.15),gl(.07,.07,.02,0xffd27a,.09,.14,.14)),
+fy2:()=>G(pad(0xf2e8d8),bx(.6,.3,.5,0xb0703a,0,.03),gab(.68,.54,.22,0xf8f2ea,.33),cy(.012,.22,0xd9433b,-.26,.03,.3,5),cy(.012,.22,0xffffff,-.2,.03,.3,5),S(.05,0xff6b9a,.2,.07,.32),S(.05,0x6bd96b,.3,.07,.3),S(.05,0xffd23b,.1,.07,.34),bx(.1,.16,.02,0x5a3a2a,0,.03,.255)),
+fy3:()=>G(pad(0x7fbf6a),cy(.2,.95,0x6a5acd,0,.03,0,10),ro(.32,.5,0x3b2f8f,.98),gs(.05,0xffd27a,0,1.5,0,0xffb040),gl(.08,.14,.02,0xffd27a,0,.5,.19),gl(.08,.14,.02,0xffd27a,0,.8,.17),bx(.1,.14,.02,0x5a3a2a,0,.03,.2)),
+fy4:()=>G(pad(0xe8f2f8),S(.34,0xeaf6ff,-.18,.03,-.05,.8),S(.24,0xdfeefa,.26,.03,.12,.8),bx(.16,.14,.2,0xdfeefa,.04,.03,.04),bx(.1,.1,.02,0x2a3a4a,-.18,.03,.28),bx(.08,.08,.02,0x2a3a4a,.26,.03,.34)),
+fy5:()=>G(pad(0x9bd488),cy(.2,.5,0xf0e6d0,0,.03,0,10),ro(.3,.2,0xc9433b,.53),bx(.1,.15,.02,0x5a3a2a,0,.03,.2),bx(.04,.55,.02,0xb08a5a,0,.45,.26),bx(.55,.04,.02,0xb08a5a,0,.7,.26),S(.04,0x6a4a2a,0,.72,.26)),
+fy6:()=>G(pad(0x7fbf6a),cy(.1,.55,0x6a4a2a,0,.03,0,7),S(.38,0x3f9b4a,0,.8,0,.8),bx(.3,.2,.3,0xb98a5a,0,.45,0),ro(.25,.14,0x8a3a2a,.65),gl(.07,.08,.02,0xffd27a,0,.5,.155),bx(.04,.45,.02,0x8a6a3a,.14,.03,.2)),
+fy7:()=>G(pad(0xf2e8e8),...[0xf7b6c8,0xb6e0f7,0xfff2a8,0xc8f0c0].flatMap((c,i)=>[bx(.22,.55+.08*(i%2),.5,c,-.36+i*.24,.03),ro(.2,.14,0xd9a0c8,.58+.08*(i%2)).translateX(-.36+i*.24),bx(.07,.12,.02,0x8a5a6a,-.36+i*.24,.03,.255)]))};
+HXDATA().forEach(r=>{P[r[0]]=r[11]?g(...r[11]):C[r[0]]()})}
+
 /* 3D models for the new items (called at the end of protos()) */
 function SDGP(){
 const P=proto,Gp=(...a)=>{const o=new THREE.Group();o.add(...a);return o},
@@ -2052,7 +2177,7 @@ function cbDock(){if(window.TMV)return;
  if(!CBC){CBC={e:"🛠️",n:"Custom",subs:[["➕ Creator",["cbnew"]],["🏗️ My buildings",[]]]};dkCATS.push(CBC)}
  CBC.subs[1][1]=Object.values(CB).filter(d=>!d.del&&!d.v).map(d=>d.id);
  const ci=dkCATS.indexOf(CBC);CBC.subs.forEach((s,si)=>s[1].forEach(id=>dkLOC[id]=[ci,si]));
- $("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+ $("tb").innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${dkOrd(s[1]).map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
  dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
 $("tb").addEventListener("click",e=>{const b=e.target.closest(".t");if(b&&b.dataset.t=="cbnew"){e.stopPropagation();cbOpen()}},true);
 {const cbSel=sel;sel=t=>{cbSel(t);const o=T[t];if(o&&o.cb)$("info").textContent=o.n+" ("+fp(o)+"): "+(o.k=="h"?"houses "+o.cap+" citizens. Nicer homes make people happier.":o.k=="c"?o.jobs+" jobs, serves "+o.svc+" citizens, +$"+o.inc+"/s. Must touch a road.":o.jobs+" jobs, fun for "+o.fun+" citizens, +$"+o.inc+"/s. Must touch a road.")+" ✨ Custom building."}}
@@ -2529,8 +2654,11 @@ auth.onAuthStateChanged(async u=>{uid=u?u.uid:null;ed=false;
 <div id="ul"><div class="ul-box" id="ul-box"></div></div>
 <script>
 (function(){
-const VER="1.49.0",
+const VER="1.51.1",
 LOG=[
+["1.51.1","Cheapest first",["Every list in the build dock is now sorted from cheapest to most expensive."]],
+["1.51.0","25 new homes",["25 new homes added to the existing Housing tabs: Ranch House, Colonial, Duplex, Brick Townhouses and Suburban Mansion (American), Cape Cod Cottage, Garden Apartments, Mushroom House, Gingerbread House and Treehouse (Classic), Alpine Chalet, Lakeside Lodge, Wizard Tower and Windmill House (European), A-Frame Cabin (Modern), Pastel Terraces (Mediterranean) and more."]],
+["1.50.0", "Fixes, bulldoze button & battery saver", ["Fixed the map not showing: a saved building with an unknown type crashed the city calculation and stopped the map from drawing. Unknown buildings are now skipped instead.","Much lower power use: the game now draws at up to 60 fps while you move or click and drops to 30 fps when idle. It no longer redraws at 120 fps on high-refresh screens, which saves a lot of battery on laptops.","High quality mode is lighter: pixel density is capped at 2x and shadow maps are 2048 instead of 4096, with almost no visible difference. Low quality is still the lightest option.","The build bar at the bottom no longer jumps or flickers when you switch categories or hover over buildings: it keeps one steady height now.","New 🚜 Bulldoze button sits at the start of the bottom category bar at all times, so you no longer have to open Roads to find it. Press B to toggle it too."], "Nov 26, 2026"],
 ["1.49.0", "Boats, Sister Cities, Goals & 15 new buildings", ["Fixed the black clouds and missing sun: the sky colors were set wrong, so clouds and the sun came out almost black. Clouds are now white with soft shaded undersides, and the sun is a bright disc low in the sky in front of your camera (tilt the camera toward the horizon to see it).","⚡ Low quality now really is lighter (1× pixel density, small hard shadows, simpler sky). ✨ High quality renders at up to 1.5× supersampling with soft 4K shadows, shaded clouds and stars at night.","⛵ Drive boats! Click any boat (with No tool selected) to take the helm like a car: W/S throttle and reverse, A/D steer, Space brake, Esc or ⚓ Anchor to stop. Boats stay on water, leave a wake and roll in turns. Cargo ships are slowest, fishing boats fastest. Boats come from the Wooden Pier, Harbor Dock and the new Marina.","🌐 New Cities button: your 3 save slots now form a network. Build a 🤝 Trade Center in two or more cities and they trade: each partner adds +3% to +10% income to the city you are playing. The panel also shows all your cities, lets you visit them, and gives you an empire rank from Village Mayor to Emperor.","🏅 New Goals button: 48 long-term goals (population, money, buildings, landmarks, expansions, happiness, driving, trade, play time and more) that pay cash when you reach them and count across all your cities. Plus a 🎁 daily gift that grows with your streak up to 7 days.","🗺️ Bigger expansions: every city expansion now adds 16×12 tiles of new land (it used to be 10×8), so your city can grow to 206×152. Cities you already started keep their size and just get the bigger steps from now on.","15 new buildings: ⛵ Marina (more boats), 🤝 Trade Center, 📈 Stock Exchange, 🎟️ Convention Center and 🎰 Casino Resort (Commerce), 🎢 Roller Coaster Park, 🔭 Planetarium, 🎪 Circus Big Top, 🎭 Grand Theater, 🎮 Esports Arena, 🏖️ Boardwalk and 🚀 Spaceport (Recreation), 🧬 Research Hospital (Health), 📡 Emergency Dispatch Center (Police & Law) and 🌞 Fusion Reactor (Power)."], "Nov 25, 2026"],
 ["1.48.0", "Three more city expansions", ["Expansions #9, #10 and #11 are here and cost $500,000,000, $1,000,000,000 and $5,000,000,000. Each adds 10×8 more tiles (your city can now grow to 140×108) and unlocks a new landmark.","🔺 Great Pyramids of Giza ($20,000,000), 🎭 Sydney Opera House ($60,000,000) and ⛪ Sagrada Família ($200,000,000) join the Landmarks tab. They are 4×4, can each be built once, and add jobs, fun, income and city pride."], "Nov 25, 2026"],
 ["1.47.0", "Six new fun buildings", ["New in the Recreation tab: ⛳ Golf Course (3×3, $12,000) with fairways, bunkers, a pond, a flag and a clubhouse; 🏌️ Mini Golf ($1,800) with a windmill; 🎡 Ferris Wheel (2×2, $8,000) that slowly turns and lights up at night; ⛸️ Ice Rink (2×2, $5,000); 🎳 Bowling Alley ($2,600) with a glowing pin sign; and 📽️ Drive-In Cinema (2×2, $4,200) with a glowing screen.","They all add fun, jobs and income, and the golf course also counts as green space.","The 🏮 Night Market now uses the remodeled lantern-stall model."], "Nov 23, 2026"],
@@ -3112,7 +3240,7 @@ T.oneway.c=0;T.oneway.lbl="$10/tile";T.oneway.d="A narrow street where cars driv
 {const j=dkG.Roads.indexOf("twoway");if(j>=0)dkG.Roads.splice(j,1);delete T.twoway;delete dkLOC.twoway}
 /* the build dock is drawn once at load, so redraw it to show the new tools */
 (()=>{const tb=document.getElementById("tb");if(!tb)return;
-tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
+tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${dkOrd(s[1]).map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;
 dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))})();
 /* rename popup: premade names as buttons, or type your own */
 document.head.insertAdjacentHTML("beforeend","<style>#sk-m{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:24}#sk-m.on{display:flex}#sk-m .bx{background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:16px;width:min(92vw,360px);display:flex;flex-direction:column;gap:10px}#sk-m input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px}#sk-m .nm{display:flex;flex-wrap:wrap;gap:4px}#sk-m .qr{display:flex;gap:6px}#sk-m .qr button{flex:1;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}</style>");
@@ -3710,7 +3838,7 @@ const redo=()=>{if(L.shadow.map){L.shadow.map.dispose();L.shadow.map=null}scene.
 if(!hq){try{/* LOW: 1x pixels, small hard-edged shadows, simple sky */
 renderer.setPixelRatio=v=>sp(1);renderer.shadowMap.type=THREE.BasicShadowMap;L.shadow.mapSize.set(1024,1024);L.shadow.bias=-.001;redo()}catch(e){console.error(e)}return}
 try{/* HIGH: supersampled pixels, soft 4K shadows */
-renderer.setPixelRatio=v=>sp(Math.min(Math.max(v,1)*1.5,coarse?2:2.5));renderer.shadowMap.type=THREE.PCFSoftShadowMap;L.shadow.mapSize.set(4096,4096);L.shadow.bias=-.0004;L.shadow.normalBias=.02;L.shadow.radius=3;redo()}catch(e){console.error(e)}})();
+renderer.setPixelRatio=v=>sp(Math.min(Math.max(v,1),2));renderer.shadowMap.type=THREE.PCFSoftShadowMap;L.shadow.mapSize.set(2048,2048);L.shadow.bias=-.0004;L.shadow.normalBias=.02;L.shadow.radius=3;redo()}catch(e){console.error(e)}})();
 </script>
 <script>
 /* HQ water: animated ripples and sun glints on the river and lakes */
@@ -3825,7 +3953,7 @@ const car=(x,z,c)=>bx(.1,.04,.05,c,x,.03,z),cars=[];for(let r=0;r<2;r++)for(let 
 proto.drivein=sm(G(bx(.96,.02,.96,0x3a3a42),bx(.74,.4,.025,0x222222,0,.02,-.4),bm(.66,.32,.02,gm(0xbfe6ff,0x6fb8ff),0,.06,-.385),bx(.03,.2,.03,0x555555,-.2,.02,-.36),bx(.03,.2,.03,0x555555,.2,.02,-.36),...cars,bx(.16,.09,.12,0xf0a030,.36,.02,.36),bm(.1,.04,.01,gl,.36,.05,.43)));
 proto.nmk=proto.market;
 ids.forEach(id=>{dkG.Recreation.push(id);dkLOC[id]=[8,0];const a=dkCATS[8]&&dkCATS[8].subs[0][1];if(a&&!a.includes(id))a.push(id)});
-const tb=document.getElementById("tb");if(tb){tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
+const tb=document.getElementById("tb");if(tb){tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${dkOrd(s[1]).map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
 const WL=[],rb=rebuild;rebuild=function(){rb.apply(this,arguments);WL.length=0;if(cityG)cityG.traverse(q=>{if(q.userData&&q.userData.fw)WL.push(q)})};
 let lt=performance.now();(function f(t){const dt=Math.min(.1,(t-lt)/1000);lt=t;WL.forEach(q=>q.rotation.z-=dt*.25);requestAnimationFrame(f)})(lt);
 dirty=1;ui()}catch(e){console.warn("new buildings skipped",e)}})();
@@ -3920,7 +4048,7 @@ const WHERE={marina:["Transport",2],tradectr:["Commerce",0],stockex:["Commerce",
  coaster:["Recreation",0],planet:["Recreation",0],circus:["Recreation",0],theater:["Recreation",0],esports:["Recreation",0],boardwalk:["Recreation",0],spaceport:["Recreation",0]};
 Object.keys(NEW).forEach(id=>{if(T[id])console.warn("building id taken",id);else T[id]=NEW[id]});
 Object.keys(WHERE).forEach(id=>{const[cn,si]=WHERE[id],ci=dkCATS.findIndex(c=>c.n==cn);if(ci<0)return;const a=dkCATS[ci].subs[si][1];if(!a.includes(id))a.push(id);dkLOC[id]=[ci,si]});
-const tb=document.getElementById("tb");if(tb){tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${s[1].map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
+const tb=document.getElementById("tb");if(tb){tb.innerHTML=`<div class="dk-panel" id="dkp"><div class="dk-subs" id="dks"></div>${dkCATS.map((c,ci)=>c.subs.map((s,si)=>`<div class="bs dk-items" data-p="${ci}.${si}" hidden>${dkOrd(s[1]).map(dkTile).join("")}</div>`).join("")).join("")}</div><div class="dk-cats">${dkCATS.map((c,ci)=>`<button class="dk-c" data-c="${ci}"><span>${c.e}</span>${c.n}</button>`).join("")}</div>`;dkDock();document.querySelectorAll(".t").forEach(b=>b.classList.toggle("on",b.dataset.t==tool))}
 dirty=1;ui()}catch(e){console.warn("new buildings skipped",e)}})();
 </script>
 <style>
@@ -4040,5 +4168,55 @@ function goalsTab(){const out=head(),o=dd(),ready=dailyReady(),n=A.filter(a=>don
   if(!r.d){const bar=el("div",null,"tm2-bar"),i=el("i");i.style.width=(r.p*100)+"%";bar.append(i);c.append(bar,el("small",fmt(Math.min(r.v,r.a[4]))+" / "+fmt(r.a[4])))}out.push(c)});return out}
 function render(){box.replaceChildren(...(tab=="c"?citiesTab():goalsTab()))}
 }catch(e){console.warn("cities/goals skipped",e)}})();
+</script>
+<script>
+/* v1.50: bulldoze lives at the start of the bottom category bar (B toggles it); strips scroll sideways with the mouse wheel */
+(()=>{const tb=document.getElementById("tb");if(!tb)return;
+const put=()=>{const c=tb.querySelector(".dk-cats");if(!c||c.querySelector("#bullb"))return;
+ const b=document.createElement("button");b.id="bullb";b.className="t";b.dataset.t="bull";b.title="Bulldoze (B)";b.innerHTML="<span>🚜</span>Bulldoze";b.classList.toggle("on",tool=="bull");c.prepend(b)};
+put();new MutationObserver(put).observe(tb,{childList:true});
+addEventListener("keydown",e=>{if((e.key=="b"||e.key=="B")&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)&&!e.target.isContentEditable&&!window.MENU)sel(tool=="bull"?"none":"bull")});
+tb.addEventListener("wheel",e=>{const r=e.target.closest&&e.target.closest(".dk-items,.dk-subs,.dk-cats");if(!r||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;if(r.scrollWidth>r.clientWidth){r.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
+})();
+</script>
+<script>
+/* Echo Timelines: snapshot your city, rewind to any past moment. The future you erase becomes an Echo that pays tribute forever. */
+(()=>{try{
+if(window.TMV)return;
+const LS=localStorage,SK="tm_tl_"+K,EK="tm_echo_"+K,fmt=n=>Math.floor(n).toLocaleString();
+const jg=(k,d)=>{try{return JSON.parse(LS.getItem(k))||d}catch(e){return d}};
+let tl=jg(SK,[]),echo=+LS.getItem(EK)||0;
+const c0=calc;calc=function(){const r=c0.apply(this,arguments);try{const o=r&&typeof r=="object"?r:S;if(echo>0&&o)o.inc*=1+echo}catch(e){}return r};
+function snap(why){try{if(!(pop>=10))return 0;save();const d=LS.getItem(K);if(!d)return 0;
+ tl.push({t:Date.now(),p:pop,m:Math.floor(money),n:why,d});while(tl.length>5)tl.shift();
+ try{LS.setItem(SK,JSON.stringify(tl))}catch(e){tl.shift();tl.shift();try{LS.setItem(SK,JSON.stringify(tl))}catch(e2){tl=[]}}return 1}catch(e){return 0}}
+let n=0;setInterval(()=>{if(window.MENU||document.hidden)return;if(++n>=300){n=0;snap("auto")}},1000);
+function rewind(i,free){const x=tl[i];if(!x)return;const lost=Math.max(0,pop-x.p),gain=Math.min(.05+lost/4000,.12);
+ if(!free){echo=Math.min(.3,echo+gain);try{LS.setItem("tm_carry_"+K,String(Math.floor(Math.max(0,money-x.m)*.5)))}catch(e){}}
+ try{LS.setItem(EK,String(echo));LS.setItem(K,x.d);tl=tl.slice(0,i);LS.setItem(SK,JSON.stringify(tl))}catch(e){}
+ save=function(){};location.reload()}
+let fres=null,fcd=+LS.getItem("tm_fs_"+K)||0;
+function foresight(){if(Date.now()<fcd){toast("🔮 Foresight is recharging",2000);return}if(!snap("foresight")){toast("Need 10+ citizens first",2000);return}
+ const a=pop,m=Math.floor(money);for(let i=0;i<120;i++){try{tick()}catch(e){}}try{calc();ui()}catch(e){}
+ fcd=Date.now()+6e5;try{LS.setItem("tm_fs_"+K,String(fcd))}catch(e){}fres={dp:pop-a,dm:Math.floor(money)-m,i:tl.length-1};render()}
+const cnt=o=>{const c={};Object.values(o||{}).forEach(v=>{if(v&&v.id)c[v.id]=(c[v.id]||0)+1});return c};
+function dif(x){try{const a=cnt(B),o=cnt(JSON.parse(x.d).B),l=[...new Set([...Object.keys(a),...Object.keys(o)])].map(k=>[k,(a[k]||0)-(o[k]||0)]).filter(v=>v[1]&&T[v[0]]).sort((p,q)=>Math.abs(q[1])-Math.abs(p[1])).slice(0,4);return l.length?"since then: "+l.map(v=>(v[1]>0?"+":"−")+Math.abs(v[1])+" "+T[v[0]].e).join(" "):"same buildings as now"}catch(e){return""}}
+addEventListener("keydown",e=>{if(e.altKey&&(e.key=="f"||e.key=="F")&&!window.MENU){e.preventDefault();toast(snap("manual")?"🔱 Timeline forked":"Need 10+ citizens first",2000)}});
+setTimeout(()=>{const c=+LS.getItem("tm_carry_"+K)||0;if(c>0){try{LS.removeItem("tm_carry_"+K)}catch(e){}money+=c;try{ui()}catch(e){}toast("⏳ Time Dividend: +$"+fmt(c)+" carried back from the erased future",5000)}},1500);
+const hd=document.querySelector("header"),b=document.createElement("button");b.textContent="⏪ Timelines";b.style.cssText="font:inherit;font-weight:600;color:var(--ink);background:none;border:1px solid var(--line);border-radius:8px;padding:3px 10px;cursor:pointer";hd&&hd.append(b);
+const M=document.createElement("div");M.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:30;padding:12px";
+const bx=document.createElement("div");bx.style.cssText="background:var(--panel);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:14px;max-width:520px;width:100%;max-height:88vh;overflow:auto;font-size:13px";M.append(bx);document.body.append(M);
+M.addEventListener("pointerdown",e=>{if(e.target===M)M.style.display="none"});
+const h=(t,c,s)=>{const e=document.createElement(t);if(c!=null)e.innerHTML=c;if(s)e.style.cssText=s;return e},bs="font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer";
+function render(){bx.replaceChildren();bx.append(h("b","⏪ Echo Timelines","font:700 20px Fredoka,system-ui"));
+ bx.append(h("p","Fork the city to save a moment, and rewind to any fork if a plan goes wrong. Every future you erase leaves an <b>Echo</b> that pays tribute: <b>+"+Math.round(echo*100)+"% income</b> (max 30%). The bigger the city you abandon, the stronger the Echo. Bold rewinds pay off. 🔮 <b>Foresight</b> warps the city 2 minutes ahead so you can see the future, then keep it or undo it for free. ⏳ Rewinding also carries back half the profit made since that fork. Alt+F forks instantly.","color:var(--mut);margin:6px 0 8px"));
+ const f=h("button","🔱 Fork now",bs);f.onclick=()=>{toast(snap("manual")?"🔱 Timeline forked":"Need 10+ citizens first",2000);render()};bx.append(f);
+ const fb=h("button","🔮 Foresight"+(Date.now()<fcd?" ("+Math.ceil((fcd-Date.now())/6e4)+"m)":""),bs+";margin-left:6px");fb.onclick=foresight;bx.append(fb);
+ if(fres){const sg=v=>(v>=0?"+":"−")+fmt(Math.abs(v)),q=h("div","🔮 <b>2 minutes ahead:</b> 👥 "+sg(fres.dp)+" · 💰 $"+sg(fres.dm)+"<br>","margin:8px 0;padding:8px;border:2px solid var(--acc);border-radius:10px"),k=h("button","Keep this future",bs),u=h("button","Undo (free)",bs+";margin-left:6px");k.onclick=()=>{fres=null;render()};u.onclick=()=>rewind(fres.i,1);q.append(k,u);bx.append(q)}
+ if(!tl.length)bx.append(h("p","No forks yet. One is saved automatically every 5 minutes.","color:var(--mut)"));
+ tl.map((x,i)=>[x,i]).reverse().forEach(([x,i])=>{const r=h("div","<div><b>"+new Date(x.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</b> · "+({auto:"auto",foresight:"🔮 foresight"})[x.n]||"manual"+" · 👥 "+fmt(x.p)+" · $"+fmt(x.m)+(pop>x.p?" <small style='color:var(--good)'>(erases +"+fmt(pop-x.p)+" citizens)</small>":"")+"<br><small style='color:var(--mut)'>"+dif(x)+"</small></div>","display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)"),g=h("button","Rewind",bs);g.onclick=()=>{if(confirm("Rewind to this moment? Your current timeline becomes an Echo."))rewind(i)};r.append(g);bx.append(r)})}
+b.onclick=()=>{render();M.style.display="flex"};
+addEventListener("keydown",e=>{if(M.style.display=="flex"&&e.key=="Escape"){M.style.display="none";e.stopImmediatePropagation()}},true);
+}catch(e){console.warn("timelines skipped",e)}})();
 </script>
 </body></html>
